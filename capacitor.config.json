@@ -1,6 +1,6 @@
 {
-  "appId": "org.example.dailymoments",
-  "appName": "Daily Moments",
+  "appId": "org.example.carm",
+  "appName": "CarM",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "build",
