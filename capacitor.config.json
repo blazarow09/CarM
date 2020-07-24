@@ -1,0 +1,13 @@
+{
+  "appId": "org.example.carm",
+  "appName": "CarM",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "build",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}
