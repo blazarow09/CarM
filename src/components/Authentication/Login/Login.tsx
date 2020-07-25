@@ -1,9 +1,6 @@
 import * as React from 'react';
 import {
     IonPage,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonList,
     IonItem,
@@ -12,10 +9,19 @@ import {
     IonButton,
     IonRouterLink,
     IonSpinner,
+    IonCard,
+    IonCardContent,
+    IonRow,
+    IonCol,
+    IonIcon,
 } from '@ionic/react';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { inject, observer } from 'mobx-react';
 import { Redirect } from 'react-router-dom';
+import { logoGoogle as googleIcon, logoFacebook as fbIcon } from 'ionicons/icons';
+import { AppRoutes } from '../../AppRoutes';
+
+import '../LoginRegister.css';
 
 interface LoginPageProps {
     loggedIn: boolean;
@@ -62,9 +68,15 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
             email: this.state.email,
             password: this.state.password,
         });
-
-        // this.setLoading(false);
     }
+
+    private setCorrectStateSaveButton = (): boolean => {
+        if (this.state.email === '' || this.state.password === '' || this.state.loading) {
+            return true;
+        }
+
+        return false;
+    };
 
     public render() {
         if (this.props.loggedIn) {
@@ -73,40 +85,61 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
 
         return (
             <IonPage>
-                <IonHeader>
-                    <IonToolbar>
-                        <IonTitle>Login</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <IonContent className="ion-padding">
-                    <IonList>
-                        <IonItem>
-                            <IonLabel position="floating">Email</IonLabel>
-                            <IonInput
-                                type="email"
-                                onIonChange={(event): void => this.setEmail(event?.detail?.value ? event?.detail?.value : '')}
-                            />
-                        </IonItem>
-                        <IonItem>
-                            <IonLabel position="floating">Password</IonLabel>
-                            <IonInput
-                                type="password"
-                                onIonChange={(event): void => this.setPassword(event?.detail?.value ? event?.detail?.value : '')}
-                            />
-                        </IonItem>
-                    </IonList>
-                    {/* {!status.isSuccessfulLoggedIn && <IonLabel color="danger">The email or password is invalid.</IonLabel>} */}
-                    {/* <IonButton expand="block" disabled={status.isLoading} onClick={async (): Promise<void> => await this.handleLogin()}> */}
-                    <IonButton expand="block" onClick={async (): Promise<void> => await this.handleLogin()} disabled={this.state.loading}>
-                        {this.state.loading ? <IonSpinner name="crescent" /> : 'Login'}
+                <IonContent className="c-login-content">
+                    <img className="c-logo-cars" src="https://prikachi.net/images/wnU9H.png" alt="carm logo" />
+                    <IonCard className="c-card">
+                        <IonCardContent>
+                            <p className="c-sub-title">Log in using</p>
+
+                            <IonRow className="ion-align-items-center">
+                                <IonCol size="6">
+                                    <IonButton fill="outline" color="secondary" className="c-provider-btn">
+                                        <IonIcon icon={fbIcon} className="c-btn-icon" />
+                                        <IonLabel>Facebook</IonLabel>
+                                    </IonButton>
+                                </IonCol>
+                                <IonCol size="6">
+                                    <IonButton fill="outline" color="secondary" className="c-provider-btn">
+                                        <IonIcon icon={googleIcon} className="c-btn-icon" />
+                                        <IonLabel>Google</IonLabel>
+                                    </IonButton>
+                                </IonCol>
+                            </IonRow>
+
+                            <div className="c-separator"></div>
+                            <p className="c-or-label">OR</p>
+                            <IonList className="c-form-fields">
+                                <IonItem>
+                                    <IonLabel position="floating">Email</IonLabel>
+                                    <IonInput
+                                        type="email"
+                                        onIonChange={(event): void => this.setEmail(event?.detail?.value ? event?.detail?.value : '')}
+                                    />
+                                </IonItem>
+                                <IonItem>
+                                    <IonLabel position="floating">Password</IonLabel>
+                                    <IonInput
+                                        type="password"
+                                        onIonChange={(event): void => this.setPassword(event?.detail?.value ? event?.detail?.value : '')}
+                                    />
+                                </IonItem>
+                            </IonList>
+                            <IonRouterLink>Forgot your password?</IonRouterLink>
+                            {/* {!status.isSuccessfulLoggedIn && <IonLabel color="danger">The email or password is invalid.</IonLabel>} */}
+                            <IonButton
+                                className="c-save-buton"
+                                expand="block"
+                                color="secondary"
+                                onClick={async (): Promise<void> => await this.handleLogin()}
+                                disabled={this.setCorrectStateSaveButton()}
+                            >
+                                {this.state.loading ? <IonSpinner name="crescent" /> : 'Login'}
+                            </IonButton>
+                        </IonCardContent>
+                    </IonCard>
+                    <IonButton className="c-create-acc-btn" color="light" fill="clear" size="small" routerLink={AppRoutes.registerRoute}>
+                        CREATE AN ACCOUNT
                     </IonButton>
-                    <IonLabel>
-                        Don't have an account? <IonRouterLink routerLink="/register">Register</IonRouterLink>
-                    </IonLabel>
-                    {/* <IonLoading
-                isOpen={status.isLoading}
-                message={'Logging in...'}
-            /> */}
                 </IonContent>
             </IonPage>
         );
