@@ -5,15 +5,17 @@ import { IUserCredentials } from '../../components/Authentication/IUserCredentia
 
 export interface IUserStore {
     // Methods
-    handleLogin(userCredentials: IUserCredentials): Promise<void>;
-    handleRegister(userCredentials: IUserCredentials): Promise<void>;
+    handleLogin(userCredentials: IUserCredentials): Promise<boolean>;
+    handleRegister(userCredentials: IUserCredentials): Promise<boolean>;
+    handleLogout(): Promise<void>;
 
     // Observables
     userContext: IAuthContext;
     setUserContext(): void;
 
     // Computed
-    onAuthStateChanged: firebase.Unsubscribe;
+    onAuthStateChanged: 'loggedIn' | 'pending' | 'notLoggedIn';
+    // onAuthStateChanged: IAuthContext;
 }
 
 export class UserStore implements UserStore {
@@ -22,58 +24,94 @@ export class UserStore implements UserStore {
     //#endregion
 
     //#region Observables initialization
-    @observable public userContext: IAuthContext = { loggedIn: false };
+    @observable public userContext: IAuthContext = null;
     //#endregion
 
     public constructor(authService: AuthService) {
         this._authService = authService;
     }
 
-    @action
-    public setUserContext(authContextResult?: IAuthContext): void {
-        if (authContextResult) {
-            this.userContext = authContextResult;
-        } else {
-            let authContext = this.onAuthStateChanged;
+    // @action
+    // public setUserContext(authContextResult?: IAuthContext): void {
+    //     if (authContextResult) {
+    //         this.userContext = authContextResult;
+    //     } else {
+    //         let authContext = this.onAuthStateChanged;
 
-            this.userContext = authContext;
+    //         // this.userContext = authContext;
+    //     }
+    // }
+
+    public async handleLogin(userCredentials: IUserCredentials): Promise<boolean> {
+        if (userCredentials) {
+            try {
+                let authContext = await this._authService.login(userCredentials);
+
+                // if (authContext?.loggedIn) {
+                //     this.setUserContext(authContext);
+
+                //     return true;
+                // }
+            } catch (error) {
+                console.log(error);
+            }
+
+            return true;
         }
     }
 
-    public async handleLogin(userCredentials: IUserCredentials): Promise<void> {
-        if (userCredentials) {
-            let authContext = await this._authService.login(userCredentials);
+    public async handleLogout(): Promise<void> {
+        // if (this.userContext?.loggedIn) {
+            try {
+                await this._authService.logout();
 
-            if (authContext?.loggedIn) {
-                this.setUserContext(authContext);
+                // this.setUserContext();
+            } catch (error) {
+                console.log(error);
             }
-        }
+        // }
     }
 
-    public async handleRegister(userCredentials: IUserCredentials): Promise<void> {
-        if (userCredentials) {
-            let authContext = await this._authService.register(userCredentials);
+    public async handleRegister(userCredentials: IUserCredentials): Promise<boolean> {
+        try {
+            if (userCredentials) {
+                let authContext = await this._authService.register(userCredentials);
 
-            if (authContext?.loggedIn) {
-                this.setUserContext(authContext);
+                // if (authContext?.loggedIn) {
+                //     this.setUserContext(authContext);
+
+                //     return true;
+                // }
             }
+        } catch (error) {
+            console.log(error);
         }
+
+        return false;
     }
 
     //#region Computed properties
-    @computed
-    public get onAuthStateChanged(): IAuthContext {
-        let auth: IAuthContext;
+    // @computed
+    // public get onAuthStateChanged(): 'loggedIn' | 'pending' | 'notLoggedIn' {
+    //     console.log('Invoked onAuthStateChange');
 
-        firebaseAuth.onAuthStateChanged((firebaseUser): void => {
-            auth = firebaseUser ? { loggedIn: true, email: firebaseUser?.email, userId: firebaseUser?.uid } : { loggedIn: false };
-        });
+    //     let auth: IAuthContext;
 
-        if (!auth) {
-            return { loggedIn: false };
-        }
+    //     let unsubscribe = firebaseAuth.onAuthStateChanged((firebaseUser): void => {
+    //         auth = firebaseUser ? { loggedIn: 'loggedIn', email: firebaseUser?.email, userId: firebaseUser?.uid } : { loggedIn: 'notLoggedIn' };
+    //     });
 
-        return auth;
-    }
+    //     console.log(auth);
+
+    //     this.userContext = auth;
+
+    //     if (!auth) {
+    //         unsubscribe();
+    //         return 'pending';
+    //     }
+
+    //     unsubscribe();
+    //     return 'loggedIn';
+    // }
     //#endregion
 }

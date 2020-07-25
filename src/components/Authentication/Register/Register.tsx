@@ -14,9 +14,11 @@ import {
 } from '@ionic/react';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { observer, inject } from 'mobx-react';
-import { Redirect } from 'react-router';
+import { Redirect } from 'react-router-dom';
+import { AppRoutes } from '../../AppRoutes';
 
 interface RegisterPageProps {
+    loggedIn: boolean;
     userStore?: IUserStore;
 }
 
@@ -54,7 +56,7 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
     }
 
     private async handleRegister(): Promise<void> {
-        let authContext =  await this.props.userStore.handleRegister({
+        let succeeded = await this.props.userStore.handleRegister({
             email: this.state.email,
             password: this.state.password,
             confirmPassword: this.state.passwordMatch,
@@ -62,9 +64,10 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
     }
 
     public render() {
-        if(this.props.userStore.userContext.loggedIn) {
-            return <Redirect to="/my/home"/>
+        if (this.props.loggedIn) {
+            return <Redirect to="/my/home" />;
         }
+
         return (
             <IonPage>
                 <IonHeader>
@@ -103,7 +106,7 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
                         Register
                     </IonButton>
                     <IonLabel>
-                        Already have an account? <IonRouterLink routerLink="/login">Login</IonRouterLink>
+                        Already have an account? <IonRouterLink routerLink={AppRoutes.loginRoute}>Register</IonRouterLink>
                     </IonLabel>
                     {/* <IonLoading
                 isOpen={status.isLoading}

@@ -1,35 +1,25 @@
-import { IonApp, IonContent, IonHeader, IonTitle, IonToolbar, IonLoading } from '@ionic/react';
+import { IonApp, IonLoading } from '@ionic/react';
 import React from 'react';
-import { observer, inject } from 'mobx-react';
-import { IUserStore } from '../stores/UserStore/UserStore';
 import AppRouter from './AppRouter';
+import HomeButton from './HomeButton/HomeButton';
+import { useAuthInit, AuthContext } from './Authentication/AuthGuard/AuthGuard';
 
-interface AppProps {
-    userStore?: IUserStore;
-}
+const App: React.FC = () => {
+    const { isLoading, auth } = useAuthInit();
 
-@inject('userStore')
-@observer
-export default class App extends React.Component<AppProps> {
-    public async componentDidMount(): Promise<void> {
-        this.props.userStore.setUserContext();
+    console.log(`Rendering App with auth: loggedIn: ${auth?.loggedIn}, userId: ${auth?.userId}`);
+    if (isLoading) {
+        return <IonLoading isOpen />;
     }
 
-    public render() {
-        // if (this.props.userStore?.userContext?.loggedIn) {
-        //     return <IonLoading isOpen />;
-        // }
-
-        return (
-            <IonApp className="ion-padding">
+    return (
+        <IonApp className="ion-padding">
+            <AuthContext.Provider value={{ loggedIn: auth?.loggedIn, userId: auth?.userId, email: auth?.email }}>
+                <HomeButton />
                 <AppRouter />
-                {/* <IonHeader>
-                    <IonToolbar>
-                        <IonTitle>My App</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <IonContent className="ion-padding">Add some content here…</IonContent> */}
-            </IonApp>
-        );
-    }
-}
+            </AuthContext.Provider>
+        </IonApp>
+    );
+};
+
+export default App;

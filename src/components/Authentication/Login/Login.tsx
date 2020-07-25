@@ -11,18 +11,21 @@ import {
     IonInput,
     IonButton,
     IonRouterLink,
+    IonSpinner,
 } from '@ionic/react';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { inject, observer } from 'mobx-react';
 import { Redirect } from 'react-router-dom';
 
 interface LoginPageProps {
+    loggedIn: boolean;
     userStore?: IUserStore;
 }
 
 interface LoginPageState {
     email: string;
     password: string;
+    loading: boolean;
 }
 
 @inject('userStore')
@@ -31,6 +34,7 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
     public state: LoginPageState = {
         email: '',
         password: '',
+        loading: false,
     };
 
     private setEmail(email: string): void {
@@ -45,17 +49,28 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
         });
     }
 
+    private setLoading(loading: boolean): void {
+        this.setState({
+            loading: loading,
+        });
+    }
+
     private async handleLogin(): Promise<void> {
+        this.setLoading(true);
+
         let authContext = await this.props.userStore.handleLogin({
             email: this.state.email,
             password: this.state.password,
         });
+
+        // this.setLoading(false);
     }
 
     public render() {
-        if(this.props.userStore.userContext.loggedIn) {
-            return <Redirect to="/my/home"/>
+        if (this.props.loggedIn) {
+            return <Redirect to="/my/home" />;
         }
+
         return (
             <IonPage>
                 <IonHeader>
@@ -82,9 +97,8 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
                     </IonList>
                     {/* {!status.isSuccessfulLoggedIn && <IonLabel color="danger">The email or password is invalid.</IonLabel>} */}
                     {/* <IonButton expand="block" disabled={status.isLoading} onClick={async (): Promise<void> => await this.handleLogin()}> */}
-                    <IonButton expand="block" onClick={async (): Promise<void> => await this.handleLogin()}>
-                        {/* {status.isLoading ? <IonSpinner name="dots" /> : 'Login'} */}
-                        Register
+                    <IonButton expand="block" onClick={async (): Promise<void> => await this.handleLogin()} disabled={this.state.loading}>
+                        {this.state.loading ? <IonSpinner name="crescent" /> : 'Login'}
                     </IonButton>
                     <IonLabel>
                         Don't have an account? <IonRouterLink routerLink="/register">Register</IonRouterLink>
