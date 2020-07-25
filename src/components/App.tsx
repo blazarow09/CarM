@@ -15,7 +15,7 @@ const App: React.FC = () => {
     return (
         <IonApp className="ion-padding">
             <AuthContext.Provider value={{ loggedIn: auth?.loggedIn, userId: auth?.userId, email: auth?.email }}>
-                <HomeButton />
+                {/* <HomeButton /> */}
                 <AppRouter />
             </AuthContext.Provider>
         </IonApp>

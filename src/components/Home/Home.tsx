@@ -1,17 +1,9 @@
 import * as React from 'react';
-import {
-    IonPage,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonButton,
-    IonIcon,
-    IonTitle,
-    IonContent,
-} from '@ionic/react';
-import { settingsOutline as settingsIcon, exitOutline as exitIcon} from 'ionicons/icons';
+import { IonPage, IonButtons, IonButton, IonIcon, IonContent } from '@ionic/react';
+import { settingsOutline as settingsIcon, exitOutline as exitIcon } from 'ionicons/icons';
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { observer, inject } from 'mobx-react';
+import MainHeader from '../MainHeader/MainHeader';
 
 interface HomeProps {
     userStore?: IUserStore;
@@ -28,34 +20,29 @@ export default class Home extends React.Component<HomeProps> {
         }
     }
 
-    private async logout (): Promise<void> {
+    private async logout(): Promise<void> {
         await this.props.userStore.handleLogout();
-
     }
 
-    public render() {        
+    public render() {
         return (
             <IonPage>
-                <IonHeader>
-                    <IonToolbar color="secondary">
-                        <IonButtons slot="end">
-                            <IonButton>
-                                <IonIcon icon={settingsIcon} slot="icon-only" />
-                            </IonButton>
-                            <IonButton onClick={async (): Promise<void> => await this.logout()}>
-                                <IonIcon icon={exitIcon} slot="icon-only" />
-                            </IonButton>
-                        </IonButtons>
-                        <IonTitle>Home</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <IonContent>
-                    {/* <IonItem>
-                        <IonLabel>Checked:</IonLabel>
-                        <IonToggle onIonChange={(e) => this.toggleTheme(e.detail.checked)} />
-                    </IonItem> */}
-                </IonContent>
+                <MainHeader title="Home" extraContent={this.extraContent} />
+                <IonContent></IonContent>
             </IonPage>
         );
     }
+
+    private extraContent = (): JSX.Element => {
+        return (
+            <IonButtons slot="end">
+                <IonButton>
+                    <IonIcon icon={settingsIcon} slot="icon-only" />
+                </IonButton>
+                <IonButton onClick={async (): Promise<void> => await this.logout()}>
+                    <IonIcon icon={exitIcon} slot="icon-only" />
+                </IonButton>
+            </IonButtons>
+        );
+    };
 }
