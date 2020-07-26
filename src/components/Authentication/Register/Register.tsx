@@ -1,22 +1,30 @@
 import * as React from 'react';
 import {
     IonPage,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonList,
     IonItem,
     IonLabel,
     IonInput,
     IonButton,
-    IonRouterLink,
+    IonCard,
+    IonCardContent,
+    IonRow,
+    IonCol,
+    IonIcon,
+    IonSpinner,
 } from '@ionic/react';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { observer, inject } from 'mobx-react';
-import { Redirect } from 'react-router';
+import { Redirect } from 'react-router-dom';
+import { AppRoutes } from '../../AppRoutes';
+import { logoGoogle as googleIcon, logoFacebook as fbIcon } from 'ionicons/icons';
+
+import '../LoginRegister.css';
+import AppRouter from '../../AppRouter';
 
 interface RegisterPageProps {
+    loggedIn: boolean;
     userStore?: IUserStore;
 }
 
@@ -24,6 +32,7 @@ interface RegisterPageState {
     email: string;
     password: string;
     passwordMatch: string;
+    loading: boolean;
 }
 
 @inject('userStore')
@@ -33,6 +42,7 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
         email: '',
         password: '',
         passwordMatch: '',
+        loading: false,
     };
 
     private setEmail(email: string): void {
@@ -53,62 +63,101 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
         });
     }
 
+    private setLoading(loading: boolean): void {
+        this.setState({
+            loading: loading,
+        });
+    }
+
     private async handleRegister(): Promise<void> {
-        let authContext =  await this.props.userStore.handleRegister({
+        this.setLoading(true);
+
+        let succeeded = await this.props.userStore.handleRegister({
             email: this.state.email,
             password: this.state.password,
             confirmPassword: this.state.passwordMatch,
         });
     }
 
-    public render() {
-        if(this.props.userStore.userContext.loggedIn) {
-            return <Redirect to="/my/home"/>
+    private setCorrectStateSaveButton = (): boolean => {
+        if (this.state.email === '' || this.state.password === '' || this.state.passwordMatch === '' || this.state.loading) {
+            return true;
         }
+
+        return false;
+    };
+
+    public render() {
+        if (this.props.loggedIn) {
+            return <Redirect to={AppRoutes.homeRoute} />;
+        }
+
         return (
-            <IonPage>
-                <IonHeader>
-                    <IonToolbar>
-                        <IonTitle>Register</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <IonContent className="ion-padding">
-                    <IonList>
-                        <IonItem>
-                            <IonLabel position="floating">Email</IonLabel>
-                            <IonInput
-                                type="email"
-                                onIonChange={(event): void => this.setEmail(event?.detail?.value ? event?.detail?.value : '')}
-                            />
-                        </IonItem>
-                        <IonItem>
-                            <IonLabel position="floating">Password</IonLabel>
-                            <IonInput
-                                type="password"
-                                onIonChange={(event): void => this.setPassword(event?.detail?.value ? event?.detail?.value : '')}
-                            />
-                        </IonItem>
-                        <IonItem>
-                            <IonLabel position="floating">Confirm password</IonLabel>
-                            <IonInput
-                                type="password"
-                                onIonChange={(event): void => this.setPasswordMatch(event?.detail?.value ? event?.detail?.value : '')}
-                            />
-                        </IonItem>
-                    </IonList>
-                    {/* {!status.isSuccessfulLoggedIn && <IonLabel color="danger">The email or password is invalid.</IonLabel>} */}
-                    {/* <IonButton expand="block" disabled={status.isLoading} onClick={async (): Promise<void> => await this.handleLogin()}> */}
-                    <IonButton expand="block" onClick={async (): Promise<void> => await this.handleRegister()}>
-                        {/* {status.isLoading ? <IonSpinner name="dots" /> : 'Login'} */}
-                        Register
-                    </IonButton>
-                    <IonLabel>
-                        Already have an account? <IonRouterLink routerLink="/login">Login</IonRouterLink>
-                    </IonLabel>
-                    {/* <IonLoading
-                isOpen={status.isLoading}
-                message={'Logging in...'}
-            /> */}
+            <IonPage className="c-auth-form">
+                <IonContent className="c-login-content">
+                    <img className="c-logo-cars" src="https://prikachi.net/images/wnU9H.png" alt="carm logo" />
+
+                    <IonCard className="c-card">
+                        <IonCardContent>
+                            <p className="c-sub-title">Create a CarM account</p>
+
+                            <IonRow className="ion-align-items-center">
+                                <IonCol size="6">
+                                    <IonButton fill="outline" color="secondary" className="c-provider-btn">
+                                        <IonIcon icon={fbIcon} className="c-btn-icon" />
+                                        <IonLabel>Facebook</IonLabel>
+                                    </IonButton>
+                                </IonCol>
+                                <IonCol size="6">
+                                    <IonButton fill="outline" color="secondary" className="c-provider-btn">
+                                        <IonIcon icon={googleIcon} className="c-btn-icon" />
+                                        <IonLabel>Google</IonLabel>
+                                    </IonButton>
+                                </IonCol>
+                            </IonRow>
+
+                            <div className="c-separator"></div>
+                            <p className="c-or-label">OR</p>
+                            <IonList className="c-form-fields">
+                                <IonItem>
+                                    <IonLabel position="floating">Email</IonLabel>
+                                    <IonInput
+                                        type="email"
+                                        onIonChange={(event): void => this.setEmail(event?.detail?.value ? event?.detail?.value : '')}
+                                    />
+                                </IonItem>
+                                <IonItem>
+                                    <IonLabel position="floating">Password</IonLabel>
+                                    <IonInput
+                                        type="password"
+                                        onIonChange={(event): void => this.setPassword(event?.detail?.value ? event?.detail?.value : '')}
+                                    />
+                                </IonItem>
+                                <IonItem>
+                                    <IonLabel position="floating">Repeat password</IonLabel>
+                                    <IonInput
+                                        type="password"
+                                        onIonChange={(event): void =>
+                                            this.setPasswordMatch(event?.detail?.value ? event?.detail?.value : '')
+                                        }
+                                    />
+                                </IonItem>
+                            </IonList>
+                            {/* {!status.isSuccessfulLoggedIn && <IonLabel color="danger">The email or password is invalid.</IonLabel>} */}
+                            <IonButton
+                                className="c-save-buton"
+                                expand="block"
+                                color="secondary"
+                                onClick={async (): Promise<void> => await this.handleRegister()}
+                                disabled={this.setCorrectStateSaveButton()}
+                            >
+                                {this.state.loading ? <IonSpinner name="crescent" /> : 'CREATE AN ACCOUNT'}
+                            </IonButton>
+                            <IonButton className="c-cancel-btn" color="primary" fill="clear" size="small" routerLink={AppRoutes.loginRoute}>
+                                CANCEL
+                            </IonButton>
+                        </IonCardContent>
+                    </IonCard>
                 </IonContent>
             </IonPage>
         );

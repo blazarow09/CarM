@@ -1,28 +1,25 @@
 import AuthService, { IAuthContext } from '../../services/AuthService';
-import { auth as firebaseAuth } from '../../firebase/firebaseConfig.dev';
-import { observable, action, computed } from 'mobx';
+import { observable, action } from 'mobx';
 import { IUserCredentials } from '../../components/Authentication/IUserCredentials';
 
 export interface IUserStore {
     // Methods
-    handleLogin(userCredentials: IUserCredentials): Promise<void>;
-    handleRegister(userCredentials: IUserCredentials): Promise<void>;
+    handleLogin(userCredentials: IUserCredentials): Promise<boolean>;
+    handleRegister(userCredentials: IUserCredentials): Promise<boolean>;
+    handleLogout(): Promise<void>;
+    setUserContext(userId: string): void;
 
     // Observables
     userContext: IAuthContext;
-    setUserContext(): void;
-
-    // Computed
-    onAuthStateChanged: firebase.Unsubscribe;
 }
 
-export class UserStore implements UserStore {
+export class UserStore implements IUserStore {
     //#region Services
     private _authService: AuthService;
     //#endregion
 
     //#region Observables initialization
-    @observable public userContext: IAuthContext = { loggedIn: false };
+    @observable public userContext: IAuthContext = null;
     //#endregion
 
     public constructor(authService: AuthService) {
@@ -30,50 +27,39 @@ export class UserStore implements UserStore {
     }
 
     @action
-    public setUserContext(authContextResult?: IAuthContext): void {
-        if (authContextResult) {
-            this.userContext = authContextResult;
-        } else {
-            let authContext = this.onAuthStateChanged;
-
-            this.userContext = authContext;
-        }
+    public setUserContext(userId: string): void {
+        this.userContext = { userId: userId, loggedIn: true };
     }
 
-    public async handleLogin(userCredentials: IUserCredentials): Promise<void> {
+    public async handleLogin(userCredentials: IUserCredentials): Promise<boolean> {
         if (userCredentials) {
-            let authContext = await this._authService.login(userCredentials);
-
-            if (authContext?.loggedIn) {
-                this.setUserContext(authContext);
+            try {
+                let authContext = await this._authService.login(userCredentials);
+            } catch (error) {
+                console.log(error);
             }
+
+            return true;
         }
     }
 
-    public async handleRegister(userCredentials: IUserCredentials): Promise<void> {
-        if (userCredentials) {
-            let authContext = await this._authService.register(userCredentials);
+    public async handleLogout(): Promise<void> {
+        try {
+            await this._authService.logout();
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-            if (authContext?.loggedIn) {
-                this.setUserContext(authContext);
+    public async handleRegister(userCredentials: IUserCredentials): Promise<boolean> {
+        try {
+            if (userCredentials) {
+                let authContext = await this._authService.register(userCredentials);
             }
-        }
-    }
-
-    //#region Computed properties
-    @computed
-    public get onAuthStateChanged(): IAuthContext {
-        let auth: IAuthContext;
-
-        firebaseAuth.onAuthStateChanged((firebaseUser): void => {
-            auth = firebaseUser ? { loggedIn: true, email: firebaseUser?.email, userId: firebaseUser?.uid } : { loggedIn: false };
-        });
-
-        if (!auth) {
-            return { loggedIn: false };
+        } catch (error) {
+            console.log(error);
         }
 
-        return auth;
+        return false;
     }
-    //#endregion
 }
