@@ -1,5 +1,5 @@
 import AuthService, { IAuthContext } from '../../services/AuthService';
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 import { IUserCredentials } from '../../components/Authentication/IUserCredentials';
 
 export interface IUserStore {
@@ -7,12 +7,13 @@ export interface IUserStore {
     handleLogin(userCredentials: IUserCredentials): Promise<boolean>;
     handleRegister(userCredentials: IUserCredentials): Promise<boolean>;
     handleLogout(): Promise<void>;
+    setUserContext(userId: string): void;
 
     // Observables
     userContext: IAuthContext;
 }
 
-export class UserStore implements UserStore {
+export class UserStore implements IUserStore {
     //#region Services
     private _authService: AuthService;
     //#endregion
@@ -23,6 +24,11 @@ export class UserStore implements UserStore {
 
     public constructor(authService: AuthService) {
         this._authService = authService;
+    }
+
+    @action
+    public setUserContext(userId: string): void {
+        this.userContext = { userId: userId, loggedIn: true };
     }
 
     public async handleLogin(userCredentials: IUserCredentials): Promise<boolean> {

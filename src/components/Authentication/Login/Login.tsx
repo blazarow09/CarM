@@ -84,7 +84,7 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
         }
 
         return (
-            <IonPage>
+            <IonPage className="c-auth-form">
                 <IonContent className="c-login-content">
                     <img className="c-logo-cars" src="https://prikachi.net/images/wnU9H.png" alt="carm logo" />
                     <IonCard className="c-card">

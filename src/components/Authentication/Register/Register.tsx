@@ -21,6 +21,7 @@ import { AppRoutes } from '../../AppRoutes';
 import { logoGoogle as googleIcon, logoFacebook as fbIcon } from 'ionicons/icons';
 
 import '../LoginRegister.css';
+import AppRouter from '../../AppRouter';
 
 interface RegisterPageProps {
     loggedIn: boolean;
@@ -88,11 +89,11 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
 
     public render() {
         if (this.props.loggedIn) {
-            return <Redirect to="/my/home" />;
+            return <Redirect to={AppRoutes.homeRoute} />;
         }
 
         return (
-            <IonPage>
+            <IonPage className="c-auth-form">
                 <IonContent className="c-login-content">
                     <img className="c-logo-cars" src="https://prikachi.net/images/wnU9H.png" alt="carm logo" />
 
