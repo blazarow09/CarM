@@ -17,12 +17,12 @@ export default class NoVehicleScreen extends React.Component<NoVehicleScreenProp
         return (
             <>
                 <IonRow className="c-no-res-screen c-center">
-                    <img className="c-no-res-screen c-center" src={logo} alt="carm logo" width="114px" height="114px" />
+                    <img className="c-no-res-screen c-center c-img" src={logo} alt="carm logo" width="114px" height="114px" />
                     <br />
                     <p className="c-no-res-label">No results were found</p>
                     <br />
-                    <IonFab horizontal="center">
-                        <IonFabButton onClick={(): void => this.props.uiStore.openCloseModal(Modals.AddCarModal, 'open')}>
+                    <IonFab horizontal="center" className="c-fab">
+                        <IonFabButton color="light" onClick={(): void => this.props.uiStore.openCloseModal(Modals.AddCarModal, 'open')}>
                             <IonIcon icon={addIcon} />
                         </IonFabButton>
                     </IonFab>

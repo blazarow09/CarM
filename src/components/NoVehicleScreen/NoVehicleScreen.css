@@ -13,3 +13,15 @@
     font-weight: 300;
     font-size: 18px;
 }
+
+.c-img {
+    opacity: 0.5;
+}
+
+.c-fab .md {
+    opacity: 0.5;
+}
+
+.c-fab .ios {
+    opacity: 1;
+}
