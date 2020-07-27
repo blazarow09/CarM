@@ -11,46 +11,41 @@ import {
     IonSelectOption,
     IonLoading,
 } from '@ionic/react';
-import { settingsOutline as settingsIcon, exitOutline as exitIcon, car } from 'ionicons/icons';
+import { settingsOutline as settingsIcon, exitOutline as exitIcon } from 'ionicons/icons';
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { observer, inject } from 'mobx-react';
 import MainHeader from '../MainHeader/MainHeader';
-import { firestore } from '../../firebase/firebaseConfig.dev';
-import { IContentStore } from '../../stores/ContentStore/ContentStore';
+import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import NoVehicleScreen from '../NoVehicleScreen/NoVehicleScreen';
 import ModalsContainer from '../Modals/ModalsContainer';
 
 interface HomeProps {
     userStore?: IUserStore;
-    contentStore?: IContentStore;
+    vehicleStore?: IVehicleStore;
 }
 
-@inject('contentStore')
+@inject('vehicleStore')
 @inject('userStore')
 @observer
 export default class Home extends React.Component<HomeProps> {
     public async componentDidMount(): Promise<void> {
-        await this.props.contentStore.getAvailableCars(false, this.props.userStore.userContext.userId);
+        await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
     }
 
     public async componentWillUnmount(): Promise<void> {
-        await this.props.contentStore.getAvailableCars(true);
-    }
-
-    private toggleTheme(checked: boolean): void {
-        if (!checked) {
-            document.body.classList.toggle('dark', checked);
-        } else {
-            document.body.classList.toggle('dark', checked);
-        }
+        await this.props.vehicleStore.getAvailableCars(true);
     }
 
     private async logout(): Promise<void> {
         await this.props.userStore.handleLogout();
     }
 
+    private setCurrentSelectedCar(event: any): void {
+        this.props.vehicleStore.setCurrentSelectedVehicle(event.target.value);
+    }
+
     public render() {
-        if (!this.props.contentStore.availableCars) {
+        if (!this.props.vehicleStore.availableCars) {
             return <IonLoading isOpen />;
         }
 
@@ -58,15 +53,11 @@ export default class Home extends React.Component<HomeProps> {
             <IonPage>
                 <MainHeader title="Dashboard" extraContent={this.extraContent} />
                 <IonContent>
-                    {this.props.contentStore.isAvailableCars ? (
+                    {this.props.vehicleStore.isAvailableCars ? (
                         <IonItem>
                             <IonLabel>Select a car</IonLabel>
-                            <IonSelect
-                                // value={toppings}
-                                interface="popover"
-                                // onIonChange={(e) => setToppings(e.detail.value)}
-                            >
-                                {this.props.contentStore.availableCars.map((car, index) => (
+                            <IonSelect interface="popover" onIonChange={(event) => this.setCurrentSelectedCar(event)}>
+                                {this.props.vehicleStore.availableCars.map((car, index) => (
                                     <IonSelectOption key={index} value={car.uid}>{`${car.brand} - ${car.model}`}</IonSelectOption>
                                 ))}
                             </IonSelect>
@@ -75,7 +66,6 @@ export default class Home extends React.Component<HomeProps> {
                         <NoVehicleScreen />
                     )}
                     <ModalsContainer />
-
                 </IonContent>
             </IonPage>
         );

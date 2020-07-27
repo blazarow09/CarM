@@ -1,7 +1,7 @@
-import { useEffect, useContext, useState } from "react";
-import { auth as firebaseAuth} from '../../../firebase/firebaseConfig.dev';
-import React from "react";
-import { IAuthContext } from "../../../services/AuthService";
+import { useEffect, useContext, useState } from 'react';
+import { auth as firebaseAuth } from '../../../firebase/firebaseConfig.dev';
+import React from 'react';
+import { IAuthContext } from '../../../services/AuthService';
 
 interface IAuthInit {
     isLoading: boolean;
@@ -17,16 +17,19 @@ export function useAuth(): IAuthContext {
 export function useAuthInit(): IAuthInit {
     const [authInit, setAuthInit] = useState<IAuthInit>({ isLoading: true });
 
-    let auth: IAuthContext = { loggedIn: false};
-    useEffect(() => {
+    let auth: IAuthContext = { loggedIn: false };
+    try {
+        useEffect(() => {
+            // Return the firebaseAuth to unsubscribe.
+            return firebaseAuth.onAuthStateChanged((firebaseUser): void => {
+                auth = firebaseUser ? { loggedIn: true, userId: firebaseUser.uid, email: firebaseUser.email } : { loggedIn: false };
 
-        // Return the firebaseAuth to unsubscribe.
-        return firebaseAuth.onAuthStateChanged((firebaseUser): void => {
-            auth = firebaseUser ? { loggedIn: true, userId: firebaseUser.uid, email: firebaseUser.email } : { loggedIn: false };
-
-            setAuthInit({ isLoading: false, auth: auth });
-        });
-    }, []);
+                setAuthInit({ isLoading: false, auth: auth });
+            });
+        }, []);
+    } catch (error) {
+        console.log(error);
+    }
 
     return authInit;
 }
