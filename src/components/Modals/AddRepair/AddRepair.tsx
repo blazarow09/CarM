@@ -120,14 +120,14 @@ export default class AddRepair extends React.Component<AddRepairProps, AddRepair
                     swipeToClose={true}
                     onDidDismiss={(): void => this.props.uiStore.openCloseModal(Modals.AddRepairModal, 'close')}
                 >
-                    <MainHeader extraContent={this.extraContent} title="Add vehicle" />
+                    <MainHeader extraContent={this.extraContent} title="Add repair" toolbarColor="warning"/>
                     <IonContent>
                         <IonList className="c-form-fields">
                             <IonRow>
                                 <IonCol>
                                     <IonItem>
                                         <IonLabel>Date</IonLabel>
-                                        <IonDatetime
+                                        <IonDatetime color="warning"
                                             pickerFormat="DD-MM-YYYY"
                                             displayFormat="DD-MMM-YYYY"
                                             onIonChange={(e) => this.handleInput(e.detail.value!, 'date')}
@@ -139,7 +139,7 @@ export default class AddRepair extends React.Component<AddRepairProps, AddRepair
                                 <IonCol>
                                     <IonItem>
                                         <IonLabel position="floating">Repair</IonLabel>
-                                        <IonInput onIonChange={(event): void => this.handleInput(event.detail.value, 'repair')} />
+                                        <IonInput onIonChange={(event): void => this.handleInput(event.detail.value, 'repair')} color="warning" />
                                     </IonItem>
                                 </IonCol>
                             </IonRow>
