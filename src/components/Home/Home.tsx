@@ -36,16 +36,12 @@ export default class Home extends React.Component<HomeProps> {
         await this.props.vehicleStore.getAvailableCars(true);
     }
 
-    private toggleTheme(checked: boolean): void {
-        if (!checked) {
-            document.body.classList.toggle('dark', checked);
-        } else {
-            document.body.classList.toggle('dark', checked);
-        }
-    }
-
     private async logout(): Promise<void> {
         await this.props.userStore.handleLogout();
+    }
+
+    private setCurrentSelectedCar(event: any): void {
+        this.props.vehicleStore.setCurrentSelectedVehicle(event.target.value);
     }
 
     public render() {
@@ -60,11 +56,7 @@ export default class Home extends React.Component<HomeProps> {
                     {this.props.vehicleStore.isAvailableCars ? (
                         <IonItem>
                             <IonLabel>Select a car</IonLabel>
-                            <IonSelect
-                                // value={toppings}
-                                interface="popover"
-                                // onIonChange={(e) => setToppings(e.detail.value)}
-                            >
+                            <IonSelect interface="popover" onIonChange={(event) => this.setCurrentSelectedCar(event)}>
                                 {this.props.vehicleStore.availableCars.map((car, index) => (
                                     <IonSelectOption key={index} value={car.uid}>{`${car.brand} - ${car.model}`}</IonSelectOption>
                                 ))}
@@ -74,7 +66,6 @@ export default class Home extends React.Component<HomeProps> {
                         <NoVehicleScreen />
                     )}
                     <ModalsContainer />
-
                 </IonContent>
             </IonPage>
         );

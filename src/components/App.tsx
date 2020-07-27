@@ -4,7 +4,7 @@ import AppRouter from './AppRouter';
 import { useAuthInit, AuthContext } from './Authentication/AuthGuard/AuthGuard';
 
 const App: React.FC = () => {
-    const { isLoading, auth } = useAuthInit(); 
+    const { isLoading, auth } = useAuthInit();
 
     console.log(`Rendering App with auth: loggedIn: ${auth?.loggedIn}, userId: ${auth?.userId}`);
     if (isLoading) {

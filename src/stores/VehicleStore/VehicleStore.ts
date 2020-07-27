@@ -1,15 +1,19 @@
 import { observable, action, IObservableArray, computed } from 'mobx';
 import { IVehicle } from '../../models/Vehicle/IVehicle';
 import VehicleService from '../../services/VehicleService';
+import { IRepair } from '../../models/Repair/IRepair';
 
 export interface IVehicleStore {
     // Methods
     getAvailableCars(reset: boolean, userId?: string): Promise<void>;
     handleAddVehicle(vehicle: IVehicle, userId: string): Promise<void>;
+    handleAddRepair(repair: IRepair, userId: string): Promise<void>;
     setUserId(userId: string): void;
+    setCurrentSelectedVehicle(vehicleId: string): void;
 
     // Observables
     availableCars: IObservableArray<IVehicle>;
+    currentSelectedVehicleId: string;
     userId: string;
 
     // Computed
@@ -25,6 +29,7 @@ export class VehicleStore implements IVehicleStore {
     //#region Observables initialization
     @observable public availableCars: IObservableArray<IVehicle> = observable([]);
     @observable public userId: string = '';
+    @observable public currentSelectedVehicleId: string = '';
 
     //#endregion
 
@@ -37,9 +42,20 @@ export class VehicleStore implements IVehicleStore {
     }
 
     public async handleAddVehicle(vehicle: IVehicle, userId: string): Promise<void> {
-        if(vehicle) {
+        if (vehicle) {
             await this._vehicleService.saveVehicle(vehicle, userId);
         }
+    }
+
+    public async handleAddRepair(repair: IRepair, userId: string): Promise<void> {
+        if (repair && this.currentSelectedVehicleId) {
+            await this._vehicleService.saveRepair(repair, userId, this.currentSelectedVehicleId);
+        }
+    }
+
+    @action
+    public setCurrentSelectedVehicle(vehicleId: string): void {
+        this.currentSelectedVehicleId = vehicleId;
     }
 
     @action

@@ -2,10 +2,12 @@ import { observable, action } from 'mobx';
 
 export interface IModals {
     addCarModal: boolean;
+    addRepairModal: boolean;
 }
 
 export enum Modals {
     AddCarModal,
+    AddRepairModal,
 }
 
 export interface IUiStore {
@@ -19,28 +21,15 @@ export interface IUiStore {
 }
 
 export class UiStore implements IUiStore {
-    //#region Services
-    // private _carService: CarService;
-
-    //#endregion
-
-    //#region Observables initialization
-    // @observable public availableCars: IObservableArray<ICar> = observable([]);
-
-    //#endregion
-
-    // public constructor(carService: CarService) {
-    //     this._carService = carService;
-    // }
-
     @observable public modals: IModals = {
         addCarModal: false,
+        addRepairModal: false,
     };
 
     @action.bound
     public openCloseModal(modal: Modals, action: 'open' | 'close'): void {
         let boolAction: boolean;
-        if (action == 'open') {
+        if (action === 'open') {
             boolAction = true;
         } else {
             boolAction = false;
@@ -50,6 +39,10 @@ export class UiStore implements IUiStore {
             case Modals.AddCarModal:
                 this.modals.addCarModal = boolAction;
                 break;
+            case Modals.AddRepairModal:
+                this.modals.addRepairModal = boolAction;
+                break;
+
             default:
                 break;
         }
