@@ -20,7 +20,7 @@ export default class AuthService {
 
     public async register(userCredentials: IUserCredentials): Promise<void> {
         if (userCredentials.email && userCredentials.password && userCredentials.confirmPassword) {
-            if (userCredentials.password == userCredentials.confirmPassword) {
+            if (userCredentials.password === userCredentials.confirmPassword) {
                 try {
                     let result = await firebaseAuth.createUserWithEmailAndPassword(userCredentials.email, userCredentials.password);
                 } catch (error) {

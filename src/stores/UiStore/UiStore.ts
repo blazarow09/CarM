@@ -1,6 +1,4 @@
-import { observable, action, IObservableArray, computed } from 'mobx';
-import { ICar } from '../../models/Car/ICar';
-import CarService from '../../services/CarService';
+import { observable, action } from 'mobx';
 
 export interface IModals {
     addCarModal: boolean;

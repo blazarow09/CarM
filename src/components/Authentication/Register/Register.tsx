@@ -21,7 +21,6 @@ import { AppRoutes } from '../../AppRoutes';
 import { logoGoogle as googleIcon, logoFacebook as fbIcon } from 'ionicons/icons';
 
 import '../LoginRegister.css';
-import AppRouter from '../../AppRouter';
 
 interface RegisterPageProps {
     loggedIn: boolean;

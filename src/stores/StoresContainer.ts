@@ -1,7 +1,7 @@
 import { UserStore } from "./UserStore/UserStore";
 import AuthService from "../services/AuthService";
-import { ContentStore } from "./ContentStore/ContentStore";
-import CarService from "../services/CarService";
+import { VehicleStore } from "./VehicleStore/VehicleStore";
+import CarService from "../services/VehicleService";
 import { UiStore } from "./UiStore/UiStore";
 
 const authService = new AuthService();
@@ -12,6 +12,6 @@ const carService = new CarService();
  */
 export const stores = {
     userStore: new UserStore(authService),
-    contentStore: new ContentStore(carService),
+    vehicleStore: new VehicleStore(carService),
     uiStore: new UiStore()
 };

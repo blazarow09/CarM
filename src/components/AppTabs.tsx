@@ -5,17 +5,19 @@ import { observer, inject } from 'mobx-react';
 import { IUserStore } from '../stores/UserStore/UserStore';
 import Home from '../components/Home/Home';
 import { AppRoutes } from './AppRoutes';
-import { homeOutline as homeIcon, addOutline as addIcon, alarmOutline as reminderIcon, menuOutline as menuIcon } from 'ionicons/icons';
-import { userInfo } from 'os';
-import ModalsContainer from './Modals/ModalsContainer';
+import { homeOutline as homeIcon, menuOutline as menuIcon } from 'ionicons/icons';
+import HomeButton from './HomeButton/HomeButton';
+import { IVehicleStore } from '../stores/VehicleStore/VehicleStore';
 
 interface AppTabsProps {
     userId: string;
     loggedIn: boolean;
     userStore?: IUserStore;
+    vehicleStore?: IVehicleStore;
 }
 
 @inject('userStore')
+@inject('vehicleStore')
 @observer
 export default class AppTabs extends React.Component<AppTabsProps> {
     public componentDidMount(): void {
@@ -31,32 +33,35 @@ export default class AppTabs extends React.Component<AppTabsProps> {
         }
 
         return (
-            <IonTabs>
-                <IonRouterOutlet>
-                    <Route exact path={AppRoutes.homeRoute}>
-                        <Home />
-                    </Route>
-                </IonRouterOutlet>
-                
-                <IonTabBar slot="bottom">
-                    <IonTabButton tab="home" href={AppRoutes.homeRoute}>
-                        <IonIcon icon={homeIcon} />
-                        <IonLabel>Home</IonLabel>
-                    </IonTabButton>
-                    <IonTabButton tab="addEntry" disabled>
-                        <IonIcon icon={addIcon} />
-                        <IonLabel>Add</IonLabel>
-                    </IonTabButton>
-                    <IonTabButton tab="settings" disabled>
-                        <IonIcon icon={reminderIcon} />
-                        <IonLabel>Reminders</IonLabel>
-                    </IonTabButton>
-                    <IonTabButton tab="more" disabled>
-                        <IonIcon icon={menuIcon} />
-                        <IonLabel>More</IonLabel>
-                    </IonTabButton>
-                </IonTabBar>
-            </IonTabs>
+            <>
+                {this.props.vehicleStore.isAvailableCars && <HomeButton />}
+                <IonTabs>
+                    <IonRouterOutlet>
+                        <Route exact path={AppRoutes.homeRoute}>
+                            <Home />
+                        </Route>
+                    </IonRouterOutlet>
+
+                    <IonTabBar slot="bottom">
+                        <IonTabButton tab="home" href={AppRoutes.homeRoute}>
+                            <IonIcon icon={homeIcon} />
+                            <IonLabel>Home</IonLabel>
+                        </IonTabButton>
+                        {/* <IonTabButton tab="addEntry" disabled>
+                            <IonIcon icon={addIcon} />
+                            <IonLabel>Add</IonLabel>
+                        </IonTabButton>
+                        <IonTabButton tab="settings" disabled>
+                            <IonIcon icon={reminderIcon} />
+                            <IonLabel>Reminders</IonLabel>
+                        </IonTabButton> */}
+                        <IonTabButton tab="more" disabled>
+                            <IonIcon icon={menuIcon} />
+                            <IonLabel>More</IonLabel>
+                        </IonTabButton>
+                    </IonTabBar>
+                </IonTabs>
+            </>
         );
     }
 }
