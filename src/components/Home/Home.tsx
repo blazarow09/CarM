@@ -10,22 +10,27 @@ import {
     IonSelect,
     IonSelectOption,
     IonLoading,
+    IonFab,
+    IonFabButton,
 } from '@ionic/react';
-import { settingsOutline as settingsIcon, exitOutline as exitIcon } from 'ionicons/icons';
+import { settingsOutline as settingsIcon, exitOutline as exitIcon, add as addIcon } from 'ionicons/icons';
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { observer, inject } from 'mobx-react';
 import MainHeader from '../MainHeader/MainHeader';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
-import NoVehicleScreen from '../NoVehicleScreen/NoVehicleScreen';
+import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 import ModalsContainer from '../Modals/ModalsContainer';
+import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
 
 interface HomeProps {
     userStore?: IUserStore;
     vehicleStore?: IVehicleStore;
+    uiStore?: IUiStore;
 }
 
 @inject('vehicleStore')
 @inject('userStore')
+@inject('uiStore')
 @observer
 export default class Home extends React.Component<HomeProps> {
     public async componentDidMount(): Promise<void> {
@@ -63,13 +68,29 @@ export default class Home extends React.Component<HomeProps> {
                             </IonSelect>
                         </IonItem>
                     ) : (
-                        <NoVehicleScreen />
+                        <NoResultsScreen extraContent={this.extraContentResultScreen} />
                     )}
                     <ModalsContainer />
                 </IonContent>
             </IonPage>
         );
     }
+
+    private extraContentResultScreen = (): JSX.Element => {
+        return (
+            <IonFab horizontal="center" className="c-fab">
+                <IonFabButton
+                    color="light"
+                    onClick={(): void => {
+                        this.props.uiStore.openCloseModal(Modals.AddVehicleModal);
+                        this.props.uiStore.setCreateEditVehicleModalOpen('create', true);
+                    }}
+                >
+                    <IonIcon icon={addIcon} />
+                </IonFabButton>
+            </IonFab>
+        );
+    };
 
     private extraContent = (): JSX.Element => {
         return (

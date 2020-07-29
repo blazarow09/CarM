@@ -106,6 +106,11 @@ export default class AddRepair extends React.Component<AddRepairProps, AddRepair
 
             await this.props.vehicleStore.handleAddRepair(repair, this.props.userStore.userContext.userId);
 
+            await this.props.vehicleStore.getRepairsByVehicleId(
+                this.props.vehicleStore.currentSelectedVehicleId,
+                this.props.userStore.userContext.userId
+            );
+
             this.props.uiStore.openCloseModal(Modals.AddRepairModal, 'close');
         } else {
             console.log('Please, form all fields');

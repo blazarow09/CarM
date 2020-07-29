@@ -8,6 +8,8 @@ import { AppRoutes } from './AppRoutes';
 import { homeOutline as homeIcon, menuOutline as menuIcon } from 'ionicons/icons';
 import HomeButton from './HomeButton/HomeButton';
 import { IVehicleStore } from '../stores/VehicleStore/VehicleStore';
+import VehicleScreen from './VehicleScreen/VehicleScreen';
+import RepairScreen from './RepairScreen/RepairScreen';
 
 interface AppTabsProps {
     userId: string;
@@ -34,15 +36,21 @@ export default class AppTabs extends React.Component<AppTabsProps> {
 
         return (
             <>
-                {this.props.vehicleStore.isAvailableCars && <HomeButton />}
+                {this.props.vehicleStore.isAvailableCars && <HomeButton hiddenAppTabs={this.props.userStore.hideTabsMenu}/>}
                 <IonTabs>
                     <IonRouterOutlet>
                         <Route exact path={AppRoutes.homeRoute}>
                             <Home />
                         </Route>
+                        <Route exact path={AppRoutes.vehicleScreenRoute}>
+                            <VehicleScreen />
+                        </Route>
+                        <Route exact path={AppRoutes.repairScreenRoute}>
+                            <RepairScreen />
+                        </Route>
                     </IonRouterOutlet>
 
-                    <IonTabBar slot="bottom">
+                    <IonTabBar slot="bottom" hidden={this.props.userStore.hideTabsMenu}>
                         <IonTabButton tab="home" href={AppRoutes.homeRoute}>
                             <IonIcon icon={homeIcon} />
                             <IonLabel>Home</IonLabel>

@@ -5,4 +5,8 @@ export class AppRoutes {
     static prefixMyRoute = '/my';
 
     static homeRoute = AppRoutes.prefixMyRoute + '/home'
+
+    static vehicleScreenRoute = AppRoutes.prefixMyRoute + '/vehicle'
+
+    static repairScreenRoute = AppRoutes.prefixMyRoute + '/repairs'
 }

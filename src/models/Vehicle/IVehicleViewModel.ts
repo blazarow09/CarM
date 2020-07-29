@@ -1,4 +1,4 @@
-export interface IVehicle {
+export interface IVehicleViewModel {
     uid?: string;
     type: string;
     brand: string;

@@ -1,20 +1,33 @@
 import { observable, action, IObservableArray, computed } from 'mobx';
-import { IVehicle } from '../../models/Vehicle/IVehicle';
+import { IVehicleViewModel } from '../../models/Vehicle/IVehicleViewModel';
 import VehicleService from '../../services/VehicleService';
 import { IRepair } from '../../models/Repair/IRepair';
+import { IVehicleCreateEdit } from '../../models/Vehicle/IVehicleCreateEdit';
 
 export interface IVehicleStore {
     // Methods
-    getAvailableCars(reset: boolean, userId?: string): Promise<void>;
-    handleAddVehicle(vehicle: IVehicle, userId: string): Promise<void>;
-    handleAddRepair(repair: IRepair, userId: string): Promise<void>;
     setUserId(userId: string): void;
+
     setCurrentSelectedVehicle(vehicleId: string): void;
+    setVehicleToEdit(vehicleToEdit: IVehicleViewModel): void;
+
+    // Vehicle
+    handleAddVehicle(vehicle: IVehicleViewModel, userId: string): Promise<void>;
+    handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void>;
+    removeVehicle(vehicleId: string, userId: string): Promise<void>;
+
+    getAvailableCars(reset: boolean, userId?: string): Promise<boolean>;
+
+    // Repair
+    handleAddRepair(repair: IRepair, userId: string): Promise<void>;
+    getRepairsByVehicleId(vehicleId: string, userId: string): Promise<void>;
 
     // Observables
-    availableCars: IObservableArray<IVehicle>;
+    availableCars: IObservableArray<IVehicleViewModel>;
     currentSelectedVehicleId: string;
     userId: string;
+    vehicleToEdit: IVehicleViewModel;
+    repairsByVehicleId: IObservableArray<IRepair>;
 
     // Computed
     isAvailableCars: boolean;
@@ -27,9 +40,13 @@ export class VehicleStore implements IVehicleStore {
     //#endregion
 
     //#region Observables initialization
-    @observable public availableCars: IObservableArray<IVehicle> = observable([]);
     @observable public userId: string = '';
+
     @observable public currentSelectedVehicleId: string = '';
+    @observable public availableCars: IObservableArray<IVehicleViewModel> = observable([]);
+    @observable public vehicleToEdit: IVehicleViewModel = null;
+
+    @observable public repairsByVehicleId: IObservableArray<IRepair> = observable([]);
 
     //#endregion
 
@@ -41,16 +58,26 @@ export class VehicleStore implements IVehicleStore {
         this.userId = userId;
     }
 
-    public async handleAddVehicle(vehicle: IVehicle, userId: string): Promise<void> {
+    //#region Vehicle Operations
+    public async handleAddVehicle(vehicle: IVehicleViewModel, userId: string): Promise<void> {
         if (vehicle) {
             await this._vehicleService.saveVehicle(vehicle, userId);
         }
     }
 
-    public async handleAddRepair(repair: IRepair, userId: string): Promise<void> {
-        if (repair && this.currentSelectedVehicleId) {
-            await this._vehicleService.saveRepair(repair, userId, this.currentSelectedVehicleId);
+    public async removeVehicle(vehicleId: string, userId: string): Promise<void> {
+        await this._vehicleService.removeVehicle(vehicleId, userId);
+    }
+
+    public async handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void> {
+        if (vehicle && userId) {
+            await this._vehicleService.editVehicle(vehicle, vehicleId ,userId);
         }
+    }
+
+    @action
+    public setVehicleToEdit(vehicleToEdit: IVehicleViewModel): void {
+        this.vehicleToEdit = vehicleToEdit;
     }
 
     @action
@@ -59,13 +86,21 @@ export class VehicleStore implements IVehicleStore {
     }
 
     @action
-    public async getAvailableCars(reset: boolean, userId: string): Promise<void> {
+    public async getAvailableCars(reset: boolean, userId: string): Promise<boolean> {
         if (reset) {
             this.availableCars.clear();
+            return true;
         } else {
-            let cars = await this._vehicleService.getAvailablecars(userId);
+            try {
+                let cars = await this._vehicleService.getAvailablecars(userId);
 
-            this.availableCars.replace(cars);
+                this.availableCars.replace(cars);
+            } catch (error) {
+                console.log(error);
+                return false;
+            }
+
+            return true;
         }
     }
 
@@ -73,4 +108,24 @@ export class VehicleStore implements IVehicleStore {
     public get isAvailableCars(): boolean {
         return !!this.availableCars.length;
     }
+    //#endregion
+
+    //#region Repair Operations
+    public async handleAddRepair(repair: IRepair, userId: string): Promise<void> {
+        if (repair && this.currentSelectedVehicleId) {
+            await this._vehicleService.saveRepair(repair, userId, this.currentSelectedVehicleId);
+        }
+    }
+
+    @action
+    public async getRepairsByVehicleId(vehicleId: string, userId: string): Promise<void> {
+        let repairs: IRepair[];
+
+        if (vehicleId && userId) {
+            repairs = await this._vehicleService.getRepairsByVehicleId(vehicleId, userId);
+        }
+
+        this.repairsByVehicleId.replace(repairs);
+    }
+    //#endregion
 }
