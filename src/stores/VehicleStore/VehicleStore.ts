@@ -15,6 +15,8 @@ export interface IVehicleStore {
     handleAddVehicle(vehicle: IVehicleViewModel, userId: string): Promise<void>;
     handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void>;
     removeVehicle(vehicleId: string, userId: string): Promise<void>;
+    getPreferredVehicleId(userId: string): Promise<void>;
+    savePreferredVehicleId(vehicleId: string, userId: string): Promise<void>;
 
     getAvailableCars(reset: boolean, userId?: string): Promise<boolean>;
 
@@ -24,10 +26,12 @@ export interface IVehicleStore {
 
     // Observables
     availableCars: IObservableArray<IVehicleViewModel>;
-    currentSelectedVehicleId: string;
+    // currentSelectedVehicleId: string;
     userId: string;
     vehicleToEdit: IVehicleViewModel;
     repairsByVehicleId: IObservableArray<IRepair>;
+
+    preferredVehicleId: string;
 
     // Computed
     isAvailableCars: boolean;
@@ -42,9 +46,10 @@ export class VehicleStore implements IVehicleStore {
     //#region Observables initialization
     @observable public userId: string = '';
 
-    @observable public currentSelectedVehicleId: string = '';
+    // @observable public currentSelectedVehicleId: string = '';
     @observable public availableCars: IObservableArray<IVehicleViewModel> = observable([]);
     @observable public vehicleToEdit: IVehicleViewModel = null;
+    @observable public preferredVehicleId: string = '';
 
     @observable public repairsByVehicleId: IObservableArray<IRepair> = observable([]);
 
@@ -71,7 +76,25 @@ export class VehicleStore implements IVehicleStore {
 
     public async handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void> {
         if (vehicle && userId) {
-            await this._vehicleService.editVehicle(vehicle, vehicleId ,userId);
+            await this._vehicleService.editVehicle(vehicle, vehicleId, userId);
+        }
+    }
+
+    @action
+    public async getPreferredVehicleId(userId: string): Promise<void> {
+        if (userId) {
+            let preferredVehicleId = await this._vehicleService.getPreferredVehicle(userId);
+
+            this.preferredVehicleId = preferredVehicleId;
+        }
+    }
+
+    @action
+    public async savePreferredVehicleId(vehicleId: string, userId: string): Promise<void> {
+        if (userId && vehicleId) {
+            await this._vehicleService.savePreferredVehicle(vehicleId, userId);
+
+            this.preferredVehicleId = vehicleId;
         }
     }
 
@@ -82,7 +105,7 @@ export class VehicleStore implements IVehicleStore {
 
     @action
     public setCurrentSelectedVehicle(vehicleId: string): void {
-        this.currentSelectedVehicleId = vehicleId;
+        this.preferredVehicleId = vehicleId;
     }
 
     @action
@@ -112,8 +135,8 @@ export class VehicleStore implements IVehicleStore {
 
     //#region Repair Operations
     public async handleAddRepair(repair: IRepair, userId: string): Promise<void> {
-        if (repair && this.currentSelectedVehicleId) {
-            await this._vehicleService.saveRepair(repair, userId, this.currentSelectedVehicleId);
+        if (repair && this.preferredVehicleId) {
+            await this._vehicleService.saveRepair(repair, userId, this.preferredVehicleId);
         }
     }
 

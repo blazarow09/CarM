@@ -22,10 +22,12 @@ interface AppTabsProps {
 @inject('vehicleStore')
 @observer
 export default class AppTabs extends React.Component<AppTabsProps> {
-    public componentDidMount(): void {
+    public async componentDidMount(): Promise<void> {
         if (this.props?.userId) {
             this.props.userStore.setUserContext(this.props.userId);
             console.log('setUserContext');
+
+            await this.props.vehicleStore.getPreferredVehicleId(this.props?.userId);
         }
     }
 

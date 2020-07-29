@@ -33,42 +33,42 @@ export default class HomeButton extends React.Component<HomeButtonProps> {
                     <IonIcon icon={arrowUpButton} />
                 </IonFabButton>
                 <IonFabList side="top">
-                    {/* Refuel */}
-                    <IonFabButton color="medium">
-                        <IonIcon icon={refuelIcon} />
-                    </IonFabButton>
-                    {/* Repair */}
-                    <IonFabButton
-                        color="warning"
-                        routerLink={AppRoutes.repairScreenRoute}
-                        disabled={this.props.vehicleStore.currentSelectedVehicleId === '' ? true : false}
-                    >
-                        <IonIcon icon={repairIcon} />
-                    </IonFabButton>
                     {/* Vehicle */}
                     <IonFabButton color="danger" routerLink={AppRoutes.vehicleScreenRoute}>
                         <IonIcon icon={vehicleIcon} />
                     </IonFabButton>
                 </IonFabList>
                 <IonFabList side="start">
-                    {/* Expense */}
+                    {/* Repair */}
+                    <IonFabButton
+                        color="warning"
+                        routerLink={AppRoutes.repairScreenRoute}
+                        disabled={this.props.vehicleStore.preferredVehicleId === '' ? true : false}
+                    >
+                        <IonIcon icon={repairIcon} />
+                    </IonFabButton>
+                    {/* Expense
                     <IonFabButton color="success">
                         <IonIcon icon={expenseIcon} />
                     </IonFabButton>
-                    {/* Income */}
+                    Income
                     <IonFabButton color="success">
                         <IonIcon icon={incomeIcon} />
-                    </IonFabButton>
+                    </IonFabButton> */}
                 </IonFabList>
                 <IonFabList side="end">
-                    {/* Route */}
+                    {/* Refuel */}
+                    <IonFabButton color="medium">
+                        <IonIcon icon={refuelIcon} />
+                    </IonFabButton>
+                    {/* Route
                     <IonFabButton color="success">
                         <IonIcon icon={routeIcon} />
                     </IonFabButton>
-                    {/* Reminder */}
+                    Reminder
                     <IonFabButton color="success">
                         <IonIcon icon={reminderIcon} />
-                    </IonFabButton>
+                    </IonFabButton> */}
                 </IonFabList>
             </IonFab>
         );

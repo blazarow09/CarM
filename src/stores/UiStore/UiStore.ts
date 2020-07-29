@@ -52,7 +52,7 @@ export class UiStore implements IUiStore {
     @action
     public closeAllModals(): void {
         this.modals.addCarModal && (this.modals.addCarModal = false);
-        this.modals.addCarModal && (this.modals.addRepairModal = false);
+        this.modals.addRepairModal && (this.modals.addRepairModal = false);
     }
 
     @action

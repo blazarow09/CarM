@@ -7,6 +7,7 @@ import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
 import { addOutline as addIcon } from 'ionicons/icons';
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
+import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 interface RepairScreenProps {
     uiStore?: IUiStore;
     userStore?: IUserStore;
@@ -22,7 +23,7 @@ export default class RepairScreen extends React.Component<RepairScreenProps> {
         this.props.userStore.setHideTabsMenu(true);
 
         await this.props.vehicleStore.getRepairsByVehicleId(
-            this.props.vehicleStore.currentSelectedVehicleId,
+            this.props.vehicleStore.preferredVehicleId,
             this.props.userStore.userContext?.userId
         );
     }
@@ -36,15 +37,14 @@ export default class RepairScreen extends React.Component<RepairScreenProps> {
             <IonPage>
                 <MainHeader toolbarColor="warning" title="Repairs" extraContent={this.extraContent} />
                 <IonContent>
-                    {this.props.vehicleStore?.repairsByVehicleId?.map((repair) => (
-                        <p>{repair?.repair}</p>
-                    ))}
+                    {this.props.vehicleStore?.repairsByVehicleId?.length === 0 ? (
+                        <NoResultsScreen />
+                    ) : (
+                        this.props.vehicleStore?.repairsByVehicleId?.map((repair) => <p key={repair.uid}>{repair?.repair}</p>)
+                    )}
 
                     <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                        <IonFabButton
-                            color="warning"
-                            onClick={(): void => this.props.uiStore.openCloseModal(Modals.AddRepairModal, 'open')}
-                        >
+                        <IonFabButton color="warning" onClick={(): void => this.props.uiStore.openCloseModal(Modals.AddRepairModal)}>
                             <IonIcon icon={addIcon} />
                         </IonFabButton>
                     </IonFab>

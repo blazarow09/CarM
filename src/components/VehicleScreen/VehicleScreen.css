@@ -20,5 +20,10 @@
 }
 
 .c-vehicle-select ion-item ion-label {
+    opacity: 1 !important;
     color: white;
+}
+
+.c-vehicle-select ion-item ion-checkbox {
+    opacity: 1;
 }

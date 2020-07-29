@@ -1,22 +1,26 @@
 import React from 'react';
 import { IonModal } from '@ionic/react';
 import { IUiStore } from '../../stores/UiStore/UiStore';
+import MainHeader from '../MainHeader/MainHeader';
 
 export interface IModalBaseProps {
-    // onDidDismiss(): void;
+    // onDidDismiss?: = (): void};
     swipeToClose?: boolean;
 
     uiStore?: IUiStore;
 }
 
-export interface IModalBaseState {}
+export interface IModalBaseState {
+    headerTitle?: string;
+    headertoolbarColor?: string;
+}
 
 export default class ModalBase<TProps extends IModalBaseProps, TState extends IModalBaseState> extends React.Component<TProps, TState> {
     protected visible(): boolean {
         return false;
     }
 
-    protected hideDialog(): void {
+    protected hideModal(): void {
         console.log('ModalBase: hiding modal');
 
         // request child classes to clear their stores
@@ -36,6 +40,10 @@ export default class ModalBase<TProps extends IModalBaseProps, TState extends IM
         return null;
     }
 
+    protected extraContent(): JSX.Element {
+        return null;
+    }
+
     public render(): JSX.Element {
         return (
             <IonModal
@@ -43,6 +51,8 @@ export default class ModalBase<TProps extends IModalBaseProps, TState extends IM
                 swipeToClose={this.props.swipeToClose ? this.props.swipeToClose : false}
                 // onDidDismiss={(): void => this.props.onDidDismiss()}
             >
+                <MainHeader extraContent={this.extraContent} title={this.state?.headerTitle} toolbarColor={this.state?.headertoolbarColor} />
+
                 {this.content()}
             </IonModal>
         );

@@ -14,6 +14,7 @@ import {
     IonCheckbox,
     IonFabList,
     IonAlert,
+    IonToast,
 } from '@ionic/react';
 import MainHeader from '../MainHeader/MainHeader';
 import {
@@ -33,6 +34,7 @@ import { MainSpinner } from '../Spinners/Spinners';
 import { AppRoutes } from '../AppRoutes';
 import { IVehicleViewModel } from '../../models/Vehicle/IVehicleViewModel';
 import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
+import VehicleService from '../../services/VehicleService';
 
 interface VehicleScreenProps {
     userStore?: IUserStore;
@@ -44,6 +46,7 @@ interface VehicleScreenState {
     loading: boolean;
     openAlert: boolean;
     vehicleId: string;
+    showPreferredSaveSucces: boolean;
 }
 
 @inject('userStore')
@@ -74,6 +77,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
         loading: false,
         openAlert: false,
         vehicleId: '',
+        showPreferredSaveSucces: false,
     };
 
     private setLoading(loading: boolean): void {
@@ -108,32 +112,19 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
         this.props.uiStore.setCreateEditVehicleModalOpen('edit', true);
     }
 
-    private getAllert = (): JSX.Element => {
-        return (
-            <IonAlert
-                isOpen={this.state.openAlert}
-                onDidDismiss={async (): Promise<void> => this.setOpenAlert(false, '')}
-                header={'Confirm'}
-                message={'Are you sure you want to delete this vehicle?'}
-                buttons={[
-                    {
-                        text: 'Cancel',
-                        role: 'cancel',
-                        cssClass: 'secondary',
-                        handler: async (): Promise<void> => {
-                            await this.setOpenAlert(false, '');
-                        },
-                    },
-                    {
-                        text: 'Confirm',
-                        handler: async (): Promise<void> => {
-                            await this.removeVehicle();
-                        },
-                    },
-                ]}
-            />
-        );
-    };
+    private async savePreferredVehicle(vehicleId: string): Promise<void> {
+        if (vehicleId) {
+            await this.props.vehicleStore.savePreferredVehicleId(vehicleId, this.props.userStore?.userContext?.userId);
+
+            this.setShowToast(true);
+        }
+    }
+
+    private setShowToast(show: boolean): void {
+        this.setState({
+            showPreferredSaveSucces: show,
+        });
+    }
 
     public render() {
         return (
@@ -152,7 +143,20 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                                         <IonLabel className="c-car-name-label" color="light">
                                             {`${vehicle.brand} ${vehicle.model}`}
                                         </IonLabel>
-                                        <IonCheckbox slot="start" color="danger" />
+                                        <IonCheckbox
+                                            slot="start"
+                                            color="danger"
+                                            value={vehicle?.uid}
+                                            disabled={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
+                                            checked={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
+                                            onClick={async (event): Promise<void> => {
+                                                if (event?.currentTarget?.value !== this.props.vehicleStore?.preferredVehicleId) {
+                                                    console.log(event?.currentTarget?.value);
+                                                    console.log(this.props.vehicleStore?.preferredVehicleId);
+                                                    await this.savePreferredVehicle(event?.currentTarget?.value);
+                                                }
+                                            }}
+                                        />
                                     </IonItem>
                                 </div>
                                 {/* Entry row background image */}
@@ -173,6 +177,12 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                         </IonFabButton>
                     </IonFab>
                     {this.getAllert()}
+                    <IonToast
+                        isOpen={this.state.showPreferredSaveSucces}
+                        onDidDismiss={() => this.setShowToast(false)}
+                        message="Your preferred vehicle is updated."
+                        duration={1000}
+                    />
                 </IonContent>
             </IonPage>
         );
@@ -209,6 +219,33 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
             <IonButtons slot="start">
                 <IonBackButton defaultHref={AppRoutes.homeRoute} />
             </IonButtons>
+        );
+    };
+
+    private getAllert = (): JSX.Element => {
+        return (
+            <IonAlert
+                isOpen={this.state.openAlert}
+                onDidDismiss={async (): Promise<void> => this.setOpenAlert(false, '')}
+                header={'Confirm'}
+                message={'Are you sure you want to delete this vehicle?'}
+                buttons={[
+                    {
+                        text: 'Cancel',
+                        role: 'cancel',
+                        cssClass: 'secondary',
+                        handler: async (): Promise<void> => {
+                            await this.setOpenAlert(false, '');
+                        },
+                    },
+                    {
+                        text: 'Confirm',
+                        handler: async (): Promise<void> => {
+                            await this.removeVehicle();
+                        },
+                    },
+                ]}
+            />
         );
     };
 }

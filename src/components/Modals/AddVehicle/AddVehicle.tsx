@@ -19,7 +19,6 @@ import { IUiStore } from '../../../stores/UiStore/UiStore';
 import { closeOutline as closeIcon, checkmarkOutline as saveButton } from 'ionicons/icons';
 import { IVehicleStore } from '../../../stores/VehicleStore/VehicleStore';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
-import MainHeader from '../../MainHeader/MainHeader';
 
 import './AddCarModal.css';
 import { IVehicleViewModel } from '../../../models/Vehicle/IVehicleViewModel';
@@ -41,6 +40,8 @@ interface AddVehicleState extends IModalBaseState {
     fuel?: string;
     mileage?: string;
     saveLoading?: boolean;
+    headertoolbarColor?: string;
+    headerTitle?: string;
 }
 
 @inject('uiStore')
@@ -62,6 +63,8 @@ export default class AddVehicle extends ModalBase<AddVehicleProps, AddVehicleSta
         fuel: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.fuel : '',
         mileage: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.mileage.toString() : '',
         saveLoading: false,
+        headerTitle: 'Add vehicle',
+        headertoolbarColor: 'danger',
     };
 
     private inputFieldTypes = new Array<string>('type', 'brand', 'model', 'variant', 'engine', 'fuel', 'mileage');
@@ -74,9 +77,6 @@ export default class AddVehicle extends ModalBase<AddVehicleProps, AddVehicleSta
         let statePropName = event.target.name;
         let statePropValue = event.detail.value;
 
-        console.log(statePropName);
-        console.log(statePropValue);
-
         if (this.inputFieldTypes.includes(statePropName)) {
             this.setState({ [statePropName]: statePropValue });
         }
@@ -85,8 +85,6 @@ export default class AddVehicle extends ModalBase<AddVehicleProps, AddVehicleSta
     protected content(): JSX.Element {
         return (
             <>
-                <MainHeader extraContent={this.extraContent} title="Add vehicle" toolbarColor="danger" />
-
                 <IonContent>
                     <IonList className="c-form-fields">
                         <IonRow>
@@ -198,6 +196,12 @@ export default class AddVehicle extends ModalBase<AddVehicleProps, AddVehicleSta
         );
     }
 
+    private setSaveLoading(loading: boolean): void {
+        this.setState({
+            saveLoading: loading,
+        });
+    }
+
     private async handleVehicleSave(): Promise<void> {
         if (
             this.state.type &&
@@ -208,9 +212,7 @@ export default class AddVehicle extends ModalBase<AddVehicleProps, AddVehicleSta
             this.state.fuel &&
             this.state.mileage
         ) {
-            this.setState({
-                saveLoading: true,
-            });
+            this.setSaveLoading(true);
 
             const vehicle: IVehicleViewModel = {
                 type: this.state.type,
@@ -222,33 +224,49 @@ export default class AddVehicle extends ModalBase<AddVehicleProps, AddVehicleSta
                 mileage: parseInt(this.state.mileage),
             };
 
+            // The current authenticated used id.
             const userId = this.props.userStore.userContext?.userId;
 
+            // If the modal is open in edit mode.
             if (this.props.uiStore.modals.editVehicleModalOpen && vehicle) {
                 vehicle.uid = this.state.uid;
 
                 await this.props.vehicleStore.handleEditVehicle(vehicle, this.state.uid, userId);
+                // If the modal is open in crete mode.
             } else if (this.props.uiStore.modals.createVehicleModalOpen && vehicle) {
                 await this.props.vehicleStore.handleAddVehicle(vehicle, userId);
             }
 
+            let shouldSetPreferredVehicle = false;
+            if (!this.props.vehicleStore.isAvailableCars) {
+                shouldSetPreferredVehicle = true;
+            }
+
+            // Retrieve last vehicle updates.
             await this.props.vehicleStore.getAvailableCars(false, userId);
 
-            this.setState({
-                saveLoading: false,
-            });
+            // If at this moment this is the first entry in the vehicle's collection we should add a preferred vehicle in the user's collection
+            // with the currently create car id.
+            // Otherwise keep the preferred vehicle as to the users' choice.
+            if (shouldSetPreferredVehicle) {
+                let preferredVehicleId = this.props.vehicleStore?.availableCars[0]?.uid;
 
-            this.props.uiStore.closeAllModals();
+                await this.props.vehicleStore.savePreferredVehicleId(preferredVehicleId, userId);
+            }
+
+            this.setSaveLoading(false);
+
+            this.hideModal();
         } else {
             console.log('Please, form all fields');
         }
     }
 
-    private extraContent = (): JSX.Element => {
+    protected extraContent = (): JSX.Element => {
         return (
             <>
                 <IonButtons slot="end">
-                    <IonButton onClick={(): void => this.props.uiStore.closeAllModals()}>
+                    <IonButton onClick={(): void => this.hideModal()}>
                         <IonIcon slot="icon-only" icon={closeIcon} />
                     </IonButton>
                 </IonButtons>
