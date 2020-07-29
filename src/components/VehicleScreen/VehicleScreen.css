@@ -1,0 +1,29 @@
+.c-vehicle-row {
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.c-vehicle-row-actions {
+    position: absolute;
+    width: 100%;
+    height: 45x;
+    background-color: var(--medium);
+    opacity: 0.3;
+    bottom: 0;
+}
+
+.c-vehicle-select ion-item {
+    position: absolute;
+    opacity: 1;
+    bottom: 0;
+    --background: transparent;
+}
+
+.c-vehicle-select ion-item ion-label {
+    opacity: 1 !important;
+    color: white;
+}
+
+.c-vehicle-select ion-item ion-checkbox {
+    opacity: 1;
+}

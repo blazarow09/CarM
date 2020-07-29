@@ -1,13 +1,24 @@
 import * as React from 'react';
-import { IonFab, IonFabButton, IonIcon, IonFabList, IonLabel } from '@ionic/react';
+import { IonFab, IonFabButton, IonIcon, IonFabList } from '@ionic/react';
 import { observer, inject } from 'mobx-react';
-import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
-import { arrowUpCircleOutline as arrowUpButton, carSportOutline as vehicleIcon, build as repairIcon } from 'ionicons/icons';
+import { IUiStore } from '../../stores/UiStore/UiStore';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
+import {
+    arrowUpCircleOutline as arrowUpButton,
+    carSportOutline as vehicleIcon,
+    build as repairIcon,
+    walletOutline as expenseIcon,
+    compassOutline as routeIcon,
+    alarmOutline as reminderIcon,
+    cardOutline as incomeIcon,
+    colorFillOutline as refuelIcon,
+} from 'ionicons/icons';
+import { AppRoutes } from '../AppRoutes';
 
 interface HomeButtonProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
+    hiddenAppTabs: boolean;
 }
 
 @inject('uiStore')
@@ -16,23 +27,48 @@ interface HomeButtonProps {
 export default class HomeButton extends React.Component<HomeButtonProps> {
     public render() {
         return (
-            <IonFab vertical="bottom" horizontal="center" className="c-home-button">
+            <IonFab vertical="bottom" horizontal="center" className="c-home-button" hidden={this.props.hiddenAppTabs}>
+                {/* Home Button */}
                 <IonFabButton color="primary">
                     <IonIcon icon={arrowUpButton} />
                 </IonFabButton>
                 <IonFabList side="top">
-                    <IonLabel>Vehicle</IonLabel>
-                    <IonFabButton color="secondary" onClick={(): void => this.props.uiStore.openCloseModal(Modals.AddCarModal, 'open')}>
+                    {/* Vehicle */}
+                    <IonFabButton color="danger" routerLink={AppRoutes.vehicleScreenRoute}>
                         <IonIcon icon={vehicleIcon} />
                     </IonFabButton>
-                    <IonLabel>Repair</IonLabel>
+                </IonFabList>
+                <IonFabList side="start">
+                    {/* Repair */}
                     <IonFabButton
-                        color="secondary"
-                        onClick={(): void => this.props.uiStore.openCloseModal(Modals.AddRepairModal, 'open')}
-                        disabled={this.props.vehicleStore.currentSelectedVehicleId === '' ? true : false}
+                        color="warning"
+                        routerLink={AppRoutes.repairScreenRoute}
+                        disabled={this.props.vehicleStore.preferredVehicleId === '' ? true : false}
                     >
                         <IonIcon icon={repairIcon} />
                     </IonFabButton>
+                    {/* Expense
+                    <IonFabButton color="success">
+                        <IonIcon icon={expenseIcon} />
+                    </IonFabButton>
+                    Income
+                    <IonFabButton color="success">
+                        <IonIcon icon={incomeIcon} />
+                    </IonFabButton> */}
+                </IonFabList>
+                <IonFabList side="end">
+                    {/* Refuel */}
+                    <IonFabButton color="medium">
+                        <IonIcon icon={refuelIcon} />
+                    </IonFabButton>
+                    {/* Route
+                    <IonFabButton color="success">
+                        <IonIcon icon={routeIcon} />
+                    </IonFabButton>
+                    Reminder
+                    <IonFabButton color="success">
+                        <IonIcon icon={reminderIcon} />
+                    </IonFabButton> */}
                 </IonFabList>
             </IonFab>
         );

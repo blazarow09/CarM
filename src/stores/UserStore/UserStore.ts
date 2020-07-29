@@ -8,9 +8,11 @@ export interface IUserStore {
     handleRegister(userCredentials: IUserCredentials): Promise<boolean>;
     handleLogout(): Promise<void>;
     setUserContext(userId: string): void;
+    setHideTabsMenu(hide: boolean): void;
 
     // Observables
     userContext: IAuthContext;
+    hideTabsMenu: boolean;
 }
 
 export class UserStore implements IUserStore {
@@ -20,6 +22,7 @@ export class UserStore implements IUserStore {
 
     //#region Observables initialization
     @observable public userContext: IAuthContext = null;
+    @observable public hideTabsMenu: boolean = false;
     //#endregion
 
     public constructor(authService: AuthService) {
@@ -43,6 +46,11 @@ export class UserStore implements IUserStore {
         }
     }
 
+    @action
+    public setHideTabsMenu(hide: boolean): void {
+        this.hideTabsMenu = hide;
+    }
+
     public async handleLogout(): Promise<void> {
         try {
             await this._authService.logout();
@@ -62,4 +70,6 @@ export class UserStore implements IUserStore {
 
         return false;
     }
+
+   
 }

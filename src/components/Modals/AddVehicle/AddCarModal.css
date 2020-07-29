@@ -5,3 +5,11 @@
 .c-label-ic .md {
     /* margin-top: 10% */
 }
+
+.c-veh-input {
+    /* --background: #ff4961; */
+}
+
+.c-item-input {
+    --border-color: var(--ion-color-danger);
+}

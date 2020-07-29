@@ -3,16 +3,20 @@ import { observable, action } from 'mobx';
 export interface IModals {
     addCarModal: boolean;
     addRepairModal: boolean;
+    createVehicleModalOpen: boolean;
+    editVehicleModalOpen: boolean;
 }
 
 export enum Modals {
-    AddCarModal,
+    AddVehicleModal,
     AddRepairModal,
 }
 
 export interface IUiStore {
     // Methods
-    openCloseModal(modal: Modals, action: 'open' | 'close'): void;
+    openCloseModal(modal: Modals): void;
+    closeAllModals(): void;
+    setCreateEditVehicleModalOpen(createOrEdit: 'create' | 'edit', status: boolean): void;
 
     // Observables
     modals: IModals;
@@ -24,27 +28,42 @@ export class UiStore implements IUiStore {
     @observable public modals: IModals = {
         addCarModal: false,
         addRepairModal: false,
+        editVehicleModalOpen: false,
+        createVehicleModalOpen: false,
     };
 
     @action.bound
-    public openCloseModal(modal: Modals, action: 'open' | 'close'): void {
-        let boolAction: boolean;
-        if (action === 'open') {
-            boolAction = true;
-        } else {
-            boolAction = false;
-        }
+    public openCloseModal(modal: Modals): void {
+        this.closeAllModals();
 
         switch (modal) {
-            case Modals.AddCarModal:
-                this.modals.addCarModal = boolAction;
+            case Modals.AddVehicleModal:
+                this.modals.addCarModal = true;
                 break;
             case Modals.AddRepairModal:
-                this.modals.addRepairModal = boolAction;
+                this.modals.addRepairModal = true;
                 break;
 
             default:
                 break;
         }
     }
+
+    @action
+    public closeAllModals(): void {
+        this.modals.addCarModal && (this.modals.addCarModal = false);
+        this.modals.addRepairModal && (this.modals.addRepairModal = false);
+    }
+
+    @action
+    public setCreateEditVehicleModalOpen(createOrEdit: 'create' | 'edit', status: boolean): void {
+        if (createOrEdit === 'create') {
+            this.modals.createVehicleModalOpen = status;
+            this.modals.editVehicleModalOpen = !status;
+        } else if (createOrEdit === 'edit') {
+            this.modals.editVehicleModalOpen = status;
+            this.modals.createVehicleModalOpen = !status;
+        }
+    }
+
 }
