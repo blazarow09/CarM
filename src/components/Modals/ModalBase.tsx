@@ -12,7 +12,7 @@ export interface IModalBaseProps {
 
 export interface IModalBaseState {
     headerTitle?: string;
-    headertoolbarColor?: string;
+    headerToolbarColor?: string;
 }
 
 export default class ModalBase<TProps extends IModalBaseProps, TState extends IModalBaseState> extends React.Component<TProps, TState> {
@@ -51,7 +51,7 @@ export default class ModalBase<TProps extends IModalBaseProps, TState extends IM
                 swipeToClose={this.props.swipeToClose ? this.props.swipeToClose : false}
                 // onDidDismiss={(): void => this.props.onDidDismiss()}
             >
-                <MainHeader extraContent={this.extraContent} title={this.state?.headerTitle} toolbarColor={this.state?.headertoolbarColor} />
+                <MainHeader extraContent={this.extraContent} title={this.state?.headerTitle} toolbarColor={this.state?.headerToolbarColor} />
 
                 {this.content()}
             </IonModal>

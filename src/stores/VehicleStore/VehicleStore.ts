@@ -12,7 +12,7 @@ export interface IVehicleStore {
     setVehicleToEdit(vehicleToEdit: IVehicleViewModel): void;
 
     // Vehicle
-    handleAddVehicle(vehicle: IVehicleViewModel, userId: string): Promise<void>;
+    handleVehicleModal(vehicle: IVehicleViewModel, userId: string): Promise<void>;
     handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void>;
     removeVehicle(vehicleId: string, userId: string): Promise<void>;
     getPreferredVehicleId(userId: string): Promise<void>;
@@ -21,7 +21,7 @@ export interface IVehicleStore {
     getAvailableCars(reset: boolean, userId?: string): Promise<boolean>;
 
     // Repair
-    handleAddRepair(repair: IRepair, userId: string): Promise<void>;
+    handleRepairModal(repair: IRepair, userId: string): Promise<void>;
     getRepairsByVehicleId(vehicleId: string, userId: string): Promise<void>;
 
     // Observables
@@ -64,7 +64,7 @@ export class VehicleStore implements IVehicleStore {
     }
 
     //#region Vehicle Operations
-    public async handleAddVehicle(vehicle: IVehicleViewModel, userId: string): Promise<void> {
+    public async handleVehicleModal(vehicle: IVehicleViewModel, userId: string): Promise<void> {
         if (vehicle) {
             await this._vehicleService.saveVehicle(vehicle, userId);
         }
@@ -134,7 +134,7 @@ export class VehicleStore implements IVehicleStore {
     //#endregion
 
     //#region Repair Operations
-    public async handleAddRepair(repair: IRepair, userId: string): Promise<void> {
+    public async handleRepairModal(repair: IRepair, userId: string): Promise<void> {
         if (repair && this.preferredVehicleId) {
             await this._vehicleService.saveRepair(repair, userId, this.preferredVehicleId);
         }

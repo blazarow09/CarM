@@ -10,6 +10,7 @@ import HomeButton from './HomeButton/HomeButton';
 import { IVehicleStore } from '../stores/VehicleStore/VehicleStore';
 import VehicleScreen from './VehicleScreen/VehicleScreen';
 import RepairScreen from './RepairScreen/RepairScreen';
+import RefuelScreen from './RefuelScreen/RefuelScreen';
 
 interface AppTabsProps {
     userId: string;
@@ -49,6 +50,9 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                         </Route>
                         <Route exact path={AppRoutes.repairScreenRoute}>
                             <RepairScreen />
+                        </Route>
+                        <Route exact path={AppRoutes.refuelScreenRoute}>
+                            <RefuelScreen />
                         </Route>
                     </IonRouterOutlet>
 

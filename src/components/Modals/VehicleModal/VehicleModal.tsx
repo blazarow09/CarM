@@ -24,13 +24,13 @@ import './AddCarModal.css';
 import { IVehicleViewModel } from '../../../models/Vehicle/IVehicleViewModel';
 import ModalBase, { IModalBaseProps, IModalBaseState } from '../ModalBase';
 
-interface AddVehicleProps extends IModalBaseProps {
+interface VehicleModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
 }
 
-interface AddVehicleState extends IModalBaseState {
+interface VehicleModalState extends IModalBaseState {
     uid?: string;
     type?: string;
     brand?: string;
@@ -48,12 +48,12 @@ interface AddVehicleState extends IModalBaseState {
 @inject('vehicleStore')
 @inject('userStore')
 @observer
-export default class AddVehicle extends ModalBase<AddVehicleProps, AddVehicleState> {
+export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleModalState> {
     protected visible(): boolean {
-        return this.props.uiStore?.modals.addCarModal;
+        return this.props.uiStore?.modals.vehicleModalOpen;
     }
 
-    public state: AddVehicleState = {
+    public state: VehicleModalState = {
         uid: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.uid : '',
         type: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.type : '',
         brand: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.brand : '',
@@ -234,7 +234,7 @@ export default class AddVehicle extends ModalBase<AddVehicleProps, AddVehicleSta
                 await this.props.vehicleStore.handleEditVehicle(vehicle, this.state.uid, userId);
                 // If the modal is open in crete mode.
             } else if (this.props.uiStore.modals.createVehicleModalOpen && vehicle) {
-                await this.props.vehicleStore.handleAddVehicle(vehicle, userId);
+                await this.props.vehicleStore.handleVehicleModal(vehicle, userId);
             }
 
             let shouldSetPreferredVehicle = false;

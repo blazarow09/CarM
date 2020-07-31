@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-    IonModal,
     IonContent,
     IonList,
     IonRow,
@@ -15,7 +14,6 @@ import {
     IonTextarea,
     IonSpinner,
 } from '@ionic/react';
-import MainHeader from '../../MainHeader/MainHeader';
 import { observer, inject } from 'mobx-react';
 import { IUiStore } from '../../../stores/UiStore/UiStore';
 import { closeOutline as closeIcon, checkmarkOutline as saveButton } from 'ionicons/icons';
@@ -23,8 +21,9 @@ import { IVehicleStore } from '../../../stores/VehicleStore/VehicleStore';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { IRepair } from '../../../models/Repair/IRepair';
 import ModalBase from '../ModalBase';
+import { GlobalConstants } from '../../../models/Constants/GlobalConstants';
 
-interface AddRepairState {
+interface RepairModalState {
     date: string;
     mileage: string;
     repair: string;
@@ -38,7 +37,7 @@ interface AddRepairState {
     headerTitle: string;
 }
 
-interface AddRepairProps {
+interface RepairModalProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
@@ -48,12 +47,12 @@ interface AddRepairProps {
 @inject('userStore')
 @inject('vehicleStore')
 @observer
-export default class AddRepair extends ModalBase<AddRepairProps, AddRepairState> {
+export default class RepairModal extends ModalBase<RepairModalProps, RepairModalState> {
     protected visible(): boolean {
-        return this.props.uiStore?.modals?.addRepairModal;
+        return this.props.uiStore?.modals?.repairModalOpen;
     }
 
-    public state: AddRepairState = {
+    public state: RepairModalState = {
         date: '',
         mileage: '',
         repair: '',
@@ -74,13 +73,13 @@ export default class AddRepair extends ModalBase<AddRepairProps, AddRepairState>
                     this.setState({ date: inputValue });
                     break;
                 case 'mileage':
-                    this.setState({ mileage: parseInt(inputValue) });
+                    this.setState({ mileage: inputValue });
                     break;
                 case 'repair':
                     this.setState({ repair: inputValue });
                     break;
                 case 'cost':
-                    this.setState({ cost: parseInt(inputValue) });
+                    this.setState({ cost: inputValue });
                     break;
                 case 'place':
                     this.setState({ place: inputValue });
@@ -89,7 +88,7 @@ export default class AddRepair extends ModalBase<AddRepairProps, AddRepairState>
                     this.setState({ city: inputValue });
                     break;
                 case 'phone':
-                    this.setState({ phone: parseInt(inputValue) });
+                    this.setState({ phone: inputValue });
                     break;
                 case 'note':
                     this.setState({ note: inputValue });
@@ -130,7 +129,7 @@ export default class AddRepair extends ModalBase<AddRepairProps, AddRepairState>
             };
             console.log('Saving repair' + repair);
 
-            await this.props.vehicleStore.handleAddRepair(repair, this.props.userStore.userContext.userId);
+            await this.props.vehicleStore.handleRepairModal(repair, this.props.userStore.userContext.userId);
 
             await this.props.vehicleStore.getRepairsByVehicleId(
                 this.props.vehicleStore.preferredVehicleId,
@@ -156,8 +155,8 @@ export default class AddRepair extends ModalBase<AddRepairProps, AddRepairState>
                                     <IonLabel>Date</IonLabel>
                                     <IonDatetime
                                         color="warning"
-                                        pickerFormat="DD-MM-YYYY"
-                                        displayFormat="DD-MMM-YYYY"
+                                        pickerFormat={GlobalConstants.defaultDateFormat}
+                                        displayFormat={GlobalConstants.defaultDateFormat}
                                         onIonChange={(e) => this.handleInput(e.detail.value!, 'date')}
                                     ></IonDatetime>
                                 </IonItem>
@@ -216,7 +215,7 @@ export default class AddRepair extends ModalBase<AddRepairProps, AddRepairState>
                         <IonRow>
                             <IonCol>
                                 <IonItem>
-                                    <IonLabel position="floating">Note</IonLabel>
+                                    <IonLabel position="floating">Notes</IonLabel>
                                     <IonTextarea onIonChange={(event): void => this.handleInput(event.detail.value, 'note')} />
                                 </IonItem>
                             </IonCol>

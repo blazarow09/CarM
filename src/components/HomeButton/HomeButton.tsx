@@ -58,7 +58,11 @@ export default class HomeButton extends React.Component<HomeButtonProps> {
                 </IonFabList>
                 <IonFabList side="end">
                     {/* Refuel */}
-                    <IonFabButton color="medium">
+                    <IonFabButton
+                        color="tertiary"
+                        routerLink={AppRoutes.refuelScreenRoute}
+                        disabled={this.props.vehicleStore.preferredVehicleId === '' ? true : false}
+                    >
                         <IonIcon icon={refuelIcon} />
                     </IonFabButton>
                     {/* Route
