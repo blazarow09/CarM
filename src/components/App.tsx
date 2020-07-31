@@ -2,6 +2,8 @@ import { IonApp, IonLoading } from '@ionic/react';
 import React from 'react';
 import AppRouter from './AppRouter';
 import { useAuthInit, AuthContext } from './Authentication/AuthGuard/AuthGuard';
+import '../theme/global-colors.css';
+
 
 const App: React.FC = () => {
     const { isLoading, auth } = useAuthInit();

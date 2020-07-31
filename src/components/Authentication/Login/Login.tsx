@@ -113,6 +113,7 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
                                     <IonLabel position="floating">Email</IonLabel>
                                     <IonInput
                                         type="email"
+                                        pattern="email"
                                         onIonChange={(event): void => this.setEmail(event?.detail?.value ? event?.detail?.value : '')}
                                     />
                                 </IonItem>

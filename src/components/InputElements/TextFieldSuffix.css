@@ -1,0 +1,16 @@
+.c-input-suffix {
+    position: absolute;
+    right: 0;
+    bottom: 6%;
+    font-size: 15px;
+}
+
+.c-input-column.md > ion-input {
+    /* top: 10%; */
+    --padding-bottom: 2%;
+}
+
+.c-input-column.ios > ion-input {
+    top: 10%;
+    /* --padding-bottom: 2%; */
+}

@@ -64,7 +64,7 @@ export default class Home extends React.Component<HomeProps> {
 
         return (
             <IonPage>
-                <MainHeader title="Dashboard" extraContent={this.extraContent} />
+                <MainHeader title="Dashboard" extraContent={this.extraContent}/>
                 <IonContent>
                     {this.props.vehicleStore.isAvailableCars ? (
                         <>
@@ -109,7 +109,7 @@ export default class Home extends React.Component<HomeProps> {
                 <IonFabButton
                     color="light"
                     onClick={(): void => {
-                        this.props.uiStore.openCloseModal(Modals.AddVehicleModal);
+                        this.props.uiStore.openModal(Modals.VehicleModal);
                         this.props.uiStore.setCreateEditVehicleModalOpen('create', true);
                     }}
                 >

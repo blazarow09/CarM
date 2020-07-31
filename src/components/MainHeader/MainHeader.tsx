@@ -10,8 +10,8 @@ interface MainHeaderProps {
 export default class MainHeader extends React.Component<MainHeaderProps> {
     public render() {
         return (
-            <IonHeader>
-                <IonToolbar color={this.props?.toolbarColor ? this.props?.toolbarColor : 'primary'}>
+            <IonHeader className={`c-color-${this.props.toolbarColor ? this.props.toolbarColor : 'default'}`}>
+                <IonToolbar>
                     {this.props?.extraContent && this.props.extraContent()}
                     {this.props?.title && <IonTitle>{this.props.title}</IonTitle>}
                 </IonToolbar>

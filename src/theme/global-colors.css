@@ -1,0 +1,46 @@
+/* Colors */
+
+:root {
+    --default: #50c8ff;
+    --purple: #6a64ff;
+    --red: #ff4961;
+    --orange: #ffd534;
+}
+
+.c-color-default {
+    color: var(--default);
+}
+
+.c-color-purple {
+    color: var(--purple);
+}
+
+.c-color-red {
+    color: var(--red);
+}
+
+.c-color-orange {
+    color: var(--orange);
+}
+
+/* End Colors */
+
+/* Input Elements */
+
+.c-input-field-default {
+    --border-color: var(--default);
+}
+
+.c-input-field-purple {
+    --border-color: var(--purple);
+}
+
+.c-input-field-red {
+    --border-color: var(--red);
+}
+
+.c-input-field-orange {
+    --border-color: var(--orange);
+}
+
+/* End Input Elements */

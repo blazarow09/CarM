@@ -1,20 +1,27 @@
 import { observable, action } from 'mobx';
 
 export interface IModals {
-    addCarModal: boolean;
-    addRepairModal: boolean;
+    // Vehicle
+    vehicleModalOpen: boolean;
     createVehicleModalOpen: boolean;
     editVehicleModalOpen: boolean;
+
+    // Repair
+    repairModalOpen: boolean;
+
+    // Refuel
+    refuelModalOpen: boolean;
 }
 
 export enum Modals {
-    AddVehicleModal,
-    AddRepairModal,
+    VehicleModal,
+    RepairModal,
+    RefuelModal,
 }
 
 export interface IUiStore {
     // Methods
-    openCloseModal(modal: Modals): void;
+    openModal(modal: Modals): void;
     closeAllModals(): void;
     setCreateEditVehicleModalOpen(createOrEdit: 'create' | 'edit', status: boolean): void;
 
@@ -26,22 +33,26 @@ export interface IUiStore {
 
 export class UiStore implements IUiStore {
     @observable public modals: IModals = {
-        addCarModal: false,
-        addRepairModal: false,
+        vehicleModalOpen: false,
+        repairModalOpen: false,
         editVehicleModalOpen: false,
         createVehicleModalOpen: false,
+        refuelModalOpen: false,
     };
 
     @action.bound
-    public openCloseModal(modal: Modals): void {
+    public openModal(modal: Modals): void {
         this.closeAllModals();
 
         switch (modal) {
-            case Modals.AddVehicleModal:
-                this.modals.addCarModal = true;
+            case Modals.VehicleModal:
+                this.modals.vehicleModalOpen = true;
                 break;
-            case Modals.AddRepairModal:
-                this.modals.addRepairModal = true;
+            case Modals.RepairModal:
+                this.modals.repairModalOpen = true;
+                break;
+            case Modals.RefuelModal:
+                this.modals.refuelModalOpen = true;
                 break;
 
             default:
@@ -51,8 +62,9 @@ export class UiStore implements IUiStore {
 
     @action
     public closeAllModals(): void {
-        this.modals.addCarModal && (this.modals.addCarModal = false);
-        this.modals.addRepairModal && (this.modals.addRepairModal = false);
+        this.modals.vehicleModalOpen && (this.modals.vehicleModalOpen = false);
+        this.modals.repairModalOpen && (this.modals.repairModalOpen = false);
+        this.modals.refuelModalOpen && (this.modals.refuelModalOpen = false);
     }
 
     @action
@@ -65,5 +77,4 @@ export class UiStore implements IUiStore {
             this.modals.createVehicleModalOpen = !status;
         }
     }
-
 }
