@@ -1,0 +1,14 @@
+.c-item-input-vehicle {
+    --border-color: var(--ion-color-red);
+}
+
+.c-item-input-repair {
+    --border-color: var(--ion-color-orange);
+}
+
+.c-note-italic {
+    font-size: 13px;
+    font-weight: 400;
+    opacity: 0.6;
+    font-style: italic;
+}

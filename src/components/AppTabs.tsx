@@ -11,6 +11,7 @@ import { IVehicleStore } from '../stores/VehicleStore/VehicleStore';
 import VehicleScreen from './VehicleScreen/VehicleScreen';
 import RepairScreen from './RepairScreen/RepairScreen';
 import RefuelScreen from './RefuelScreen/RefuelScreen';
+import MoreOptionsScreen from './MoreOptionsScreen/MoreOptionsScreen';
 
 interface AppTabsProps {
     userId: string;
@@ -54,6 +55,9 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                         <Route exact path={AppRoutes.refuelScreenRoute}>
                             <RefuelScreen />
                         </Route>
+                        <Route exact path={AppRoutes.moreOptionsRoute}>
+                            <MoreOptionsScreen />
+                        </Route>
                     </IonRouterOutlet>
 
                     <IonTabBar slot="bottom" hidden={this.props.userStore.hideTabsMenu}>
@@ -69,7 +73,7 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                             <IonIcon icon={reminderIcon} />
                             <IonLabel>Reminders</IonLabel>
                         </IonTabButton> */}
-                        <IonTabButton tab="more" disabled>
+                        <IonTabButton tab="more" href={AppRoutes.moreOptionsRoute}>
                             <IonIcon icon={menuIcon} />
                             <IonLabel>More</IonLabel>
                         </IonTabButton>

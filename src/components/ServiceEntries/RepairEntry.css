@@ -1,0 +1,50 @@
+.c-entry-thumbnail {
+    border-radius: 50%;
+    width: 42px !important;
+    height: 42px !important;
+    margin-top: 10%;
+    margin-left: auto;
+}
+
+.c-entry-thumbnail {
+    border-radius: 50%;
+    width: 42px !important;
+    height: 42px !important;
+    margin-top: 10%;
+    margin-left: auto;
+}
+
+.c-repair {
+    background: var(--ion-color-orange);
+}
+
+.c-refuel {
+    background: var(--ion-color-purple);
+}
+
+.c-entry-icon {
+    margin-top: 17%;
+    width: 100%;
+    height: 60%;
+    object-fit: contain;
+}
+
+.c-entry-details-row {
+    width: 100%;
+}
+
+.c-bgr-transparent {
+    --background: transparent;
+}
+
+.c-detail-secondary-row {
+    margin-top: 5%;
+    font-size: 14px;
+    opacity: 0.9;
+    font-weight: 300;
+    text-align: center;
+}
+
+.c-detail-primary-row {
+    text-align: center;
+}
