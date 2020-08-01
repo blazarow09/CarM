@@ -233,7 +233,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                 await this.props.vehicleStore.handleEditVehicle(vehicle, this.state.uid, userId);
                 // If the modal is open in crete mode.
             } else if (this.props.uiStore.modals.createVehicleModalOpen && vehicle) {
-                await this.props.vehicleStore.handleVehicleModal(vehicle, userId);
+                await this.props.vehicleStore.handleVehicleSave(vehicle, userId);
             }
 
             let shouldSetPreferredVehicle = false;

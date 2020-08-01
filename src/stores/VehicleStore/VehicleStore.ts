@@ -3,6 +3,9 @@ import { IVehicleViewModel } from '../../models/Vehicle/IVehicleViewModel';
 import VehicleService from '../../services/VehicleService';
 import { IRepair } from '../../models/Repair/IRepair';
 import { IVehicleCreateEdit } from '../../models/Vehicle/IVehicleCreateEdit';
+import { IRefuelCreateEdit } from '../../models/Refuel/IRefuelCreateEdit';
+import RefuelService from '../../services/RefuelService';
+import { IRefuelView } from '../../models/Refuel/IRefuelView';
 
 export interface IVehicleStore {
     // Methods
@@ -12,24 +15,29 @@ export interface IVehicleStore {
     setVehicleToEdit(vehicleToEdit: IVehicleViewModel): void;
 
     // Vehicle
-    handleVehicleModal(vehicle: IVehicleViewModel, userId: string): Promise<void>;
+    handleVehicleSave(vehicle: IVehicleViewModel, userId: string): Promise<void>;
     handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void>;
     removeVehicle(vehicleId: string, userId: string): Promise<void>;
+
     getPreferredVehicleId(userId: string): Promise<void>;
     savePreferredVehicleId(vehicleId: string, userId: string): Promise<void>;
 
     getAvailableCars(reset: boolean, userId?: string): Promise<boolean>;
 
     // Repair
-    handleRepairModal(repair: IRepair, userId: string): Promise<void>;
-    getRepairsByVehicleId(vehicleId: string, userId: string): Promise<void>;
+    handleSaveRepair(repair: IRepair, userId: string): Promise<void>;
+    getRepairsByVehicleId(reset: boolean, vehicleId: string, userId: string): Promise<void>;
+
+    //Refuel
+    handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<void>;
+    getRefuelsByVehicleId(reset: boolean, userId: string, vehicleId: string): Promise<void>;
 
     // Observables
     availableCars: IObservableArray<IVehicleViewModel>;
-    // currentSelectedVehicleId: string;
     userId: string;
     vehicleToEdit: IVehicleViewModel;
     repairsByVehicleId: IObservableArray<IRepair>;
+    refuelsByVehicleId: IObservableArray<IRefuelView>;
 
     preferredVehicleId: string;
 
@@ -40,23 +48,26 @@ export interface IVehicleStore {
 export class VehicleStore implements IVehicleStore {
     //#region Services
     private _vehicleService: VehicleService;
+    private _refuelService: RefuelService;
 
     //#endregion
 
     //#region Observables initialization
     @observable public userId: string = '';
 
-    // @observable public currentSelectedVehicleId: string = '';
     @observable public availableCars: IObservableArray<IVehicleViewModel> = observable([]);
     @observable public vehicleToEdit: IVehicleViewModel = null;
     @observable public preferredVehicleId: string = '';
 
     @observable public repairsByVehicleId: IObservableArray<IRepair> = observable([]);
 
+    @observable public refuelsByVehicleId: IObservableArray<IRefuelView> = observable([]);
+
     //#endregion
 
-    public constructor(carService: VehicleService) {
-        this._vehicleService = carService;
+    public constructor(vehicleService: VehicleService, refuelService: RefuelService) {
+        this._vehicleService = vehicleService;
+        this._refuelService = refuelService;
     }
 
     public setUserId(userId: string): void {
@@ -64,7 +75,7 @@ export class VehicleStore implements IVehicleStore {
     }
 
     //#region Vehicle Operations
-    public async handleVehicleModal(vehicle: IVehicleViewModel, userId: string): Promise<void> {
+    public async handleVehicleSave(vehicle: IVehicleViewModel, userId: string): Promise<void> {
         if (vehicle) {
             await this._vehicleService.saveVehicle(vehicle, userId);
         }
@@ -134,21 +145,45 @@ export class VehicleStore implements IVehicleStore {
     //#endregion
 
     //#region Repair Operations
-    public async handleRepairModal(repair: IRepair, userId: string): Promise<void> {
+    public async handleSaveRepair(repair: IRepair, userId: string): Promise<void> {
         if (repair && this.preferredVehicleId) {
             await this._vehicleService.saveRepair(repair, userId, this.preferredVehicleId);
         }
     }
 
     @action
-    public async getRepairsByVehicleId(vehicleId: string, userId: string): Promise<void> {
-        let repairs: IRepair[];
+    public async getRepairsByVehicleId(reset: boolean, vehicleId: string, userId: string): Promise<void> {
+        if (reset) {
+            this.repairsByVehicleId.clear();
+        } else {
+            let repairs: IRepair[];
 
-        if (vehicleId && userId) {
-            repairs = await this._vehicleService.getRepairsByVehicleId(vehicleId, userId);
+            if (vehicleId && userId) {
+                repairs = await this._vehicleService.getRepairsByVehicleId(vehicleId, userId);
+            }
+
+            this.repairsByVehicleId.replace(repairs);
         }
+    }
+    //#endregion
 
-        this.repairsByVehicleId.replace(repairs);
+    //#region Refuel Operations
+    public async handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<void> {
+        if (refuel && this.preferredVehicleId) {
+            await this._refuelService.saveRefuel(refuel, userId, this.preferredVehicleId);
+        }
+    }
+
+    public async getRefuelsByVehicleId(reset: boolean, userId: string, vehicleId: string): Promise<void> {
+        if (reset) {
+            this.refuelsByVehicleId.clear();
+        } else {
+            if (userId && vehicleId) {
+                let refuels = await this._refuelService.getIRefuelsByVehicleId(vehicleId, userId);
+
+                this.refuelsByVehicleId.replace(refuels);
+            }
+        }
     }
     //#endregion
 }

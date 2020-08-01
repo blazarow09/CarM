@@ -130,9 +130,9 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
             };
             console.log('Saving repair' + repair);
 
-            await this.props.vehicleStore.handleRepairModal(repair, this.props.userStore.userContext.userId);
+            await this.props.vehicleStore.handleSaveRepair(repair, this.props.userStore.userContext.userId);
 
-            await this.props.vehicleStore.getRepairsByVehicleId(
+            await this.props.vehicleStore.getRepairsByVehicleId(false,
                 this.props.vehicleStore.preferredVehicleId,
                 this.props.userStore.userContext.userId
             );

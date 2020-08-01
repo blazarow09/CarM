@@ -21,10 +21,10 @@ import { IVehicleStore } from '../../../stores/VehicleStore/VehicleStore';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import dayjs from 'dayjs';
 import ModalBase, { IModalBaseProps, IModalBaseState } from '../ModalBase';
-import './RefuelModal.css';
 import TextFieldSuffix from '../../InputElements/TextFieldSuffix';
 import { GlobalConstants } from '../../../models/Constants/GlobalConstants';
 import { GlobalColors } from '../../../models/Constants/GlobalColors';
+import { IRefuelCreateEdit } from '../../../models/Refuel/IRefuelCreateEdit';
 
 interface RefuelModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
@@ -57,7 +57,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
 
     public state: RefuelModalState = {
         uid: '',
-        date: '',
+        date: dayjs(Date.now()).toString(),
         quantity: '',
         pricePerLtr: '',
         totalCost: '',
@@ -88,9 +88,9 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                     this.calculateTotalCostByQuantity(statePropValue);
                     break;
             }
-        }
 
-        this.setState({ [statePropName]: statePropValue });
+            this.setState({ [statePropName]: statePropValue });
+        }
     };
 
     private calculateTotalCostByQuantity(statePropValue: string): void {
@@ -133,15 +133,10 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                                             displayFormat={GlobalConstants.defaultDateFormat}
                                             onIonChange={(event) => this.handleInput(event)}
                                             name="date"
-                                            value={
-                                                this.state.date
-                                                    ? this.state.date
-                                                    : dayjs(Date.now()).format(GlobalConstants.defaultDateFormat)
-                                            }
+                                            value={dayjs(this.state.date).format(GlobalConstants.defaultDateFormat)}
                                         />
                                     </IonItem>
                                 </IonCol>
-                                {/* <IonCol size="3"><IonIcon icon={dateIcon} /></IonCol> */}
                             </IonRow>
                         </IonCol>
                     </IonRow>
@@ -213,15 +208,12 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                         <IonCol>
                             <IonItem className="c-input-field-purple">
                                 <IonLabel position="floating">Notes</IonLabel>
-                                <IonTextarea
-                                    onIonChange={(event): void => this.handleInput(event.detail.value)}
-                                    value={this.state.notes}
-                                    name="notes"
-                                />
+                                <IonTextarea onIonChange={(event): void => this.handleInput(event)} value={this.state.notes} name="notes" />
                             </IonItem>
                         </IonCol>
                     </IonRow>
                 </IonList>
+                <IonItem className="c-note-italic">Note: Entering mileage will update your car's odometer and track it by every entry.</IonItem>
             </IonContent>
         );
     }
@@ -239,7 +231,24 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
             // The current authenticated used id.
             const userId = this.props.userStore.userContext?.userId;
 
-            // CR: Implement...
+            var refuel: IRefuelCreateEdit = {
+                date: this.state.date,
+                mileage: parseInt(this.state.mileage),
+                pricePerLtr: parseFloat(this.state.pricePerLtr),
+                totalCost: parseInt(this.state.totalCost),
+                quantity: parseFloat(this.state.quantity),
+                fillingStation: this.state.fillingStation,
+                notes: this.state.notes,
+            };
+            console.log('Saving refuel' + refuel.date);
+
+            await this.props.vehicleStore.handleSaveRefuel(refuel, userId);
+
+            await this.props.vehicleStore.getRefuelsByVehicleId(
+                false,
+                this.props.userStore.userContext.userId,
+                this.props.vehicleStore.preferredVehicleId
+            );
 
             this.setSaveLoading(false);
 

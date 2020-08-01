@@ -11,4 +11,6 @@ export class AppRoutes {
     static repairScreenRoute = AppRoutes.prefixMyRoute + '/repairs'
 
     static refuelScreenRoute = AppRoutes.prefixMyRoute + '/refuels'
+
+    static moreOptionsRoute = AppRoutes.prefixMyRoute + '/more-options'
 }
