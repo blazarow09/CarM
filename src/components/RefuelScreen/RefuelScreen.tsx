@@ -7,6 +7,7 @@ import { AppRoutes } from '../AppRoutes';
 import { addOutline as addIcon } from 'ionicons/icons';
 import { observer, inject } from 'mobx-react';
 import { IUserStore } from '../../stores/UserStore/UserStore';
+import { GlobalColors } from '../../models/Constants/GlobalColors';
 
 interface RefuelScreenProps {
     uiStore?: IUiStore;
@@ -19,8 +20,6 @@ interface RefuelScreenProps {
 export default class RefuelScreen extends React.Component<RefuelScreenProps> {
     public async componentDidMount(): Promise<void> {
         this.props.userStore.setHideTabsMenu(true);
-
-       
     }
 
     public componentWillUnmount(): void {
@@ -30,7 +29,7 @@ export default class RefuelScreen extends React.Component<RefuelScreenProps> {
     public render() {
         return (
             <IonPage>
-                <MainHeader toolbarColor="purple" title="Refuels" extraContent={this.extraContent} />
+                <MainHeader toolbarColor={GlobalColors.purpleColor} title="Refuels" extraContent={this.extraContent} />
                 <IonContent>
                     {/* {this.props.vehicleStore?.repairsByVehicleId?.length === 0 ? (
                         <NoResultsScreen />
@@ -39,7 +38,7 @@ export default class RefuelScreen extends React.Component<RefuelScreenProps> {
                     )} */}
 
                     <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                        <IonFabButton className="c-color-purple" onClick={(): void => this.props.uiStore.openModal(Modals.RefuelModal)}>
+                        <IonFabButton color={GlobalColors.purpleColor} onClick={(): void => this.props.uiStore.openModal(Modals.RefuelModal)}>
                             <IonIcon icon={addIcon} />
                         </IonFabButton>
                     </IonFab>

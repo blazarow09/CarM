@@ -8,6 +8,7 @@ import { addOutline as addIcon } from 'ionicons/icons';
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
+import { GlobalColors } from '../../models/Constants/GlobalColors';
 interface RepairScreenProps {
     uiStore?: IUiStore;
     userStore?: IUserStore;
@@ -35,7 +36,7 @@ export default class RepairScreen extends React.Component<RepairScreenProps> {
     public render() {
         return (
             <IonPage>
-                <MainHeader toolbarColor="orange" title="Repairs" extraContent={this.extraContent} />
+                <MainHeader toolbarColor={GlobalColors.orangeColor} title="Repairs" extraContent={this.extraContent} />
                 <IonContent>
                     {this.props.vehicleStore?.repairsByVehicleId?.length === 0 ? (
                         <NoResultsScreen />
@@ -44,7 +45,7 @@ export default class RepairScreen extends React.Component<RepairScreenProps> {
                     )}
 
                     <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                        <IonFabButton className="c-color-purple" onClick={(): void => this.props.uiStore.openModal(Modals.RepairModal)}>
+                        <IonFabButton color={GlobalColors.orangeColor} onClick={(): void => this.props.uiStore.openModal(Modals.RepairModal)}>
                             <IonIcon icon={addIcon} />
                         </IonFabButton>
                     </IonFab>

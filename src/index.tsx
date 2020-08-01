@@ -24,7 +24,7 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-// import './theme/global-colors.css';
+import './theme/global-colors.css';
 
 const { SplashScreen } = Plugins;
 ReactDOM.render(

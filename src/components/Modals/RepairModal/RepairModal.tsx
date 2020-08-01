@@ -22,6 +22,7 @@ import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { IRepair } from '../../../models/Repair/IRepair';
 import ModalBase from '../ModalBase';
 import { GlobalConstants } from '../../../models/Constants/GlobalConstants';
+import { GlobalColors } from '../../../models/Constants/GlobalColors';
 
 interface RepairModalState {
     date: string;
@@ -33,7 +34,7 @@ interface RepairModalState {
     phone: string;
     note: string;
     saveLoading?: boolean;
-    headertoolbarColor: string;
+    headerToolbarColor: string;
     headerTitle: string;
 }
 
@@ -63,7 +64,7 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
         note: '',
         saveLoading: false,
         headerTitle: 'Add repair',
-        headertoolbarColor: 'warning',
+        headerToolbarColor: GlobalColors.orangeColor,
     };
 
     private handleInput(inputValue: string, field: 'date' | 'mileage' | 'repair' | 'cost' | 'place' | 'city' | 'phone' | 'note'): void {
@@ -151,10 +152,10 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                     <IonList className="c-form-fields">
                         <IonRow>
                             <IonCol>
-                                <IonItem>
+                                <IonItem className="c-item-input-repair">
                                     <IonLabel>Date</IonLabel>
                                     <IonDatetime
-                                        color="warning"
+                                        color={GlobalColors.orangeColor}
                                         pickerFormat={GlobalConstants.defaultDateFormat}
                                         displayFormat={GlobalConstants.defaultDateFormat}
                                         onIonChange={(e) => this.handleInput(e.detail.value!, 'date')}
@@ -164,24 +165,24 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                         </IonRow>
                         <IonRow>
                             <IonCol>
-                                <IonItem>
+                                <IonItem className="c-item-input-repair">
                                     <IonLabel position="floating">Repair</IonLabel>
                                     <IonInput
                                         onIonChange={(event): void => this.handleInput(event.detail.value, 'repair')}
-                                        color="warning"
+                                        
                                     />
                                 </IonItem>
                             </IonCol>
                         </IonRow>
                         <IonRow>
                             <IonCol>
-                                <IonItem>
+                                <IonItem className="c-item-input-repair">
                                     <IonLabel position="floating">Cost</IonLabel>
                                     <IonInput onIonChange={(event): void => this.handleInput(event.detail.value, 'cost')} type="number" />
                                 </IonItem>
                             </IonCol>
                             <IonCol>
-                                <IonItem>
+                                <IonItem className="c-item-input-repair">
                                     <IonLabel position="floating">Mileage</IonLabel>
                                     <IonInput
                                         type="number"
@@ -192,7 +193,7 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                         </IonRow>
                         <IonRow>
                             <IonCol>
-                                <IonItem>
+                                <IonItem className="c-item-input-repair">
                                     <IonLabel position="floating">Place</IonLabel>
                                     <IonInput onIonChange={(event): void => this.handleInput(event.detail.value, 'place')} />
                                 </IonItem>
@@ -200,13 +201,13 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                         </IonRow>
                         <IonRow>
                             <IonCol>
-                                <IonItem>
+                                <IonItem className="c-item-input-repair">
                                     <IonLabel position="floating">City</IonLabel>
                                     <IonInput onIonChange={(event): void => this.handleInput(event.detail.value, 'city')} />
                                 </IonItem>
                             </IonCol>
                             <IonCol>
-                                <IonItem>
+                                <IonItem className="c-item-input-repair">
                                     <IonLabel position="floating">Phone</IonLabel>
                                     <IonInput onIonChange={(event): void => this.handleInput(event.detail.value, 'phone')} type="number" />
                                 </IonItem>
@@ -214,7 +215,7 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                         </IonRow>
                         <IonRow>
                             <IonCol>
-                                <IonItem>
+                                <IonItem className="c-item-input-repair">
                                     <IonLabel position="floating">Notes</IonLabel>
                                     <IonTextarea onIonChange={(event): void => this.handleInput(event.detail.value, 'note')} />
                                 </IonItem>

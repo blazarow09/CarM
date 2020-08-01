@@ -14,6 +14,7 @@ import {
     colorFillOutline as refuelIcon,
 } from 'ionicons/icons';
 import { AppRoutes } from '../AppRoutes';
+import { GlobalColors } from '../../models/Constants/GlobalColors';
 
 interface HomeButtonProps {
     uiStore?: IUiStore;
@@ -29,19 +30,19 @@ export default class HomeButton extends React.Component<HomeButtonProps> {
         return (
             <IonFab vertical="bottom" horizontal="center" className="c-home-button" hidden={this.props.hiddenAppTabs}>
                 {/* Home Button */}
-                <IonFabButton color="primary">
+                <IonFabButton color={GlobalColors.defaultColor}>
                     <IonIcon icon={arrowUpButton} />
                 </IonFabButton>
                 <IonFabList side="top">
                     {/* Vehicle */}
-                    <IonFabButton color="danger" routerLink={AppRoutes.vehicleScreenRoute}>
+                    <IonFabButton color={GlobalColors.redColor} routerLink={AppRoutes.vehicleScreenRoute}>
                         <IonIcon icon={vehicleIcon} />
                     </IonFabButton>
                 </IonFabList>
                 <IonFabList side="start">
                     {/* Repair */}
                     <IonFabButton
-                        color="warning"
+                        color={GlobalColors.orangeColor}
                         routerLink={AppRoutes.repairScreenRoute}
                         disabled={this.props.vehicleStore.preferredVehicleId === '' ? true : false}
                     >
@@ -59,7 +60,7 @@ export default class HomeButton extends React.Component<HomeButtonProps> {
                 <IonFabList side="end">
                     {/* Refuel */}
                     <IonFabButton
-                        color="tertiary"
+                        color={GlobalColors.purpleColor}
                         routerLink={AppRoutes.refuelScreenRoute}
                         disabled={this.props.vehicleStore.preferredVehicleId === '' ? true : false}
                     >

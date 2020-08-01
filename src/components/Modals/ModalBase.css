@@ -1,0 +1,7 @@
+.c-item-input-vehicle {
+    --border-color: var(--ion-color-red);
+}
+
+.c-item-input-repair {
+    --border-color: var(--ion-color-orange)
+}

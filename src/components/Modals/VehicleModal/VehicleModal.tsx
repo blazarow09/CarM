@@ -19,10 +19,9 @@ import { IUiStore } from '../../../stores/UiStore/UiStore';
 import { closeOutline as closeIcon, checkmarkOutline as saveButton } from 'ionicons/icons';
 import { IVehicleStore } from '../../../stores/VehicleStore/VehicleStore';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
-
-import './AddCarModal.css';
 import { IVehicleViewModel } from '../../../models/Vehicle/IVehicleViewModel';
 import ModalBase, { IModalBaseProps, IModalBaseState } from '../ModalBase';
+import { GlobalColors } from '../../../models/Constants/GlobalColors';
 
 interface VehicleModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
@@ -40,7 +39,7 @@ interface VehicleModalState extends IModalBaseState {
     fuel?: string;
     mileage?: string;
     saveLoading?: boolean;
-    headertoolbarColor?: string;
+    headerToolbarColor?: string;
     headerTitle?: string;
 }
 
@@ -63,8 +62,8 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
         fuel: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.fuel : '',
         mileage: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.mileage.toString() : '',
         saveLoading: false,
-        headerTitle: 'Add vehicle',
-        headertoolbarColor: 'danger',
+        headerTitle: this.props.uiStore.modals.createVehicleModalOpen ? 'Add vehicle' : 'Edit vehicle',
+        headerToolbarColor: GlobalColors.redColor,
     };
 
     private inputFieldTypes = new Array<string>('type', 'brand', 'model', 'variant', 'engine', 'fuel', 'mileage');
@@ -89,10 +88,10 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                     <IonList className="c-form-fields">
                         <IonRow>
                             <IonCol>
-                                <IonItem className="c-item-input">
+                                <IonItem className="c-item-input-vehicle">
                                     <IonLabel position="floating">Type</IonLabel>
                                     <IonSelect
-                                        color="danger"
+                                        color={GlobalColors.redColor}
                                         interface="popover"
                                         onIonChange={(event): void => this.handleInput(event)}
                                         value={this.state.type}
@@ -113,7 +112,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                         </IonRow>
                         <IonRow>
                             <IonCol>
-                                <IonItem className="c-item-input">
+                                <IonItem className="c-item-input-vehicle">
                                     <IonLabel position="floating">Brand</IonLabel>
                                     <IonInput
                                         onIonChange={(event): void => this.handleInput(event)}
@@ -124,7 +123,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                                 </IonItem>
                             </IonCol>
                             <IonCol>
-                                <IonItem className="c-item-input">
+                                <IonItem className="c-item-input-vehicle">
                                     <IonLabel position="floating">Model</IonLabel>
                                     <IonInput
                                         onIonChange={(event): void => this.handleInput(event)}
@@ -136,7 +135,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                         </IonRow>
                         <IonRow>
                             <IonCol>
-                                <IonItem className="c-item-input">
+                                <IonItem className="c-item-input-vehicle">
                                     <IonLabel position="floating">Variant</IonLabel>
                                     <IonInput
                                         onIonChange={(event): void => this.handleInput(event)}
@@ -146,7 +145,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                                 </IonItem>
                             </IonCol>
                             <IonCol>
-                                <IonItem className="c-item-input">
+                                <IonItem className="c-item-input-vehicle">
                                     <IonLabel position="floating">Engine</IonLabel>
                                     <IonInput
                                         onIonChange={(event): void => this.handleInput(event)}
@@ -158,7 +157,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                         </IonRow>
                         <IonRow>
                             <IonCol>
-                                <IonItem className="c-item-input">
+                                <IonItem className="c-item-input-vehicle">
                                     <IonLabel position="floating">Fuel</IonLabel>
                                     <IonSelect
                                         interface="popover"
@@ -179,7 +178,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                                 </IonItem>
                             </IonCol>
                             <IonCol>
-                                <IonItem className="c-item-input">
+                                <IonItem className="c-item-input-vehicle">
                                     <IonLabel position="floating">Mileage</IonLabel>
                                     <IonInput
                                         value={this.state.mileage}

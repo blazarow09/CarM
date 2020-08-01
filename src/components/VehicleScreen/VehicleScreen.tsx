@@ -35,6 +35,7 @@ import { AppRoutes } from '../AppRoutes';
 import { IVehicleViewModel } from '../../models/Vehicle/IVehicleViewModel';
 import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 import VehicleService from '../../services/VehicleService';
+import { GlobalColors } from '../../models/Constants/GlobalColors';
 
 interface VehicleScreenProps {
     userStore?: IUserStore;
@@ -129,7 +130,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
     public render() {
         return (
             <IonPage>
-                <MainHeader toolbarColor="red" title="Vehicles" extraContent={this.extraContent} />
+                <MainHeader toolbarColor={GlobalColors.redColor} title="Vehicles" extraContent={this.extraContent} />
                 <IonContent>
                     {this.props.vehicleStore?.availableCars?.length === 0 ? (
                         <NoResultsScreen />
@@ -145,7 +146,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                                         </IonLabel>
                                         <IonCheckbox
                                             slot="start"
-                                            className="c-color-red"
+                                            color={GlobalColors.redColor}
                                             value={vehicle?.uid}
                                             disabled={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
                                             checked={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
@@ -167,7 +168,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
                     <IonFab vertical="bottom" horizontal="end" slot="fixed">
                         <IonFabButton
-                            className="c-color-red"
+                            color={GlobalColors.redColor}
                             onClick={(): void => {
                                 this.props.uiStore.openModal(Modals.VehicleModal);
                                 this.props.uiStore.setCreateEditVehicleModalOpen('create', true);
@@ -198,17 +199,17 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                     <IonFabList side="start">
                         {/* Delete */}
                         <IonFabButton
-                            className="c-color-red"
+                            color={GlobalColors.redColor}
                             onClick={async (): Promise<void> => await this.setOpenAlert(true, vehicle.uid)}
                         >
                             <IonIcon icon={removeIcon} />
                         </IonFabButton>
                         {/* Edit */}
-                        <IonFabButton className="c-color-orange" onClick={(): void => this.openEditVehicleView(vehicle)}>
+                        <IonFabButton color={GlobalColors.orangeColor} onClick={(): void => this.openEditVehicleView(vehicle)}>
                             <IonIcon icon={editIcon} />
                         </IonFabButton>
                         {/* View */}
-                        <IonFabButton className="c-color-purple">
+                        <IonFabButton color={GlobalColors.purpleColor}>
                             <IonIcon icon={viewIcon} />
                         </IonFabButton>
                     </IonFabList>

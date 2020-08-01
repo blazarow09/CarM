@@ -24,6 +24,7 @@ import ModalBase, { IModalBaseProps, IModalBaseState } from '../ModalBase';
 import './RefuelModal.css';
 import TextFieldSuffix from '../../InputElements/TextFieldSuffix';
 import { GlobalConstants } from '../../../models/Constants/GlobalConstants';
+import { GlobalColors } from '../../../models/Constants/GlobalColors';
 
 interface RefuelModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
@@ -65,7 +66,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
         mileage: '',
         saveLoading: false,
         headerTitle: 'Add refuel',
-        headertoolbarColor: 'purple',
+        headerToolbarColor: GlobalColors.purpleColor,
     };
 
     private inputFieldTypes = new Array<string>('date', 'quantity', 'pricePerLtr', 'totalCost', 'fillingStation', 'notes', 'mileage');
