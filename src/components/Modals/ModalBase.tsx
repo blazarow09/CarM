@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonModal } from '@ionic/react';
+import { IonModal, isPlatform } from '@ionic/react';
 import { IUiStore } from '../../stores/UiStore/UiStore';
 import MainHeader from '../MainHeader/MainHeader';
 import './ModalBase.css';
@@ -21,11 +21,15 @@ export default class ModalBase<TProps extends IModalBaseProps, TState extends IM
     };
 
     public componentDidMount(): void {
-        document.addEventListener('ionBackButton', this.backButtonListener, true);
+        if (isPlatform('android')) {
+            document.addEventListener('ionBackButton', this.backButtonListener, true);
+        }
     }
 
     componentWillUnmount(): void {
-        document.removeEventListener('ionBackButton', this.backButtonListener, true);
+        if (isPlatform('android')) {
+            document.removeEventListener('ionBackButton', this.backButtonListener, true);
+        }
     }
 
     protected visible(): boolean {
