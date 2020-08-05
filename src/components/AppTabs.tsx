@@ -12,22 +12,27 @@ import VehicleScreen from './VehicleScreen/VehicleScreen';
 import RepairScreen from './RepairScreen/RepairScreen';
 import RefuelScreen from './RefuelScreen/RefuelScreen';
 import MoreOptionsScreen from './MoreOptionsScreen/MoreOptionsScreen';
+import { ILocalizationStore } from '../stores/LocalizationStore/LocalizationStore';
 
 interface AppTabsProps {
     userId: string;
     loggedIn: boolean;
     userStore?: IUserStore;
     vehicleStore?: IVehicleStore;
+    localizationStore?: ILocalizationStore;
 }
 
 @inject('userStore')
 @inject('vehicleStore')
+@inject('localizationStore')
 @observer
 export default class AppTabs extends React.Component<AppTabsProps> {
     public async componentDidMount(): Promise<void> {
         if (this.props?.userId) {
             this.props.userStore.setUserContext(this.props.userId);
             console.log('setUserContext');
+
+            this.props.localizationStore.populateLabelStore('EN');
 
             await this.props.vehicleStore.getPreferredVehicleId(this.props?.userId);
         }
@@ -63,7 +68,7 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                     <IonTabBar slot="bottom" hidden={this.props.userStore.hideTabsMenu}>
                         <IonTabButton tab="home" href={AppRoutes.homeRoute}>
                             <IonIcon icon={homeIcon} />
-                            <IonLabel>Home</IonLabel>
+                            <IonLabel>{this.props.localizationStore?.dashboardLabels?.homeTabTitle}</IonLabel>
                         </IonTabButton>
                         {/* <IonTabButton tab="addEntry" disabled>
                             <IonIcon icon={addIcon} />
@@ -75,7 +80,7 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                         </IonTabButton> */}
                         <IonTabButton tab="more" href={AppRoutes.moreOptionsRoute}>
                             <IonIcon icon={menuIcon} />
-                            <IonLabel>More</IonLabel>
+                            <IonLabel>{this.props.localizationStore?.dashboardLabels?.moreTabTitle}</IonLabel>
                         </IonTabButton>
                     </IonTabBar>
                 </IonTabs>

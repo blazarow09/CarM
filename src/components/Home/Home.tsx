@@ -26,16 +26,19 @@ import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 import ModalsContainer from '../Modals/ModalsContainer';
 import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
+import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
 
 interface HomeProps {
     userStore?: IUserStore;
     vehicleStore?: IVehicleStore;
     uiStore?: IUiStore;
+    localizationStore?: ILocalizationStore;
 }
 
 @inject('vehicleStore')
 @inject('userStore')
 @inject('uiStore')
+@inject('localizationStore')
 @observer
 export default class Home extends React.Component<HomeProps> {
     // private backButtonPlugin = Plugins;
@@ -64,12 +67,12 @@ export default class Home extends React.Component<HomeProps> {
 
         return (
             <IonPage>
-                <MainHeader title="Dashboard" extraContent={this.extraContent}/>
+                <MainHeader title={this.props.localizationStore?.dashboardLabels?.headerTitle} extraContent={this.extraContent} />
                 <IonContent>
                     {this.props.vehicleStore.isAvailableCars ? (
                         <>
                             <IonItem>
-                                <IonLabel>Preferred vehicle</IonLabel>
+                                <IonLabel>{this.props.localizationStore?.dashboardLabels?.preferredVehicleMessage}</IonLabel>
                                 <IonSelect
                                     interface="popover"
                                     onIonChange={(event) => this.setCurrentSelectedCar(event)}

@@ -1,10 +1,11 @@
 import * as React from 'react';
-import './RepairEntry.css';
+import './ServiceEntry.css';
 import { IonItem, IonLabel, IonIcon, IonRow, IonCol } from '@ionic/react';
-import { colorFillOutline as refuelIcon } from 'ionicons/icons';
+// import { colorFillOutline as refuelIcon } from 'ionicons/icons';
 import dayjs from 'dayjs';
 import { GlobalConstants } from '../../models/Constants/GlobalConstants';
 import { IRefuelView } from '../../models/Refuel/IRefuelView';
+import refuelIcon from '../../img/icons/refuel.svg';
 
 interface RepairEntryProps {
     refuelEntry: IRefuelView;

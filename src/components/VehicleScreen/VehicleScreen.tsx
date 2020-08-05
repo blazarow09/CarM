@@ -36,11 +36,13 @@ import { IVehicleViewModel } from '../../models/Vehicle/IVehicleViewModel';
 import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 import VehicleService from '../../services/VehicleService';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
+import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
 
 interface VehicleScreenProps {
     userStore?: IUserStore;
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
+    localizationStore?: ILocalizationStore;
 }
 
 interface VehicleScreenState {
@@ -53,6 +55,7 @@ interface VehicleScreenState {
 @inject('userStore')
 @inject('uiStore')
 @inject('vehicleStore')
+@inject('localizationStore')
 @observer
 export default class VehicleScreen extends React.Component<VehicleScreenProps> {
     public async componentDidMount(): Promise<void> {
@@ -130,7 +133,11 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
     public render() {
         return (
             <IonPage>
-                <MainHeader toolbarColor={GlobalColors.redColor} title="Vehicles" extraContent={this.extraContent} />
+                <MainHeader
+                    toolbarColor={GlobalColors.redColor}
+                    title={this.props.localizationStore.vehicleLabels.headerTitle}
+                    extraContent={this.extraContent}
+                />
                 <IonContent>
                     {this.props.vehicleStore?.availableCars?.length === 0 ? (
                         <NoResultsScreen />
@@ -181,7 +188,8 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                     <IonToast
                         isOpen={this.state.showPreferredSaveSucces}
                         onDidDismiss={() => this.setShowToast(false)}
-                        message="Your preferred vehicle is updated."
+                        message={this.props.localizationStore.vehicleLabels.preferredVehicleUpdateMessage}
+                        // message="Your preferred vehicle is updated."
                         duration={1000}
                     />
                 </IonContent>
@@ -221,7 +229,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
     private extraContent = (): JSX.Element => {
         return (
             <IonButtons slot="start">
-                <IonBackButton defaultHref={AppRoutes.homeRoute} />
+                <IonBackButton defaultHref={AppRoutes.homeRoute} text={this.props.localizationStore.generalLabels.backButton} />
             </IonButtons>
         );
     };
@@ -231,11 +239,11 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
             <IonAlert
                 isOpen={this.state.openAlert}
                 onDidDismiss={async (): Promise<void> => this.setOpenAlert(false, '')}
-                header={'Confirm'}
-                message={'Are you sure you want to delete this vehicle?'}
+                // header={'Confirm'}
+                message={this.props.localizationStore.vehicleLabels.areYouSureDelete}
                 buttons={[
                     {
-                        text: 'Cancel',
+                        text: this.props.localizationStore.vehicleLabels.cancelDelete,
                         role: 'cancel',
                         cssClass: 'secondary',
                         handler: async (): Promise<void> => {
@@ -243,7 +251,8 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                         },
                     },
                     {
-                        text: 'Confirm',
+                        text: this.props.localizationStore.vehicleLabels.confirmDelete,
+                        cssClass: 'primary',
                         handler: async (): Promise<void> => {
                             await this.removeVehicle();
                         },

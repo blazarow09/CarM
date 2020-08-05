@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './RepairEntry.css';
+import './ServiceEntry.css';
 import { IonItem, IonLabel, IonIcon, IonRow, IonCol } from '@ionic/react';
 import { build as repairIcon } from 'ionicons/icons';
 import dayjs from 'dayjs';

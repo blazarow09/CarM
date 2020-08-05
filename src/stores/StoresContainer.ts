@@ -4,6 +4,7 @@ import { VehicleStore } from './VehicleStore/VehicleStore';
 import VehicleService from '../services/VehicleService';
 import { UiStore } from './UiStore/UiStore';
 import RefuelService from '../services/RefuelService';
+import LocalizationStore from './LocalizationStore/LocalizationStore';
 
 const authService = new AuthService();
 const vehicleService = new VehicleService();
@@ -16,4 +17,5 @@ export const stores = {
     userStore: new UserStore(authService),
     vehicleStore: new VehicleStore(vehicleService, refuelService),
     uiStore: new UiStore(),
+    localizationStore: new LocalizationStore(),
 };
