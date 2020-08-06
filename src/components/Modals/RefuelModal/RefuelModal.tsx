@@ -22,7 +22,7 @@ import { IUserStore } from '../../../stores/UserStore/UserStore';
 import dayjs from 'dayjs';
 import ModalBase, { IModalBaseProps, IModalBaseState } from '../ModalBase';
 import TextFieldSuffix from '../../InputElements/TextFieldSuffix';
-import { GlobalConstants } from '../../../models/Constants/GlobalConstants';
+import { DateFormat } from '../../../models/Constants/DateFormat';
 import { GlobalColors } from '../../../models/Constants/GlobalColors';
 import { IRefuelCreateEdit } from '../../../models/Refuel/IRefuelCreateEdit';
 import IHistoryEntry from '../../../models/History/IHistoryEntry';
@@ -133,11 +133,11 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                                         <IonLabel position="floating">Date</IonLabel>
                                         <IonDatetime
                                             color="warning"
-                                            pickerFormat={GlobalConstants.defaultDateFormat}
-                                            displayFormat={GlobalConstants.defaultDateFormat}
+                                            pickerFormat={DateFormat.defaultDateFormat}
+                                            displayFormat={DateFormat.defaultDateFormat}
                                             onIonChange={(event) => this.handleInput(event)}
                                             name="date"
-                                            value={dayjs(this.state.date).format(GlobalConstants.defaultDateFormat)}
+                                            value={dayjs(this.state.date).format(DateFormat.defaultDateFormat)}
                                         />
                                     </IonItem>
                                 </IonCol>
@@ -268,12 +268,13 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
 
                 await this.props.contentStore.saveHistoryEntry(vehicleId, historyEntry);
 
+                // this.setSaveLoading(false);
                 this.hideModal();
             } else {
+                this.setSaveLoading(false);
                 // log the problem.
             }
 
-            this.setSaveLoading(false);
         } else {
             console.log('Please, form all fields');
         }

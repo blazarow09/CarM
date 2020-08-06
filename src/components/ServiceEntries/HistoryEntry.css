@@ -41,8 +41,6 @@
     margin-top: 4%;
 }
 
-.c-no-ripple {
-    /* --ripple-color: var(--ion-color-purple); */
-    /* z-index: 100; */
-    /* --background-activated: transparent; */
+.c-margin-left {
+    margin-left: 3%;
 }

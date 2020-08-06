@@ -21,7 +21,7 @@ import { IVehicleStore } from '../../../stores/VehicleStore/VehicleStore';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { IRepair } from '../../../models/Repair/IRepair';
 import ModalBase from '../ModalBase';
-import { GlobalConstants } from '../../../models/Constants/GlobalConstants';
+import { DateFormat } from '../../../models/Constants/DateFormat';
 import { GlobalColors } from '../../../models/Constants/GlobalColors';
 import IHistoryEntry from '../../../models/History/IHistoryEntry';
 import { IContentStore } from '../../../stores/ContentStore/ContentStore';
@@ -169,8 +169,8 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                                     <IonLabel>Date</IonLabel>
                                     <IonDatetime
                                         color={GlobalColors.orangeColor}
-                                        pickerFormat={GlobalConstants.defaultDateFormat}
-                                        displayFormat={GlobalConstants.defaultDateFormat}
+                                        pickerFormat={DateFormat.defaultDateFormat}
+                                        displayFormat={DateFormat.defaultDateFormat}
                                         onIonChange={(e) => this.handleInput(e.detail.value!, 'date')}
                                     ></IonDatetime>
                                 </IonItem>

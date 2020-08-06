@@ -10,15 +10,13 @@ interface NoResultsScreenProps {
 export default class NoResultsScreen extends React.Component<NoResultsScreenProps> {
     public render() {
         return (
-            <>
-                <IonRow className="c-no-res-screen c-center">
-                    <img className="c-no-res-screen c-center c-img" src={logo} alt="carm logo" width="114px" height="114px" />
-                    <br />
-                    <p className="c-no-res-label">No results were found</p>
-                    <br />
-                    {this.props?.extraContent && this.props.extraContent()}
-                </IonRow>
-            </>
+            <IonRow className="c-no-res-screen c-center">
+                <img className="c-no-res-screen c-center c-img" src={logo} alt="carm logo" width="114px" height="114px" />
+                <br />
+                <p className="c-no-res-label">No results were found</p>
+                <br />
+                {this.props?.extraContent && this.props.extraContent()}
+            </IonRow>
         );
     }
 }

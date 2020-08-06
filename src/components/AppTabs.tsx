@@ -13,6 +13,7 @@ import RepairScreen from './RepairScreen/RepairScreen';
 import RefuelScreen from './RefuelScreen/RefuelScreen';
 import MoreOptionsScreen from './MoreOptionsScreen/MoreOptionsScreen';
 import { ILocalizationStore } from '../stores/LocalizationStore/LocalizationStore';
+import ViewRefuel from './RefuelScreen/ViewRefuel';
 
 interface AppTabsProps {
     userId: string;
@@ -60,12 +61,15 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                         <Route exact path={AppRoutes.refuelScreenRoute}>
                             <RefuelScreen />
                         </Route>
+                        <Route exact path={AppRoutes.viewRefuelScreenRoute}>
+                            <ViewRefuel />
+                        </Route>
                         <Route exact path={AppRoutes.moreOptionsRoute}>
                             <MoreOptionsScreen />
                         </Route>
                     </IonRouterOutlet>
 
-                    <IonTabBar slot="bottom" hidden={this.props.userStore.hideTabsMenu}>
+                    <IonTabBar className={this.props.userStore.hideTabsMenu && 'c-tabs-not-visible'} slot="bottom">
                         <IonTabButton tab="home" href={AppRoutes.homeRoute}>
                             <IonIcon icon={homeIcon} />
                             <IonLabel>{this.props.localizationStore?.dashboardLabels?.homeTabTitle}</IonLabel>

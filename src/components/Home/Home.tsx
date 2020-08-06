@@ -30,8 +30,13 @@ import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
 import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
 import { IContentStore } from '../../stores/ContentStore/ContentStore';
 import HistoryEntry from '../ServiceEntries/HistoryEntry';
-import IHistoryEntry from '../../models/History/IHistoryEntry';
 import { AppRoutes } from '../AppRoutes';
+import dayjs from 'dayjs';
+import './Home.css';
+import { DateFormat } from '../../models/Constants/DateFormat';
+import LoadingScreen from '../Spinners/LoadingScreen';
+import { GlobalColors } from '../../models/Constants/GlobalColors';
+import calendarIcon from '../../img/icons/calendar-b.svg';
 
 interface HomeProps {
     userStore?: IUserStore;
@@ -41,24 +46,35 @@ interface HomeProps {
     contentStore?: IContentStore;
 }
 
+interface HomeState {
+    dataLoading: boolean;
+}
+
 @inject('vehicleStore')
 @inject('userStore')
 @inject('uiStore')
 @inject('localizationStore')
 @inject('contentStore')
 @observer
-export default class Home extends React.Component<HomeProps> {
-    // private backButtonPlugin = Plugins;
-    // private BackButtonEvent = Plugins;
+export default class Home extends React.Component<HomeProps, HomeState> {
+    public state: HomeState = {
+        dataLoading: true,
+    };
 
     public async componentDidMount(): Promise<void> {
+        this.setDataLoading(true);
+
         await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
         await this.props.contentStore.getHistoryEntries(this.props.vehicleStore.preferredVehicleId);
+
+        // Stop loading indicator.
+        this.setDataLoading(false);
     }
 
-    public async componentDidUpdate(): Promise<void> {
-        await this.props.contentStore.getHistoryEntries(this.props.vehicleStore.preferredVehicleId);
-    }
+    // Causes thousands requests to the firestore.
+    // public async componentDidUpdate(): Promise<void> {
+    //     await this.props.contentStore.getHistoryEntries(this.props.vehicleStore.preferredVehicleId);
+    // }
 
     public async componentWillUnmount(): Promise<void> {
         await this.props.vehicleStore.getAvailableCars(true);
@@ -68,8 +84,60 @@ export default class Home extends React.Component<HomeProps> {
         await this.props.userStore.handleLogout();
     }
 
-    private setCurrentSelectedCar(event: any): void {
-        this.props.vehicleStore.savePreferredVehicleId(event?.target?.value, window?.authContext?.userId);
+    private setDataLoading(dataLoading: boolean): void {
+        this.setState({
+            dataLoading: dataLoading,
+        });
+    }
+
+    private renderContent(): JSX.Element {
+        return this.state.dataLoading ? (
+            <LoadingScreen iconColor={GlobalColors.defaultColor} />
+        ) : this.props.contentStore?.historyEntries?.length > 0 ? (
+            this.renderHistoryContent()
+        ) : (
+            <NoResultsScreen extraContent={!this.props.vehicleStore.isAvailableCars && this.extraContentResultScreen} />
+        );
+    }
+
+    private renderHistoryContent(): JSX.Element {
+        let preferredVehicle = this.props.vehicleStore?.availableCars?.find(
+            (x): boolean => x?.uid === this.props.vehicleStore?.preferredVehicleId
+        );
+
+        return (
+            <>
+                <IonItem>
+                    <IonLabel>
+                        {preferredVehicle?.brand} {preferredVehicle?.model}
+                    </IonLabel>
+                    <IonButton expand="block" color="primary" fill="outline" routerLink={AppRoutes.vehicleScreenRoute}>
+                        Change
+                    </IonButton>
+                    {/* <IonSelect
+                    interface="popover"
+                    onIonChange={(event) => this.setCurrentSelectedCar(event)}
+                    value={this.props.vehicleStore?.preferredVehicleId}
+                >
+                    {this.props.vehicleStore.availableCars.map((car, index) => (
+                        <IonSelectOption key={index} value={car?.uid}>
+                            {`${car?.brand} - ${car?.model}`}{' '}
+                        </IonSelectOption>
+                    ))}
+                </IonSelect> */}
+                </IonItem>
+                <IonList>
+                    <IonItem lines="none">
+                        <IonIcon className="c-entries-month-icon" icon={calendarIcon} />
+
+                        <IonLabel className="c-entries-month">{dayjs(Date.now()).format(DateFormat.defaultDateFormatFullMonthWithoutYear)}</IonLabel>
+                    </IonItem>
+                    {this.props.contentStore.historyEntries.map((historyEntry, index) => (
+                        <HistoryEntry key={index} historyEntry={historyEntry} />
+                    ))}
+                </IonList>
+            </>
+        );
     }
 
     public render() {
@@ -77,53 +145,11 @@ export default class Home extends React.Component<HomeProps> {
             return <IonLoading isOpen />;
         }
 
-        let preferredVehicle = this.props.vehicleStore.availableCars.find(
-            (x): boolean => x.uid === this.props.vehicleStore.preferredVehicleId
-        );
-
         return (
             <IonPage>
                 <MainHeader title={this.props.localizationStore?.dashboardLabels?.headerTitle} extraContent={this.extraContent} />
                 <IonContent>
-                    {this.props.contentStore?.historyEntries?.length > 0 ? (
-                        <>
-                            <IonItem>
-                                <IonLabel>
-                                    {/* {this.props.localizationStore?.dashboardLabels?.preferredVehicleMessage} - {preferredVehicle.brand} {preferredVehicle.model} */}
-                                    {preferredVehicle.brand} {preferredVehicle.model}
-                                </IonLabel>
-                                <IonButton
-                                    expand="block"
-                                    color="primary"
-                                    fill="outline"
-                                    routerLink={AppRoutes.vehicleScreenRoute}
-                                    // onClick={async (): Promise<void> => await this.handleLogin()}
-                                    // disabled={this.setCorrectStateSaveButton()}
-                                >
-                                    Change
-                                </IonButton>
-                                {/* <IonSelect
-                                    interface="popover"
-                                    onIonChange={(event) => this.setCurrentSelectedCar(event)}
-                                    value={this.props.vehicleStore?.preferredVehicleId}
-                                >
-                                    {this.props.vehicleStore.availableCars.map((car, index) => (
-                                        <IonSelectOption key={index} value={car?.uid}>
-                                            {`${car?.brand} - ${car?.model}`}{' '}
-                                        </IonSelectOption>
-                                    ))}
-                                </IonSelect> */}
-                            </IonItem>
-                            <IonList>
-                                {this.props.contentStore.historyEntries.map((historyEntry, index) => (
-                                    <HistoryEntry key={index} historyEntry={historyEntry} />
-                                ))}
-                            </IonList>
-                        </>
-                    ) : (
-                        <NoResultsScreen />
-                        // <NoResultsScreen extraContent={this.extraContentResultScreen} />
-                    )}
+                    {this.renderContent()}
                     <ModalsContainer />
                 </IonContent>
             </IonPage>

@@ -10,6 +10,7 @@ import { IUserStore } from '../../stores/UserStore/UserStore';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import RefuelEntry from '../ServiceEntries/RefuelEntry';
+import LoadingScreen from '../Spinners/LoadingScreen';
 
 interface RefuelScreenProps {
     uiStore?: IUiStore;
@@ -17,12 +18,17 @@ interface RefuelScreenProps {
     vehicleStore?: IVehicleStore;
 }
 
+interface RefuelScreenState {
+    dataLoading: boolean;
+}
+
 @inject('uiStore')
 @inject('userStore')
 @inject('vehicleStore')
 @observer
-export default class RefuelScreen extends React.Component<RefuelScreenProps> {
+export default class RefuelScreen extends React.Component<RefuelScreenProps, RefuelScreenState> {
     public async componentDidMount(): Promise<void> {
+        this.setDataLoading(true);
         this.props.userStore.setHideTabsMenu(true);
 
         await this.props.vehicleStore.getRefuelsByVehicleId(
@@ -30,6 +36,12 @@ export default class RefuelScreen extends React.Component<RefuelScreenProps> {
             this.props.userStore.userContext.userId,
             this.props.vehicleStore.preferredVehicleId
         );
+
+        this.setDataLoading(false);
+    }
+
+    public state: RefuelScreenState = {
+        dataLoading: false
     }
 
     public componentWillUnmount(): void {
@@ -38,19 +50,38 @@ export default class RefuelScreen extends React.Component<RefuelScreenProps> {
         this.props.vehicleStore.getRefuelsByVehicleId(true, '', '');
     }
 
+    private setDataLoading(dataLoading: boolean): void {
+        this.setState({
+            dataLoading: dataLoading,
+        });
+    }
+
+    private renderContent(): JSX.Element {
+        return this.state.dataLoading ? (
+            <LoadingScreen iconColor={GlobalColors.orangeColor} />
+        ) : this.props.vehicleStore?.refuelsByVehicleId?.length > 0 ? (
+            this.renderRefuelContent()
+        ) : (
+            <NoResultsScreen />
+        );
+    }
+
+    private renderRefuelContent(): JSX.Element {
+        return (
+            <>
+            {this.props.vehicleStore?.refuelsByVehicleId?.map((refuel, index) => (
+                <RefuelEntry key={index} refuelEntry={refuel} />
+            ))}
+            </>
+        )
+    }
+
     public render() {
         return (
             <IonPage>
                 <MainHeader toolbarColor={GlobalColors.purpleColor} title="Refuels" extraContent={this.extraContent} />
                 <IonContent>
-                    {this.props.vehicleStore?.refuelsByVehicleId?.length === 0 ? (
-                        <NoResultsScreen />
-                    ) : (
-                        this.props.vehicleStore?.refuelsByVehicleId?.map((refuel, index) => (
-                            <RefuelEntry key={index} refuelEntry={refuel} />
-                        ))
-                    )}
-
+                    {this.renderContent()}
                     <IonFab vertical="bottom" horizontal="end" slot="fixed">
                         <IonFabButton
                             color={GlobalColors.purpleColor}

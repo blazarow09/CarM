@@ -2,7 +2,7 @@ import * as React from 'react';
 import './ServiceEntry.css';
 import { IonItem, IonLabel, IonIcon, IonRow, IonCol } from '@ionic/react';
 import dayjs from 'dayjs';
-import { GlobalConstants } from '../../models/Constants/GlobalConstants';
+import { DateFormat } from '../../models/Constants/DateFormat';
 import { IRepair } from '../../models/Repair/IRepair';
 import RepairIcon from './ServiceIcons/RepairIcon';
 
@@ -20,7 +20,7 @@ export default class RepairEntry extends React.Component<RepairEntryProps> {
                         <IonRow className="c-entry-details-row">
                             <IonCol size="4">
                                 <IonLabel className="c-detail-primary-row">
-                                    {dayjs(this.props.repairEntry.date).format(GlobalConstants.defaultDateFormat)}
+                                    {dayjs(this.props.repairEntry.date).format(DateFormat.defaultDateFormat)}
                                 </IonLabel>
                                 <IonLabel className="c-detail-secondary-row">{`Mil: ${this.props.repairEntry.mileage}`}</IonLabel>
                             </IonCol>
