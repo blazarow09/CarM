@@ -30,8 +30,10 @@ import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
 import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
 import { IContentStore } from '../../stores/ContentStore/ContentStore';
 import HistoryEntry from '../ServiceEntries/HistoryEntry';
-import IHistoryEntry from '../../models/History/IHistoryEntry';
 import { AppRoutes } from '../AppRoutes';
+import dayjs from 'dayjs';
+import { GlobalConstants } from '../../models/Constants/GlobalConstants';
+import './Home.css';
 
 interface HomeProps {
     userStore?: IUserStore;
@@ -89,17 +91,9 @@ export default class Home extends React.Component<HomeProps> {
                         <>
                             <IonItem>
                                 <IonLabel>
-                                    {/* {this.props.localizationStore?.dashboardLabels?.preferredVehicleMessage} - {preferredVehicle.brand} {preferredVehicle.model} */}
                                     {preferredVehicle.brand} {preferredVehicle.model}
                                 </IonLabel>
-                                <IonButton
-                                    expand="block"
-                                    color="primary"
-                                    fill="outline"
-                                    routerLink={AppRoutes.vehicleScreenRoute}
-                                    // onClick={async (): Promise<void> => await this.handleLogin()}
-                                    // disabled={this.setCorrectStateSaveButton()}
-                                >
+                                <IonButton expand="block" color="primary" fill="outline" routerLink={AppRoutes.vehicleScreenRoute}>
                                     Change
                                 </IonButton>
                                 {/* <IonSelect
@@ -115,6 +109,9 @@ export default class Home extends React.Component<HomeProps> {
                                 </IonSelect> */}
                             </IonItem>
                             <IonList>
+                                <IonItem lines="none">
+                                    <IonLabel className="c-entries-month">{dayjs(Date.now()).format(GlobalConstants.defaultDateFormatFullMonthWithoutYear)}</IonLabel>
+                                </IonItem>
                                 {this.props.contentStore.historyEntries.map((historyEntry, index) => (
                                     <HistoryEntry key={index} historyEntry={historyEntry} />
                                 ))}

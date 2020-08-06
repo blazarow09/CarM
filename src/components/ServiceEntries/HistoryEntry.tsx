@@ -18,7 +18,8 @@ export default class HistoryEntry extends React.Component<HistoryEntryProps> {
             <IonRow>
                 {this.getEntryIcon(this.props.historyEntry.type)}
                 <IonCol size="11">
-                    <IonItem lines="none" button className="c-bgr-transparent c-no-ripple">
+                    <IonItem button className="c-bgr-transparent c-no-ripple">
+                    {/* <IonItem lines="none" button className="c-bgr-transparent c-no-ripple"> */}
                         <IonRow className="c-entry-details-row">
                             <IonCol size="8">
                                 <IonLabel className="c-detail-primary-row c-title">{this.props.historyEntry.title}</IonLabel>
