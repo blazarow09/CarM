@@ -7,31 +7,28 @@ import {
     arrowUpCircleOutline as arrowUpButton,
     carSportOutline as vehicleIcon,
     build as repairIcon,
-    walletOutline as expenseIcon,
-    compassOutline as routeIcon,
-    alarmOutline as reminderIcon,
-    cardOutline as incomeIcon,
-    // colorFillOutline as refuelIcon,
 } from 'ionicons/icons';
 import { AppRoutes } from '../AppRoutes';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
 import refuelIcon from '../../img/icons/refuel-w.svg';
-import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
+import { IUserStore } from '../../stores/UserStore/UserStore';
 
 
 interface HomeButtonProps {
     uiStore?: IUiStore;
+    userStore?: IUserStore;
     vehicleStore?: IVehicleStore;
     hiddenAppTabs: boolean;
 }
 
 @inject('uiStore')
 @inject('vehicleStore')
+@inject('userStore')
 @observer
 export default class HomeButton extends React.Component<HomeButtonProps> {
     public render() {
         return (
-            <IonFab vertical="bottom" horizontal="center" className="c-home-button" hidden={this.props.hiddenAppTabs}>
+            <IonFab vertical="bottom" horizontal="center" className={`c-home-button ${this.props.userStore.hideTabsMenu && 'c-tabs-not-visible'}`} hidden={this.props.hiddenAppTabs}>
                 {/* Home Button */}
                 <IonFabButton color={GlobalColors.defaultColor}>
                     <IonIcon icon={arrowUpButton} />

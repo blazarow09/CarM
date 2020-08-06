@@ -69,7 +69,7 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                         </Route>
                     </IonRouterOutlet>
 
-                    <IonTabBar slot="bottom" hidden={this.props.userStore.hideTabsMenu}>
+                    <IonTabBar className={this.props.userStore.hideTabsMenu && 'c-tabs-not-visible'} slot="bottom">
                         <IonTabButton tab="home" href={AppRoutes.homeRoute}>
                             <IonIcon icon={homeIcon} />
                             <IonLabel>{this.props.localizationStore?.dashboardLabels?.homeTabTitle}</IonLabel>

@@ -71,9 +71,10 @@ export default class Home extends React.Component<HomeProps, HomeState> {
         this.setDataLoading(false);
     }
 
-    public async componentDidUpdate(): Promise<void> {
-        await this.props.contentStore.getHistoryEntries(this.props.vehicleStore.preferredVehicleId);
-    }
+    // Causes thousands requests to the firestore.
+    // public async componentDidUpdate(): Promise<void> {
+    //     await this.props.contentStore.getHistoryEntries(this.props.vehicleStore.preferredVehicleId);
+    // }
 
     public async componentWillUnmount(): Promise<void> {
         await this.props.vehicleStore.getAvailableCars(true);
@@ -95,7 +96,7 @@ export default class Home extends React.Component<HomeProps, HomeState> {
         ) : this.props.contentStore?.historyEntries?.length > 0 ? (
             this.renderHistoryContent()
         ) : (
-            <NoResultsScreen extraContent={!this.props.vehicleStore.isAvailableCars && this.extraContentResultScreen}/>
+            <NoResultsScreen extraContent={!this.props.vehicleStore.isAvailableCars && this.extraContentResultScreen} />
         );
     }
 
@@ -107,7 +108,6 @@ export default class Home extends React.Component<HomeProps, HomeState> {
         return (
             <>
                 <IonItem>
-                    <IonIcon icon={calendarIcon}/>
                     <IonLabel>
                         {preferredVehicle?.brand} {preferredVehicle?.model}
                     </IonLabel>
@@ -128,9 +128,9 @@ export default class Home extends React.Component<HomeProps, HomeState> {
                 </IonItem>
                 <IonList>
                     <IonItem lines="none">
-                        <IonLabel className="c-entries-month">
-                            {dayjs(Date.now()).format(DateFormat.defaultDateFormatFullMonthWithoutYear)}
-                        </IonLabel>
+                        <IonIcon className="c-entries-month-icon" icon={calendarIcon} />
+
+                        <IonLabel className="c-entries-month">{dayjs(Date.now()).format(DateFormat.defaultDateFormatFullMonthWithoutYear)}</IonLabel>
                     </IonItem>
                     {this.props.contentStore.historyEntries.map((historyEntry, index) => (
                         <HistoryEntry key={index} historyEntry={historyEntry} />

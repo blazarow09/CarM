@@ -30,11 +30,11 @@ export default class HistoryEntry extends React.Component<HistoryEntryProps, His
 
     public render() {
         return (
-            <IonRow>
+            <IonRow className="c-margin-left">
                 {this.getEntryIcon(this.props.historyEntry.type)}
                 <IonCol size="11">
                     <IonItem
-                        className="c-bgr-transparent c-no-ripple"
+                        className="c-bgr-transparent"
                         button
                         routerLink={this.getRoute()}
                         onClick={async (): Promise<void> => await this.getDetailsForEntry()}

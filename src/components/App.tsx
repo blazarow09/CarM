@@ -5,6 +5,7 @@ import { useAuthInit, AuthContext } from './Authentication/AuthGuard/AuthGuard';
 import '../theme/global-colors.css';
 import LoadingScreen from './Spinners/LoadingScreen';
 import { GlobalColors } from '../models/Constants/GlobalColors';
+import './App.css';
 
 const App: React.FC = () => {
     const { isLoading, auth } = useAuthInit();

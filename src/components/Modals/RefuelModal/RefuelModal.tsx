@@ -268,12 +268,13 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
 
                 await this.props.contentStore.saveHistoryEntry(vehicleId, historyEntry);
 
+                // this.setSaveLoading(false);
                 this.hideModal();
             } else {
+                this.setSaveLoading(false);
                 // log the problem.
             }
 
-            this.setSaveLoading(false);
         } else {
             console.log('Please, form all fields');
         }
