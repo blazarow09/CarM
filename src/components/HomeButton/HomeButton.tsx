@@ -11,10 +11,13 @@ import {
     compassOutline as routeIcon,
     alarmOutline as reminderIcon,
     cardOutline as incomeIcon,
-    colorFillOutline as refuelIcon,
+    // colorFillOutline as refuelIcon,
 } from 'ionicons/icons';
 import { AppRoutes } from '../AppRoutes';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
+import refuelIcon from '../../img/icons/refuel-w.svg';
+import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
+
 
 interface HomeButtonProps {
     uiStore?: IUiStore;

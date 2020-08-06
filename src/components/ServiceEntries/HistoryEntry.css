@@ -1,0 +1,48 @@
+.c-bgr-transparent {
+    --background: transparent;
+}
+
+.c-entry-details-row {
+    width: 100%;
+}
+
+.c-detail-primary-row {
+    text-align: start !important;
+}
+
+.c-detail-secondary-row {
+    margin-top: 5%;
+    font-size: 14px;
+    opacity: 0.9;
+    font-weight: 300;
+    text-align: start !important;
+}
+
+.c-detail-primary-row.c-tile {
+    font-weight: 500;
+}
+
+.c-detail-primary-row-end {
+    text-align: end;
+}
+
+.c-detail-secondary-row-end {
+    margin-top: 5%;
+    font-size: 14px;
+    opacity: 0.9;
+    font-weight: 300;
+    text-align: end;
+}
+
+.c-mileage-icon {
+    width: 23px;
+    height: 23px;
+    position: relative;
+    margin-top: 4%;
+}
+
+.c-no-ripple {
+    /* --ripple-color: var(--ion-color-purple); */
+    /* z-index: 100; */
+    /* --background-activated: transparent; */
+}

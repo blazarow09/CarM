@@ -1,10 +1,11 @@
 import * as React from 'react';
-import './RepairEntry.css';
-import { IonItem, IonLabel, IonIcon, IonRow, IonCol } from '@ionic/react';
-import { colorFillOutline as refuelIcon } from 'ionicons/icons';
+import './ServiceEntry.css';
+import { IonItem, IonLabel, IonRow, IonCol } from '@ionic/react';
+// import { colorFillOutline as refuelIcon } from 'ionicons/icons';
 import dayjs from 'dayjs';
 import { GlobalConstants } from '../../models/Constants/GlobalConstants';
 import { IRefuelView } from '../../models/Refuel/IRefuelView';
+import RefuelIcon from './ServiceIcons/RefuelIcon';
 
 interface RepairEntryProps {
     refuelEntry: IRefuelView;
@@ -14,11 +15,7 @@ export default class RefuelEntry extends React.Component<RepairEntryProps> {
     public render() {
         return (
             <IonRow>
-                <IonCol size="1">
-                    <div className="c-entry-thumbnail c-refuel">
-                        <IonIcon color="white" className="c-entry-icon" icon={refuelIcon} />
-                    </div>
-                </IonCol>
+                <RefuelIcon className="c-refuel"/>
                 <IonCol size="11">
                     <IonItem className="c-bgr-transparent">
                         <IonRow className="c-entry-details-row">
