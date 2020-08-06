@@ -17,6 +17,7 @@ import {
     IonCardSubtitle,
     IonCardTitle,
     IonCardContent,
+    IonList,
 } from '@ionic/react';
 import { settingsOutline as settingsIcon, exitOutline as exitIcon, add as addIcon } from 'ionicons/icons';
 import { IUserStore } from '../../stores/UserStore/UserStore';
@@ -27,18 +28,24 @@ import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 import ModalsContainer from '../Modals/ModalsContainer';
 import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
 import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
+import { IContentStore } from '../../stores/ContentStore/ContentStore';
+import HistoryEntry from '../ServiceEntries/HistoryEntry';
+import IHistoryEntry from '../../models/History/IHistoryEntry';
+import { AppRoutes } from '../AppRoutes';
 
 interface HomeProps {
     userStore?: IUserStore;
     vehicleStore?: IVehicleStore;
     uiStore?: IUiStore;
     localizationStore?: ILocalizationStore;
+    contentStore?: IContentStore;
 }
 
 @inject('vehicleStore')
 @inject('userStore')
 @inject('uiStore')
 @inject('localizationStore')
+@inject('contentStore')
 @observer
 export default class Home extends React.Component<HomeProps> {
     // private backButtonPlugin = Plugins;
@@ -46,6 +53,11 @@ export default class Home extends React.Component<HomeProps> {
 
     public async componentDidMount(): Promise<void> {
         await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
+        await this.props.contentStore.getHistoryEntries(this.props.vehicleStore.preferredVehicleId);
+    }
+
+    public async componentDidUpdate(): Promise<void> {
+        await this.props.contentStore.getHistoryEntries(this.props.vehicleStore.preferredVehicleId);
     }
 
     public async componentWillUnmount(): Promise<void> {
@@ -57,7 +69,7 @@ export default class Home extends React.Component<HomeProps> {
     }
 
     private setCurrentSelectedCar(event: any): void {
-        this.props.vehicleStore.savePreferredVehicleId(event?.target?.value, this.props.userStore.userContext?.userId);
+        this.props.vehicleStore.savePreferredVehicleId(event?.target?.value, window?.authContext?.userId);
     }
 
     public render() {
@@ -65,15 +77,32 @@ export default class Home extends React.Component<HomeProps> {
             return <IonLoading isOpen />;
         }
 
+        let preferredVehicle = this.props.vehicleStore.availableCars.find(
+            (x): boolean => x.uid === this.props.vehicleStore.preferredVehicleId
+        );
+
         return (
             <IonPage>
                 <MainHeader title={this.props.localizationStore?.dashboardLabels?.headerTitle} extraContent={this.extraContent} />
                 <IonContent>
-                    {this.props.vehicleStore.isAvailableCars ? (
+                    {this.props.contentStore?.historyEntries?.length > 0 ? (
                         <>
                             <IonItem>
-                                <IonLabel>{this.props.localizationStore?.dashboardLabels?.preferredVehicleMessage}</IonLabel>
-                                <IonSelect
+                                <IonLabel>
+                                    {/* {this.props.localizationStore?.dashboardLabels?.preferredVehicleMessage} - {preferredVehicle.brand} {preferredVehicle.model} */}
+                                    {preferredVehicle.brand} {preferredVehicle.model}
+                                </IonLabel>
+                                <IonButton
+                                    expand="block"
+                                    color="primary"
+                                    fill="outline"
+                                    routerLink={AppRoutes.vehicleScreenRoute}
+                                    // onClick={async (): Promise<void> => await this.handleLogin()}
+                                    // disabled={this.setCorrectStateSaveButton()}
+                                >
+                                    Change
+                                </IonButton>
+                                {/* <IonSelect
                                     interface="popover"
                                     onIonChange={(event) => this.setCurrentSelectedCar(event)}
                                     value={this.props.vehicleStore?.preferredVehicleId}
@@ -83,22 +112,17 @@ export default class Home extends React.Component<HomeProps> {
                                             {`${car?.brand} - ${car?.model}`}{' '}
                                         </IonSelectOption>
                                     ))}
-                                </IonSelect>
+                                </IonSelect> */}
                             </IonItem>
-                            <IonCard>
-                                <IonCardHeader>
-                                    <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-                                    <IonCardTitle>Card Title</IonCardTitle>
-                                </IonCardHeader>
-
-                                <IonCardContent>
-                                    Keep close to Nature's heart... and break clear away, once in awhile, and climb a mountain or spend a
-                                    week in the woods. Wash your spirit clean.
-                                </IonCardContent>
-                            </IonCard>
+                            <IonList>
+                                {this.props.contentStore.historyEntries.map((historyEntry, index) => (
+                                    <HistoryEntry key={index} historyEntry={historyEntry} />
+                                ))}
+                            </IonList>
                         </>
                     ) : (
-                        <NoResultsScreen extraContent={this.extraContentResultScreen} />
+                        <NoResultsScreen />
+                        // <NoResultsScreen extraContent={this.extraContentResultScreen} />
                     )}
                     <ModalsContainer />
                 </IonContent>
@@ -107,6 +131,7 @@ export default class Home extends React.Component<HomeProps> {
     }
 
     private extraContentResultScreen = (): JSX.Element => {
+        // Add default history events such as welcome to carM and one more - Star monitoring your vehicle expenses with Car M
         return (
             <IonFab horizontal="center" className="c-fab">
                 <IonFabButton

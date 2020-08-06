@@ -4,7 +4,6 @@ import AppRouter from './AppRouter';
 import { useAuthInit, AuthContext } from './Authentication/AuthGuard/AuthGuard';
 import '../theme/global-colors.css';
 
-
 const App: React.FC = () => {
     const { isLoading, auth } = useAuthInit();
 

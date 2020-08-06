@@ -17,10 +17,12 @@ export default class VehicleService {
     }
 
     //#region Repair Operations
-    public async saveRepair(repair: IRepair, userId: string, vehicleId: string): Promise<void> {
+    public async saveRepair(repair: IRepair, userId: string, vehicleId: string): Promise<string> {
         const repairsRef = this.getRepairsCollectionRef(userId, vehicleId);
 
-        await repairsRef.add(repair);
+        let repairResult = await repairsRef.add(repair);
+
+        return repairResult.id;
     }
 
     public async getRepairsByVehicleId(vehicleId: string, userId: string): Promise<IRepair[]> {

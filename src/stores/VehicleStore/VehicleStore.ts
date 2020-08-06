@@ -2,7 +2,6 @@ import { observable, action, IObservableArray, computed } from 'mobx';
 import { IVehicleViewModel } from '../../models/Vehicle/IVehicleViewModel';
 import VehicleService from '../../services/VehicleService';
 import { IRepair } from '../../models/Repair/IRepair';
-import { IVehicleCreateEdit } from '../../models/Vehicle/IVehicleCreateEdit';
 import { IRefuelCreateEdit } from '../../models/Refuel/IRefuelCreateEdit';
 import RefuelService from '../../services/RefuelService';
 import { IRefuelView } from '../../models/Refuel/IRefuelView';
@@ -25,11 +24,11 @@ export interface IVehicleStore {
     getAvailableCars(reset: boolean, userId?: string): Promise<boolean>;
 
     // Repair
-    handleSaveRepair(repair: IRepair, userId: string): Promise<void>;
+    handleSaveRepair(repair: IRepair, userId: string): Promise<string>;
     getRepairsByVehicleId(reset: boolean, vehicleId: string, userId: string): Promise<void>;
 
     //Refuel
-    handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<void>;
+    handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<string>;
     getRefuelsByVehicleId(reset: boolean, userId: string, vehicleId: string): Promise<void>;
 
     // Observables
@@ -145,9 +144,11 @@ export class VehicleStore implements IVehicleStore {
     //#endregion
 
     //#region Repair Operations
-    public async handleSaveRepair(repair: IRepair, userId: string): Promise<void> {
+    public async handleSaveRepair(repair: IRepair, userId: string): Promise<string> {
         if (repair && this.preferredVehicleId) {
-            await this._vehicleService.saveRepair(repair, userId, this.preferredVehicleId);
+            let repairId = await this._vehicleService.saveRepair(repair, userId, this.preferredVehicleId);
+
+            return repairId;
         }
     }
 
@@ -168,9 +169,11 @@ export class VehicleStore implements IVehicleStore {
     //#endregion
 
     //#region Refuel Operations
-    public async handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<void> {
+    public async handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<string> {
         if (refuel && this.preferredVehicleId) {
-            await this._refuelService.saveRefuel(refuel, userId, this.preferredVehicleId);
+            let refuelId = await this._refuelService.saveRefuel(refuel, userId, this.preferredVehicleId);
+
+            return refuelId;
         }
     }
 

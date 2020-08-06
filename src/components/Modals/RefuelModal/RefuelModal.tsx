@@ -25,11 +25,14 @@ import TextFieldSuffix from '../../InputElements/TextFieldSuffix';
 import { GlobalConstants } from '../../../models/Constants/GlobalConstants';
 import { GlobalColors } from '../../../models/Constants/GlobalColors';
 import { IRefuelCreateEdit } from '../../../models/Refuel/IRefuelCreateEdit';
+import IHistoryEntry from '../../../models/History/IHistoryEntry';
+import { IContentStore } from '../../../stores/ContentStore/ContentStore';
 
 interface RefuelModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
+    contentStore?: IContentStore;
 }
 
 interface RefuelModalState extends IModalBaseState {
@@ -49,6 +52,7 @@ interface RefuelModalState extends IModalBaseState {
 @inject('uiStore')
 @inject('vehicleStore')
 @inject('userStore')
+@inject('contentStore')
 @observer
 export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModalState> {
     protected visible(): boolean {
@@ -213,7 +217,9 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                         </IonCol>
                     </IonRow>
                 </IonList>
-                <IonItem className="c-note-italic">Note: Entering mileage will update your car's odometer and track it by every entry.</IonItem>
+                <IonItem className="c-note-italic">
+                    Note: Entering mileage will update your car's odometer and track it by every entry.
+                </IonItem>
             </IonContent>
         );
     }
@@ -228,10 +234,11 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
         if (this.state.date && this.state.mileage && this.state.quantity && this.state.pricePerLtr && this.state.totalCost) {
             this.setSaveLoading(true);
 
+            const vehicleId = this.props.vehicleStore.preferredVehicleId;
             // The current authenticated used id.
-            const userId = this.props.userStore.userContext?.userId;
+            const userId = window?.authContext?.userId;
 
-            var refuel: IRefuelCreateEdit = {
+            let refuel: IRefuelCreateEdit = {
                 date: this.state.date,
                 mileage: parseInt(this.state.mileage),
                 pricePerLtr: parseFloat(this.state.pricePerLtr),
@@ -240,19 +247,33 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                 fillingStation: this.state.fillingStation,
                 notes: this.state.notes,
             };
-            console.log('Saving refuel' + refuel.date);
 
-            await this.props.vehicleStore.handleSaveRefuel(refuel, userId);
+            let refuelId = await this.props.vehicleStore.handleSaveRefuel(refuel, userId);
 
-            await this.props.vehicleStore.getRefuelsByVehicleId(
-                false,
-                this.props.userStore.userContext.userId,
-                this.props.vehicleStore.preferredVehicleId
-            );
+            if (refuelId) {
+                await this.props.vehicleStore.getRefuelsByVehicleId(
+                    false,
+                    this.props.userStore.userContext.userId,
+                    this.props.vehicleStore.preferredVehicleId
+                );
+
+                let historyEntry: IHistoryEntry = {
+                    cost: refuel.totalCost,
+                    date: refuel.date,
+                    mileage: refuel.mileage,
+                    referenceId: refuelId,
+                    title: 'Refueling', // CR: think about localization.
+                    type: 'refuel',
+                };
+
+                await this.props.contentStore.saveHistoryEntry(vehicleId, historyEntry);
+
+                this.hideModal();
+            } else {
+                // log the problem.
+            }
 
             this.setSaveLoading(false);
-
-            this.hideModal();
         } else {
             console.log('Please, form all fields');
         }

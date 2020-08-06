@@ -23,6 +23,8 @@ import { IRepair } from '../../../models/Repair/IRepair';
 import ModalBase from '../ModalBase';
 import { GlobalConstants } from '../../../models/Constants/GlobalConstants';
 import { GlobalColors } from '../../../models/Constants/GlobalColors';
+import IHistoryEntry from '../../../models/History/IHistoryEntry';
+import { IContentStore } from '../../../stores/ContentStore/ContentStore';
 
 interface RepairModalState {
     date: string;
@@ -42,11 +44,13 @@ interface RepairModalProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
+    contentStore?: IContentStore;
 }
 
 @inject('uiStore')
 @inject('userStore')
 @inject('vehicleStore')
+@inject('contentStore')
 @observer
 export default class RepairModal extends ModalBase<RepairModalProps, RepairModalState> {
     protected visible(): boolean {
@@ -109,14 +113,9 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
             this.state.date &&
             this.state.mileage &&
             this.state.repair &&
-            this.state.cost &&
-            this.state.place &&
-            this.state.city &&
-            this.state.phone &&
-            this.state.note
+            this.state.cost
         ) {
             this.setSaveLoading(true);
-            console.log('Saving repair for vehicle with Id:' + this.props.vehicleStore.preferredVehicleId);
 
             var repair: IRepair = {
                 date: this.state.date,
@@ -128,14 +127,28 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                 phone: parseInt(this.state.phone),
                 note: this.state.note,
             };
-            console.log('Saving repair' + repair);
 
-            await this.props.vehicleStore.handleSaveRepair(repair, this.props.userStore.userContext.userId);
+            let vehicleId = this.props.vehicleStore.preferredVehicleId;
+            let userId = window?.authContext?.userId;
 
-            await this.props.vehicleStore.getRepairsByVehicleId(false,
-                this.props.vehicleStore.preferredVehicleId,
-                this.props.userStore.userContext.userId
-            );
+            let repairId = await this.props.vehicleStore.handleSaveRepair(repair, userId);
+
+            await this.props.vehicleStore.getRepairsByVehicleId(false, vehicleId, userId);
+
+            if (repairId) {
+                let historyEntry: IHistoryEntry = {
+                    cost: repair.cost,
+                    date: repair.date,
+                    mileage: repair.mileage,
+                    referenceId: repairId,
+                    title: repair.repair, // CR: think about localization.
+                    type: 'repair',
+                };
+
+                await this.props.contentStore.saveHistoryEntry(vehicleId, historyEntry);
+
+                this.hideModal();
+            }
 
             this.setSaveLoading(false);
 
@@ -167,10 +180,7 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                             <IonCol>
                                 <IonItem className="c-item-input-repair">
                                     <IonLabel position="floating">Repair</IonLabel>
-                                    <IonInput
-                                        onIonChange={(event): void => this.handleInput(event.detail.value, 'repair')}
-                                        
-                                    />
+                                    <IonInput onIonChange={(event): void => this.handleInput(event.detail.value, 'repair')} />
                                 </IonItem>
                             </IonCol>
                         </IonRow>

@@ -11,12 +11,14 @@ export default class RefuelService {
         return firestore.collection('users').doc(userId).collection('vehicles');
     }
 
-    public async saveRefuel(refuel: IRefuelCreateEdit, userId: string, vehicleId: string): Promise<void> {
+    public async saveRefuel(refuel: IRefuelCreateEdit, userId: string, vehicleId: string): Promise<string> {
         const repairsRef = this.getRefuelCollectionRef(userId, vehicleId);
 
-        await repairsRef.add(refuel);
+        let repairResult = await repairsRef.add(refuel);
 
-        const vehicleRef = this.getVehiclesCollectionRef(userId);
+        return repairResult?.id;
+
+        // const vehicleRef = this.getVehiclesCollectionRef(userId);
 
         // let preferredRef = this.getUsersCollectionRef(userId);
 

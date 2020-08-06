@@ -6,9 +6,24 @@ import RegisterPage from './Authentication/Register/Register';
 import AppTabs from './AppTabs';
 import { AppRoutes } from './AppRoutes';
 import { useAuth } from './Authentication/AuthGuard/AuthGuard';
+import { IAuthContext } from '../services/AuthService';
+
+declare global {
+    interface Window {
+        authContext: IAuthContext;
+    }
+}
 
 const AppRouter: React.FC = () => {
-    const { loggedIn, userId } = useAuth();
+    const { loggedIn, userId, email } = useAuth();
+
+    const userContext: IAuthContext = {
+        userId: userId,
+        loggedIn: loggedIn,
+        email: email,
+    };
+
+    window.authContext = userContext;
 
     return (
         <IonReactRouter>
