@@ -3,7 +3,7 @@ import './ServiceEntry.css';
 import { IonItem, IonLabel, IonRow, IonCol } from '@ionic/react';
 // import { colorFillOutline as refuelIcon } from 'ionicons/icons';
 import dayjs from 'dayjs';
-import { GlobalConstants } from '../../models/Constants/GlobalConstants';
+import { DateFormat } from '../../models/Constants/DateFormat';
 import { IRefuelView } from '../../models/Refuel/IRefuelView';
 import RefuelIcon from './ServiceIcons/RefuelIcon';
 
@@ -21,7 +21,7 @@ export default class RefuelEntry extends React.Component<RepairEntryProps> {
                         <IonRow className="c-entry-details-row">
                             <IonCol size="4">
                                 <IonLabel className="c-detail-primary-row">
-                                    {dayjs(this.props.refuelEntry.date).format(GlobalConstants.defaultDateFormat)}
+                                    {dayjs(this.props.refuelEntry.date).format(DateFormat.defaultDateFormat)}
                                 </IonLabel>
                                 <IonLabel className="c-detail-secondary-row">{`Mil: ${this.props.refuelEntry.mileage}`}</IonLabel>
                             </IonCol>

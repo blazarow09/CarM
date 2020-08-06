@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { IonRow, IonCol, IonIcon, IonItem, IonLabel } from '@ionic/react';
 import dayjs from 'dayjs';
-import { GlobalConstants } from '../../models/Constants/GlobalConstants';
 import IHistoryEntry from '../../models/History/IHistoryEntry';
 import RefuelIcon from './ServiceIcons/RefuelIcon';
 import odometerIcon from '../../img/icons/odometer-b.svg';
 import './HistoryEntry.css';
 import RepairIcon from './ServiceIcons/RepairIcon';
+import { DateFormat } from '../../models/Constants/DateFormat';
 
 interface HistoryEntryProps {
     historyEntry: IHistoryEntry;
@@ -31,7 +31,7 @@ export default class HistoryEntry extends React.Component<HistoryEntryProps> {
                             <IonCol size="4">
                                 <IonLabel className="c-detail-primary-row-end">{`${this.props.historyEntry.cost} BGN`}</IonLabel>
                                 <IonLabel className="c-detail-secondary-row-end">
-                                    {dayjs(this.props.historyEntry.date).format(GlobalConstants.defaultDateFormatWithoutYear)}
+                                    {dayjs(this.props.historyEntry.date).format(DateFormat.defaultDateFormatWithoutYear)}
                                 </IonLabel>
                             </IonCol>
                         </IonRow>

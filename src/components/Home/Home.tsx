@@ -32,8 +32,8 @@ import { IContentStore } from '../../stores/ContentStore/ContentStore';
 import HistoryEntry from '../ServiceEntries/HistoryEntry';
 import { AppRoutes } from '../AppRoutes';
 import dayjs from 'dayjs';
-import { GlobalConstants } from '../../models/Constants/GlobalConstants';
 import './Home.css';
+import { DateFormat } from '../../models/Constants/DateFormat';
 
 interface HomeProps {
     userStore?: IUserStore;
@@ -79,8 +79,8 @@ export default class Home extends React.Component<HomeProps> {
             return <IonLoading isOpen />;
         }
 
-        let preferredVehicle = this.props.vehicleStore.availableCars.find(
-            (x): boolean => x.uid === this.props.vehicleStore.preferredVehicleId
+        let preferredVehicle = this.props.vehicleStore?.availableCars?.find(
+            (x): boolean => x?.uid === this.props.vehicleStore?.preferredVehicleId
         );
 
         return (
@@ -91,7 +91,7 @@ export default class Home extends React.Component<HomeProps> {
                         <>
                             <IonItem>
                                 <IonLabel>
-                                    {preferredVehicle.brand} {preferredVehicle.model}
+                                    {preferredVehicle?.brand} {preferredVehicle?.model}
                                 </IonLabel>
                                 <IonButton expand="block" color="primary" fill="outline" routerLink={AppRoutes.vehicleScreenRoute}>
                                     Change
@@ -110,7 +110,7 @@ export default class Home extends React.Component<HomeProps> {
                             </IonItem>
                             <IonList>
                                 <IonItem lines="none">
-                                    <IonLabel className="c-entries-month">{dayjs(Date.now()).format(GlobalConstants.defaultDateFormatFullMonthWithoutYear)}</IonLabel>
+                                    <IonLabel className="c-entries-month">{dayjs(Date.now()).format(DateFormat.defaultDateFormatFullMonthWithoutYear)}</IonLabel>
                                 </IonItem>
                                 {this.props.contentStore.historyEntries.map((historyEntry, index) => (
                                     <HistoryEntry key={index} historyEntry={historyEntry} />
@@ -118,8 +118,7 @@ export default class Home extends React.Component<HomeProps> {
                             </IonList>
                         </>
                     ) : (
-                        <NoResultsScreen />
-                        // <NoResultsScreen extraContent={this.extraContentResultScreen} />
+                        <NoResultsScreen extraContent={!this.props.vehicleStore.isAvailableCars && this.extraContentResultScreen} />
                     )}
                     <ModalsContainer />
                 </IonContent>
