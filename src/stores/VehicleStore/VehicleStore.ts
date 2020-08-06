@@ -30,6 +30,10 @@ export interface IVehicleStore {
     //Refuel
     handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<string>;
     getRefuelsByVehicleId(reset: boolean, userId: string, vehicleId: string): Promise<void>;
+    getSingleRefulebById(refuelId: string): Promise<void>
+
+    setViewRefuel(refuel: IRefuelView): void;
+    viewRefuelData: IRefuelView;
 
     // Observables
     availableCars: IObservableArray<IVehicleViewModel>;
@@ -61,6 +65,7 @@ export class VehicleStore implements IVehicleStore {
     @observable public repairsByVehicleId: IObservableArray<IRepair> = observable([]);
 
     @observable public refuelsByVehicleId: IObservableArray<IRefuelView> = observable([]);
+    @observable public viewRefuelData: IRefuelView = null;
 
     //#endregion
 
@@ -187,6 +192,19 @@ export class VehicleStore implements IVehicleStore {
                 this.refuelsByVehicleId.replace(refuels);
             }
         }
+    }
+
+    public async getSingleRefulebById(refuelId: string): Promise<void> {
+        if (refuelId && this.preferredVehicleId) {
+            let refuel = await this._refuelService.getSingleRefuel(this.preferredVehicleId, refuelId);
+
+            this.setViewRefuel(refuel);
+        }
+    }
+
+    @action
+    public setViewRefuel(refuel: IRefuelView): void {
+        this.viewRefuelData = refuel;
     }
     //#endregion
 }

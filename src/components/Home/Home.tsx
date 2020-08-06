@@ -36,6 +36,7 @@ import './Home.css';
 import { DateFormat } from '../../models/Constants/DateFormat';
 import LoadingScreen from '../Spinners/LoadingScreen';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
+import calendarIcon from '../../img/icons/calendar-b.svg';
 
 interface HomeProps {
     userStore?: IUserStore;
@@ -106,6 +107,7 @@ export default class Home extends React.Component<HomeProps, HomeState> {
         return (
             <>
                 <IonItem>
+                    <IonIcon icon={calendarIcon}/>
                     <IonLabel>
                         {preferredVehicle?.brand} {preferredVehicle?.model}
                     </IonLabel>
