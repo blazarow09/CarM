@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "start": "ionic serve",
-    "build": "ionic build"
+    "build": "ionic build",
+    "sync-android": "npx cap sync android",
+    "open-android": "npx cap open android",
+    "buildSyncAndroid": "sync-android && open-android",
+    "resources": "capacitor-resources -p android,ios"
   },
   "dependencies": {
     "@capacitor/android": "^2.1.0",
