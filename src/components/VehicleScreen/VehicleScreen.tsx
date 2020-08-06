@@ -30,13 +30,12 @@ import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
 import defaultCarImg from '../../img/default-car.png';
 import './VehicleScreen.css';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
-import { MainSpinner } from '../Spinners/Spinners';
 import { AppRoutes } from '../AppRoutes';
 import { IVehicleViewModel } from '../../models/Vehicle/IVehicleViewModel';
 import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
-import VehicleService from '../../services/VehicleService';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
 import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
+import LoadingScreen from '../Spinners/LoadingScreen';
 
 interface VehicleScreenProps {
     userStore?: IUserStore;
@@ -46,7 +45,7 @@ interface VehicleScreenProps {
 }
 
 interface VehicleScreenState {
-    loading: boolean;
+    dataLoading: boolean;
     openAlert: boolean;
     vehicleId: string;
     showPreferredSaveSucces: boolean;
@@ -61,16 +60,12 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
     public async componentDidMount(): Promise<void> {
         this.props.userStore.setHideTabsMenu(true);
 
-        this.setLoading(true);
+        this.setDataLoading(true);
 
-        let loaded = await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
+        await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
 
-        // if (!loaded) {
-        //     // show empty screen and stop loading
-        //     this.setLoading(loaded);
-        // } else {
-        //     this.setLoading(!loaded);
-        // }
+        // Stop loading indicator.
+        this.setDataLoading(false);
     }
 
     public componentWillUnmount(): void {
@@ -78,15 +73,15 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
     }
 
     public state: VehicleScreenState = {
-        loading: false,
         openAlert: false,
         vehicleId: '',
         showPreferredSaveSucces: false,
+        dataLoading: true,
     };
 
-    private setLoading(loading: boolean): void {
+    private setDataLoading(dataLoading: boolean): void {
         this.setState({
-            loading: loading,
+            dataLoading: dataLoading,
         });
     }
 
@@ -130,6 +125,52 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
         });
     }
 
+    private renderContent(): JSX.Element {
+        return this.state.dataLoading ? (
+            <LoadingScreen iconColor={GlobalColors.redColor} />
+        ) : this.props.vehicleStore?.availableCars?.length > 0 ? (
+            this.renderVehicleContent()
+        ) : (
+            <NoResultsScreen />
+        );
+    }
+
+    private renderVehicleContent(): JSX.Element {
+        return (
+            <>
+                {this.props.vehicleStore?.availableCars?.map((vehicle, index) => (
+                    <IonRow className="c-vehicle-row" key={index}>
+                        {/* More actions buttons */}
+                        {this.getMoreActionsButton(vehicle)}
+                        <div className="c-vehicle-select">
+                            <IonItem>
+                                <IonLabel className="c-car-name-label" color="light">
+                                    {`${vehicle.brand} ${vehicle.model}`}
+                                </IonLabel>
+                                <IonCheckbox
+                                    slot="start"
+                                    color={GlobalColors.redColor}
+                                    value={vehicle?.uid}
+                                    disabled={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
+                                    checked={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
+                                    onClick={async (event): Promise<void> => {
+                                        if (event?.currentTarget?.value !== this.props.vehicleStore?.preferredVehicleId) {
+                                            console.log(event?.currentTarget?.value);
+                                            console.log(this.props.vehicleStore?.preferredVehicleId);
+                                            await this.savePreferredVehicle(event?.currentTarget?.value);
+                                        }
+                                    }}
+                                />
+                            </IonItem>
+                        </div>
+                        {/* Entry row background image */}
+                        <IonImg src={defaultCarImg} />
+                    </IonRow>
+                ))}
+            </>
+        );
+    }
+
     public render() {
         return (
             <IonPage>
@@ -139,40 +180,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                     extraContent={this.extraContent}
                 />
                 <IonContent>
-                    {this.props.vehicleStore?.availableCars?.length === 0 ? (
-                        <NoResultsScreen />
-                    ) : (
-                        this.props.vehicleStore?.availableCars?.map((vehicle, index) => (
-                            <IonRow className="c-vehicle-row" key={index}>
-                                {/* More actions buttons */}
-                                {this.getMoreActionsButton(vehicle)}
-                                <div className="c-vehicle-select">
-                                    <IonItem>
-                                        <IonLabel className="c-car-name-label" color="light">
-                                            {`${vehicle.brand} ${vehicle.model}`}
-                                        </IonLabel>
-                                        <IonCheckbox
-                                            slot="start"
-                                            color={GlobalColors.redColor}
-                                            value={vehicle?.uid}
-                                            disabled={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
-                                            checked={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
-                                            onClick={async (event): Promise<void> => {
-                                                if (event?.currentTarget?.value !== this.props.vehicleStore?.preferredVehicleId) {
-                                                    console.log(event?.currentTarget?.value);
-                                                    console.log(this.props.vehicleStore?.preferredVehicleId);
-                                                    await this.savePreferredVehicle(event?.currentTarget?.value);
-                                                }
-                                            }}
-                                        />
-                                    </IonItem>
-                                </div>
-                                {/* Entry row background image */}
-                                <IonImg src={defaultCarImg} />
-                            </IonRow>
-                        ))
-                    )}
-
+                    {this.renderContent()}
                     <IonFab vertical="bottom" horizontal="end" slot="fixed">
                         <IonFabButton
                             color={GlobalColors.redColor}
@@ -189,7 +197,6 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                         isOpen={this.state.showPreferredSaveSucces}
                         onDidDismiss={() => this.setShowToast(false)}
                         message={this.props.localizationStore.vehicleLabels.preferredVehicleUpdateMessage}
-                        // message="Your preferred vehicle is updated."
                         duration={1000}
                     />
                 </IonContent>
