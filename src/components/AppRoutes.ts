@@ -15,4 +15,6 @@ export class AppRoutes {
     static viewRefuelScreenRoute = AppRoutes.prefixMyRoute + '/refuel/details'
 
     static moreOptionsRoute = AppRoutes.prefixMyRoute + '/more-options'
+    
+    static settingsRoute = AppRoutes.prefixMyRoute + '/settings'
 }
