@@ -1,0 +1,13 @@
+.c-title {
+    display: block;
+    margin-left: 3%;
+    margin-top: 2%;
+    color: var(--ion-color-default);
+    font-weight: 500;
+}
+
+.c-option-secondary {
+    font-size: 14px !important;
+    padding-top: 1px;
+    opacity: 0.6;
+}

@@ -165,7 +165,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                                         value={this.state.fuel}
                                         name="fuel"
                                     >
-                                        <IonSelectOption key={1} value="Car">
+                                        <IonSelectOption key={1} value="Diesel">
                                             Diesel
                                         </IonSelectOption>
                                         <IonSelectOption key={2} value="Petrol">

@@ -62,10 +62,8 @@ export default class Home extends React.Component<HomeProps, HomeState> {
     };
 
     public async componentDidMount(): Promise<void> {
-        this.setDataLoading(true);
-
         await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
-        await this.props.contentStore.getHistoryEntries(this.props.vehicleStore.preferredVehicleId);
+        await this.props.contentStore.getHistoryEntries(this.props.vehicleStore?.preferredVehicleId);
 
         // Stop loading indicator.
         this.setDataLoading(false);

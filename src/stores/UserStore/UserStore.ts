@@ -1,32 +1,63 @@
 import AuthService, { IAuthContext } from '../../services/AuthService';
 import { observable, action } from 'mobx';
 import { IUserCredentials } from '../../components/Authentication/IUserCredentials';
+import UserService from '../../services/UserService';
+import { IUserSettingsView } from '../../models/User/IUserSettingsView';
+import { IUserSettingsCreateUpdate } from '../../models/User/IUserSettingsCreateUpdate';
 
 export interface IUserStore {
     // Methods
-    handleLogin(userCredentials: IUserCredentials): Promise<boolean>;
+
+    // Auth
+    handleLogin(userCredentials: IUserCredentials): Promise<boolean | string>;
     handleRegister(userCredentials: IUserCredentials): Promise<boolean>;
     handleLogout(): Promise<void>;
+
     setUserContext(userId: string): void;
     setHideTabsMenu(hide: boolean): void;
+
+    // User Settings
+    getUserSettings(): Promise<void>;
+    updateUserSettings(userSettingsModel: IUserSettingsCreateUpdate): Promise<void>;
 
     // Observables
     userContext: IAuthContext;
     hideTabsMenu: boolean;
+
+    userSettings: IUserSettingsView;
 }
 
 export class UserStore implements IUserStore {
     //#region Services
     private _authService: AuthService;
+    private _userService: UserService;
     //#endregion
 
     //#region Observables initialization
     @observable public userContext: IAuthContext = null;
     @observable public hideTabsMenu: boolean = false;
+    @observable public userSettings: IUserSettingsView = null;
     //#endregion
 
-    public constructor(authService: AuthService) {
+    public constructor(authService: AuthService, userService: UserService) {
         this._authService = authService;
+        this._userService = userService;
+    }
+
+    @action
+    public async getUserSettings(): Promise<void> {
+        let userSettings = await this._userService.getUserSettings();
+
+        if (userSettings) {
+            this.userSettings = userSettings;
+        }
+    }
+
+    public async updateUserSettings(userSettingsModel: IUserSettingsCreateUpdate): Promise<void> {
+        
+        await this._userService.updateUserSettings(this.userSettings?.uid, userSettingsModel);
+
+        await this.getUserSettings();
     }
 
     @action
@@ -34,15 +65,17 @@ export class UserStore implements IUserStore {
         this.userContext = { userId: userId, loggedIn: true };
     }
 
-    public async handleLogin(userCredentials: IUserCredentials): Promise<boolean> {
+    public async handleLogin(userCredentials: IUserCredentials): Promise<boolean | string> {
         if (userCredentials) {
             try {
-                let authContext = await this._authService.login(userCredentials);
+                let authResult = await this._authService.login(userCredentials);
+
+                return authResult;
             } catch (error) {
                 console.log(error);
             }
 
-            return true;
+            return false;
         }
     }
 
@@ -62,7 +95,9 @@ export class UserStore implements IUserStore {
     public async handleRegister(userCredentials: IUserCredentials): Promise<boolean> {
         try {
             if (userCredentials) {
-                let authContext = await this._authService.register(userCredentials);
+                let authResult = await this._authService.register(userCredentials);
+
+                return authResult;
             }
         } catch (error) {
             console.log(error);
@@ -70,6 +105,4 @@ export class UserStore implements IUserStore {
 
         return false;
     }
-
-   
 }

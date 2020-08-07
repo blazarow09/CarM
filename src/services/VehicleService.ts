@@ -4,21 +4,25 @@ import { IRepair } from '../models/Repair/IRepair';
 import { IVehicleCreateEdit } from '../models/Vehicle/IVehicleCreateEdit';
 
 export default class VehicleService {
-    private getVehiclesCollectionRef(userId: string) {
-        return firestore.collection('users').doc(userId).collection('vehicles');
+    private getVehiclesCollectionRef() {
+        return firestore.collection('users').doc(window?.authContext?.userId).collection('vehicles');
     }
 
-    private getRepairsCollectionRef(userId: string, vehicleId: string) {
-        return firestore.collection('users').doc(userId).collection('vehicles').doc(vehicleId).collection('repairs');
+    private getVehiclesCollectionRefById(vehicleId: string) {
+        return firestore.collection('users').doc(window?.authContext?.userId).collection('vehicles').doc(vehicleId);
     }
 
-    private getUsersCollectionRef(userId: string) {
-        return firestore.collection('users').doc(userId);
+    private getRepairsCollectionRef(vehicleId: string) {
+        return firestore.collection('users').doc(window?.authContext?.userId).collection('vehicles').doc(vehicleId).collection('repairs');
+    }
+
+    private getUsersCollectionRef() {
+        return firestore.collection('users').doc(window?.authContext?.userId);
     }
 
     //#region Repair Operations
     public async saveRepair(repair: IRepair, userId: string, vehicleId: string): Promise<string> {
-        const repairsRef = this.getRepairsCollectionRef(userId, vehicleId);
+        const repairsRef = this.getRepairsCollectionRef(vehicleId);
 
         let repairResult = await repairsRef.add(repair);
 
@@ -26,7 +30,7 @@ export default class VehicleService {
     }
 
     public async getRepairsByVehicleId(vehicleId: string, userId: string): Promise<IRepair[]> {
-        const repairsRef = this.getRepairsCollectionRef(userId, vehicleId);
+        const repairsRef = this.getRepairsCollectionRef(vehicleId);
 
         let repairs = await repairsRef.get();
 
@@ -52,8 +56,26 @@ export default class VehicleService {
     //#endregion
 
     //#region Vehicle Operations
+    public async getLastOdometerForVehicle(vehicleId: string): Promise<string> {
+        let singleVehicleRef = this.getVehiclesCollectionRefById(vehicleId);
+
+        let singleVehicleData = await singleVehicleRef.get();
+
+        let lastOdometer = singleVehicleData.data()?.lastOdometer;
+
+        return lastOdometer;
+    }
+
+    public async saveLastOdometerForVehicle(vehicleId: string, odometer: number): Promise<void> {
+        let preferredRef = this.getVehiclesCollectionRefById(vehicleId);
+
+        let lastOdometer = await preferredRef.get();
+
+        await lastOdometer.ref.set({ lastOdometer: odometer });
+    }
+
     public async getPreferredVehicle(userId: string): Promise<string> {
-        let preferredRef = this.getUsersCollectionRef(userId);
+        let preferredRef = this.getUsersCollectionRef();
 
         let preferredVehicleData = await preferredRef.get();
 
@@ -63,7 +85,7 @@ export default class VehicleService {
     }
 
     public async savePreferredVehicle(vehicleId: string, userId: string): Promise<void> {
-        let preferredRef = this.getUsersCollectionRef(userId);
+        let preferredRef = this.getUsersCollectionRef();
 
         let preferred = await preferredRef.get();
 
@@ -75,7 +97,7 @@ export default class VehicleService {
     }
 
     public async saveVehicle(vehicle: IVehicleViewModel, userId: string): Promise<void> {
-        const vehiclesRef = this.getVehiclesCollectionRef(userId);
+        const vehiclesRef = this.getVehiclesCollectionRef();
 
         let vehicleToSave = vehicle as IVehicleCreateEdit;
 
@@ -83,14 +105,14 @@ export default class VehicleService {
     }
 
     public async removeVehicle(vehicleId: string, userId: string): Promise<void> {
-        const vehiclesRef = this.getVehiclesCollectionRef(userId);
+        const vehiclesRef = this.getVehiclesCollectionRef();
 
         // CR: should delete and the references as repairs and so on.
         await vehiclesRef.doc(vehicleId).delete();
     }
 
     public async editVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void> {
-        const vehicleRef = this.getVehiclesCollectionRef(userId);
+        const vehicleRef = this.getVehiclesCollectionRef();
 
         let vehicleToSave = vehicle as IVehicleCreateEdit;
 
@@ -98,7 +120,7 @@ export default class VehicleService {
     }
 
     public async getAvailablecars(userId: string): Promise<IVehicleViewModel[]> {
-        const vehiclesRef = this.getVehiclesCollectionRef(userId);
+        const vehiclesRef = this.getVehiclesCollectionRef();
 
         let cars = await vehiclesRef.get();
         let carsCollection: IVehicleViewModel[];

@@ -18,6 +18,9 @@ export interface IVehicleStore {
     handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void>;
     removeVehicle(vehicleId: string, userId: string): Promise<void>;
 
+    saveLastOdometerForVehicle(odometer: number): Promise<void>;
+    getLastOdometerForVehicle(): Promise<void>;
+
     getPreferredVehicleId(userId: string): Promise<void>;
     savePreferredVehicleId(vehicleId: string, userId: string): Promise<void>;
 
@@ -30,7 +33,7 @@ export interface IVehicleStore {
     //Refuel
     handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<string>;
     getRefuelsByVehicleId(reset: boolean, userId: string, vehicleId: string): Promise<void>;
-    getSingleRefulebById(refuelId: string): Promise<void>
+    getSingleRefulebById(refuelId: string): Promise<void>;
 
     setViewRefuel(refuel: IRefuelView): void;
     viewRefuelData: IRefuelView;
@@ -43,6 +46,7 @@ export interface IVehicleStore {
     refuelsByVehicleId: IObservableArray<IRefuelView>;
 
     preferredVehicleId: string;
+    lastOdometer: string;
 
     // Computed
     isAvailableCars: boolean;
@@ -66,6 +70,7 @@ export class VehicleStore implements IVehicleStore {
 
     @observable public refuelsByVehicleId: IObservableArray<IRefuelView> = observable([]);
     @observable public viewRefuelData: IRefuelView = null;
+    @observable public lastOdometer: string = '';
 
     //#endregion
 
@@ -79,9 +84,31 @@ export class VehicleStore implements IVehicleStore {
     }
 
     //#region Vehicle Operations
+    @action
+    public async getLastOdometerForVehicle(): Promise<void> {
+        if (this.preferredVehicleId) {
+            let lastOdometer = await this._vehicleService.getLastOdometerForVehicle(this.preferredVehicleId);
+
+            if(lastOdometer) {
+                this.lastOdometer = lastOdometer;
+            }
+        }
+    }
+
+    @action
+    public async saveLastOdometerForVehicle(odometer: number): Promise<void> {
+        if (this.preferredVehicleId && odometer) {
+            await this._vehicleService.saveLastOdometerForVehicle(this.preferredVehicleId, odometer);
+
+            this.lastOdometer = this.lastOdometer;
+        }
+    }
+
     public async handleVehicleSave(vehicle: IVehicleViewModel, userId: string): Promise<void> {
         if (vehicle) {
             await this._vehicleService.saveVehicle(vehicle, userId);
+
+            // await this.saveLastOdometerForVehicle(vehicle.mileage);
         }
     }
 
@@ -153,6 +180,8 @@ export class VehicleStore implements IVehicleStore {
         if (repair && this.preferredVehicleId) {
             let repairId = await this._vehicleService.saveRepair(repair, userId, this.preferredVehicleId);
 
+            // await this.saveLastOdometerForVehicle(repair.mileage);
+
             return repairId;
         }
     }
@@ -177,6 +206,9 @@ export class VehicleStore implements IVehicleStore {
     public async handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<string> {
         if (refuel && this.preferredVehicleId) {
             let refuelId = await this._refuelService.saveRefuel(refuel, userId, this.preferredVehicleId);
+
+
+            // await this.saveLastOdometerForVehicle(refuel.mileage);
 
             return refuelId;
         }

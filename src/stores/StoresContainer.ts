@@ -7,17 +7,19 @@ import RefuelService from '../services/RefuelService';
 import LocalizationStore from './LocalizationStore/LocalizationStore';
 import HistoryService from '../services/HistoryService';
 import ContentStore from './ContentStore/ContentStore';
+import UserService from '../services/UserService';
 
 const authService = new AuthService();
 const vehicleService = new VehicleService();
 const refuelService = new RefuelService();
 const historyService = new HistoryService();
+const userService = new UserService();
 
 /**
  * A property that combines and initializes all stores.
  */
 export const stores = {
-    userStore: new UserStore(authService),
+    userStore: new UserStore(authService, userService),
     vehicleStore: new VehicleStore(vehicleService, refuelService),
     uiStore: new UiStore(),
     localizationStore: new LocalizationStore(),
