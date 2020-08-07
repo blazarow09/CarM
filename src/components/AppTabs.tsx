@@ -34,7 +34,11 @@ export default class AppTabs extends React.Component<AppTabsProps> {
             this.props.userStore.setUserContext(this.props.userId);
             console.log('setUserContext');
 
-            this.props.localizationStore.populateLabelStore('EN');
+            await this.props.userStore.getUserSettings();
+
+            this.props.localizationStore.populateLabelStore(
+                this.props.userStore?.userSettings?.language ? this.props.userStore?.userSettings?.language : 'EN'
+            );
 
             await this.props.vehicleStore.getPreferredVehicleId(this.props?.userId);
         }
@@ -47,7 +51,7 @@ export default class AppTabs extends React.Component<AppTabsProps> {
 
         return (
             <>
-                {this.props.vehicleStore.isAvailableCars && <HomeButton hiddenAppTabs={this.props.userStore.hideTabsMenu}/>}
+                {this.props.vehicleStore.isAvailableCars && <HomeButton hiddenAppTabs={this.props.userStore.hideTabsMenu} />}
                 <IonTabs>
                     <IonRouterOutlet>
                         <Route exact path={AppRoutes.homeRoute}>

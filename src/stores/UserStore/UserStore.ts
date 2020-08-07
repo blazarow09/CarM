@@ -1,32 +1,61 @@
 import AuthService, { IAuthContext } from '../../services/AuthService';
 import { observable, action } from 'mobx';
 import { IUserCredentials } from '../../components/Authentication/IUserCredentials';
+import { IUserSettings } from '../../models/User/IUserSettings';
+import UserService from '../../services/UserService';
 
 export interface IUserStore {
     // Methods
+
+    // Auth
     handleLogin(userCredentials: IUserCredentials): Promise<boolean>;
     handleRegister(userCredentials: IUserCredentials): Promise<boolean>;
     handleLogout(): Promise<void>;
+
     setUserContext(userId: string): void;
     setHideTabsMenu(hide: boolean): void;
+
+    // User Settings
+    getUserSettings(): Promise<void>;
+    updateUserSettings(userSettingsModel: IUserSettings): Promise<void>
 
     // Observables
     userContext: IAuthContext;
     hideTabsMenu: boolean;
+
+    userSettings: IUserSettings;
 }
 
 export class UserStore implements IUserStore {
     //#region Services
     private _authService: AuthService;
+    private _userService: UserService;
     //#endregion
 
     //#region Observables initialization
     @observable public userContext: IAuthContext = null;
     @observable public hideTabsMenu: boolean = false;
+    @observable public userSettings: IUserSettings = null;
     //#endregion
 
-    public constructor(authService: AuthService) {
+    public constructor(authService: AuthService, userService: UserService) {
         this._authService = authService;
+        this._userService = userService;
+    }
+
+    @action
+    public async getUserSettings(): Promise<void> {
+        let userSettings = await this._userService.getUserSettings();
+
+        if (userSettings) {
+            this.userSettings = userSettings;
+        }
+    }
+
+    public async updateUserSettings(userSettingsModel: IUserSettings): Promise<void> {
+        await this._userService.updateUserSettings(this.userSettings?.uid, userSettingsModel);
+
+        await this.getUserSettings();
     }
 
     @action
@@ -70,6 +99,4 @@ export class UserStore implements IUserStore {
 
         return false;
     }
-
-   
 }
