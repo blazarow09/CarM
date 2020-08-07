@@ -1,8 +1,9 @@
 import AuthService, { IAuthContext } from '../../services/AuthService';
 import { observable, action } from 'mobx';
 import { IUserCredentials } from '../../components/Authentication/IUserCredentials';
-import { IUserSettings } from '../../models/User/IUserSettings';
 import UserService from '../../services/UserService';
+import { IUserSettingsView } from '../../models/User/IUserSettingsView';
+import { IUserSettingsCreateUpdate } from '../../models/User/IUserSettingsCreateUpdate';
 
 export interface IUserStore {
     // Methods
@@ -17,13 +18,13 @@ export interface IUserStore {
 
     // User Settings
     getUserSettings(): Promise<void>;
-    updateUserSettings(userSettingsModel: IUserSettings): Promise<void>;
+    updateUserSettings(userSettingsModel: IUserSettingsCreateUpdate): Promise<void>;
 
     // Observables
     userContext: IAuthContext;
     hideTabsMenu: boolean;
 
-    userSettings: IUserSettings;
+    userSettings: IUserSettingsView;
 }
 
 export class UserStore implements IUserStore {
@@ -35,7 +36,7 @@ export class UserStore implements IUserStore {
     //#region Observables initialization
     @observable public userContext: IAuthContext = null;
     @observable public hideTabsMenu: boolean = false;
-    @observable public userSettings: IUserSettings = null;
+    @observable public userSettings: IUserSettingsView = null;
     //#endregion
 
     public constructor(authService: AuthService, userService: UserService) {
@@ -52,7 +53,8 @@ export class UserStore implements IUserStore {
         }
     }
 
-    public async updateUserSettings(userSettingsModel: IUserSettings): Promise<void> {
+    public async updateUserSettings(userSettingsModel: IUserSettingsCreateUpdate): Promise<void> {
+        
         await this._userService.updateUserSettings(this.userSettings?.uid, userSettingsModel);
 
         await this.getUserSettings();

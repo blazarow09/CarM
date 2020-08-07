@@ -1,12 +1,13 @@
 import { firestore } from '../firebase/firebaseConfig.dev';
-import { IUserSettings } from '../models/User/IUserSettings';
+import { IUserSettingsCreateUpdate } from '../models/User/IUserSettingsCreateUpdate';
+import { IUserSettingsView } from '../models/User/IUserSettingsView';
 
 export default class UserService {
     private getUserSettingsCollectionRef() {
         return firestore.collection('users').doc(window.authContext?.userId).collection('userSettings');
     }
 
-    public async getUserSettings(): Promise<IUserSettings> {
+    public async getUserSettings(): Promise<IUserSettingsView> {
         const userSettingsRef = this.getUserSettingsCollectionRef();
 
         let userSettingsResult = await userSettingsRef.get();
@@ -14,7 +15,7 @@ export default class UserService {
         let userSettings = userSettingsResult?.docs?.pop()?.data();
         let userSettingsId = userSettingsResult?.docs?.pop()?.id;
 
-        let userSettignsModel: IUserSettings = {
+        let userSettignsModel: IUserSettingsView = {
             uid: userSettingsId,
             language: userSettings?.language,
         };
@@ -22,7 +23,7 @@ export default class UserService {
         return userSettignsModel;
     }
 
-    public async updateUserSettings(userSettingsId: string, userSettings: IUserSettings): Promise<void> {
+    public async updateUserSettings(userSettingsId: string, userSettings: IUserSettingsCreateUpdate): Promise<void> {
         const userSettingsRef = this.getUserSettingsCollectionRef();
 
         await userSettingsRef.doc(userSettingsId).update(userSettings);

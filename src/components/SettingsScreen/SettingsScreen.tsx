@@ -7,6 +7,7 @@ import './SettingsScreen.css';
 import { observer, inject } from 'mobx-react';
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
+import { IUserSettingsCreateUpdate } from '../../models/User/IUserSettingsCreateUpdate';
 
 interface SettingsScreenProps {
     userStore?: IUserStore;
@@ -15,6 +16,8 @@ interface SettingsScreenProps {
 
 interface SettingsScreenState {
     isOpenLanguageOptions: boolean;
+    enChecked: boolean;
+    bgChecked: boolean;
 }
 
 @inject('userStore')
@@ -23,6 +26,8 @@ interface SettingsScreenState {
 export default class SettingsScreen extends React.Component<SettingsScreenProps, SettingsScreenState> {
     public state: SettingsScreenState = {
         isOpenLanguageOptions: false,
+        enChecked: this.props.userStore?.userSettings?.language === 'EN',
+        bgChecked: this.props.userStore?.userSettings?.language === 'BG',
     };
 
     public render() {
@@ -73,13 +78,31 @@ export default class SettingsScreen extends React.Component<SettingsScreenProps,
                         type: 'checkbox',
                         label: 'English',
                         value: 'EN',
-                        checked: true,
+                        handler: (input) => {
+                            if(input.checked) {
+                                this.setState({
+                                    bgChecked: false,
+                                    enChecked: true,
+                                });
+                            }
+                        },
+                        checked: this.state.enChecked,
+                        // checked: this.props.userStore.userSettings?.language === 'EN',
                     },
                     {
                         name: 'language',
                         type: 'checkbox',
                         label: 'Български',
                         value: 'BG',
+                        handler: (input) => {
+                            if(input.checked) {
+                                this.setState({
+                                    bgChecked: true,
+                                    enChecked: false,
+                                });
+                            }
+                        },
+                        checked: this.state.bgChecked,
                     },
                 ]}
                 buttons={[
@@ -92,14 +115,18 @@ export default class SettingsScreen extends React.Component<SettingsScreenProps,
                         },
                     },
                     {
-                        text: 'Ok',
+                        text: 'Save',
                         handler: async (option): Promise<void> => {
                             if (option.length === 1) {
                                 let currentUserSettings = this.props.userStore?.userSettings;
 
                                 currentUserSettings.language = option[0];
 
-                                await this.props.userStore.updateUserSettings(currentUserSettings);
+                                let userSettings: IUserSettingsCreateUpdate = {
+                                    language: currentUserSettings.language,
+                                };
+
+                                await this.props.userStore.updateUserSettings(userSettings);
 
                                 this.props.localizationStore.populateLabelStore(this.props.userStore?.userSettings?.language);
 

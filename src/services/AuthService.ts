@@ -1,8 +1,7 @@
 import { auth as firebaseAuth } from '../firebase/firebaseConfig.dev';
 import { IUserCredentials } from '../components/Authentication/IUserCredentials';
 import { firestore } from '../firebase/firebaseConfig.dev';
-import { IUserSettings } from '../models/User/IUserSettings';
-import { trophyOutline } from 'ionicons/icons';
+import { IUserSettingsCreateUpdate } from '../models/User/IUserSettingsCreateUpdate';
 
 export interface IAuthContext {
     loggedIn: boolean;
@@ -11,6 +10,10 @@ export interface IAuthContext {
 }
 
 export default class AuthService {
+    private getUserSettingsCollectionRef(userId: string) {
+        return firestore.collection('users').doc(userId).collection('userSettings');
+    }
+
     public async login(userCredentials: IUserCredentials): Promise<boolean> {
         if (userCredentials.email && userCredentials.password) {
             try {
@@ -50,14 +53,10 @@ export default class AuthService {
         window.authContext = null;
     }
 
-    private getUserSettingsCollectionRef(userId: string) {
-        return firestore.collection('users').doc(userId).collection('userSettings');
-    }
-
     private async seedDefaultValues(userId: string): Promise<void> {
         const userSettingsRef = this.getUserSettingsCollectionRef(userId);
 
-        const defaultUserSettings: IUserSettings = {
+        const defaultUserSettings: IUserSettingsCreateUpdate = {
             language: 'EN',
         };
 
