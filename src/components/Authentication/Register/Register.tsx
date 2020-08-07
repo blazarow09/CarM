@@ -13,6 +13,7 @@ import {
     IonCol,
     IonIcon,
     IonSpinner,
+    IonToast,
 } from '@ionic/react';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { observer, inject } from 'mobx-react';
@@ -21,6 +22,7 @@ import { AppRoutes } from '../../AppRoutes';
 import { logoGoogle as googleIcon, logoFacebook as fbIcon } from 'ionicons/icons';
 
 import '../LoginRegister.css';
+import { GlobalColors } from '../../../models/Constants/GlobalColors';
 
 interface RegisterPageProps {
     loggedIn: boolean;
@@ -32,6 +34,8 @@ interface RegisterPageState {
     password: string;
     passwordMatch: string;
     loading: boolean;
+    anyError: boolean;
+    errorMessage: string;
 }
 
 @inject('userStore')
@@ -42,6 +46,8 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
         password: '',
         passwordMatch: '',
         loading: false,
+        anyError: false,
+        errorMessage: '',
     };
 
     private setEmail(email: string): void {
@@ -71,11 +77,31 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
     private async handleRegister(): Promise<void> {
         this.setLoading(true);
 
-        let succeeded = await this.props.userStore.handleRegister({
-            email: this.state.email,
-            password: this.state.password,
-            confirmPassword: this.state.passwordMatch,
-        });
+        if (this.state.password !== this.state.passwordMatch) {
+            this.setShowToast(true);
+
+            this.setState({
+                errorMessage: 'Your password and confirmation password do not match',
+            });
+
+            this.setLoading(false);
+        } else {
+            let succeeded = await this.props.userStore.handleRegister({
+                email: this.state.email,
+                password: this.state.password,
+                confirmPassword: this.state.passwordMatch,
+            });
+
+            if (!succeeded) {
+                this.setShowToast(true);
+
+                this.setState({
+                    errorMessage: 'Invalid email address',
+                });
+
+                this.setLoading(false);
+            }
+        }
     }
 
     private setCorrectStateSaveButton = (): boolean => {
@@ -133,7 +159,7 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
                                     />
                                 </IonItem>
                                 <IonItem>
-                                    <IonLabel position="floating">Repeat password</IonLabel>
+                                    <IonLabel position="floating">Confirm password</IonLabel>
                                     <IonInput
                                         type="password"
                                         onIonChange={(event): void =>
@@ -157,8 +183,26 @@ export default class RegisterPage extends React.Component<RegisterPageProps, Reg
                             </IonButton>
                         </IonCardContent>
                     </IonCard>
+                    <IonToast
+                        isOpen={this.state.anyError}
+                        onDidDismiss={() => {
+                            this.setShowToast(false);
+                            this.setState({
+                                errorMessage: '',
+                            });
+                        }}
+                        message={this.state.errorMessage}
+                        duration={10000}
+                        color={GlobalColors.redColor}
+                    />
                 </IonContent>
             </IonPage>
         );
+    }
+
+    private setShowToast(show: boolean): void {
+        this.setState({
+            anyError: show,
+        });
     }
 }

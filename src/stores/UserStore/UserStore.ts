@@ -8,7 +8,7 @@ export interface IUserStore {
     // Methods
 
     // Auth
-    handleLogin(userCredentials: IUserCredentials): Promise<boolean>;
+    handleLogin(userCredentials: IUserCredentials): Promise<boolean | string>;
     handleRegister(userCredentials: IUserCredentials): Promise<boolean>;
     handleLogout(): Promise<void>;
 
@@ -17,7 +17,7 @@ export interface IUserStore {
 
     // User Settings
     getUserSettings(): Promise<void>;
-    updateUserSettings(userSettingsModel: IUserSettings): Promise<void>
+    updateUserSettings(userSettingsModel: IUserSettings): Promise<void>;
 
     // Observables
     userContext: IAuthContext;
@@ -63,15 +63,17 @@ export class UserStore implements IUserStore {
         this.userContext = { userId: userId, loggedIn: true };
     }
 
-    public async handleLogin(userCredentials: IUserCredentials): Promise<boolean> {
+    public async handleLogin(userCredentials: IUserCredentials): Promise<boolean | string> {
         if (userCredentials) {
             try {
-                let authContext = await this._authService.login(userCredentials);
+                let authResult = await this._authService.login(userCredentials);
+
+                return authResult;
             } catch (error) {
                 console.log(error);
             }
 
-            return true;
+            return false;
         }
     }
 
@@ -91,7 +93,9 @@ export class UserStore implements IUserStore {
     public async handleRegister(userCredentials: IUserCredentials): Promise<boolean> {
         try {
             if (userCredentials) {
-                let authContext = await this._authService.register(userCredentials);
+                let authResult = await this._authService.register(userCredentials);
+
+                return authResult;
             }
         } catch (error) {
             console.log(error);

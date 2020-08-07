@@ -2,6 +2,7 @@ import { auth as firebaseAuth } from '../firebase/firebaseConfig.dev';
 import { IUserCredentials } from '../components/Authentication/IUserCredentials';
 import { firestore } from '../firebase/firebaseConfig.dev';
 import { IUserSettings } from '../models/User/IUserSettings';
+import { trophyOutline } from 'ionicons/icons';
 
 export interface IAuthContext {
     loggedIn: boolean;
@@ -10,32 +11,37 @@ export interface IAuthContext {
 }
 
 export default class AuthService {
-    public async login(userCredentials: IUserCredentials): Promise<void> {
+    public async login(userCredentials: IUserCredentials): Promise<boolean> {
         if (userCredentials.email && userCredentials.password) {
             try {
                 let result = await firebaseAuth.signInWithEmailAndPassword(userCredentials.email, userCredentials.password);
-                console.log('auth service register')
+
+                if (result.user.uid) {
+                    return true;
+                }
             } catch (error) {
-                console.log(error);
+                if (error.code == 'auth/invalid-email' || error.code == 'auth/wrong-password') {
+                    return false;
+                }
             }
         }
     }
 
-    public async register(userCredentials: IUserCredentials): Promise<void> {
-        if (userCredentials.email && userCredentials.password && userCredentials.confirmPassword) {
-            if (userCredentials.password === userCredentials.confirmPassword) {
-                try {
-                    let result = await firebaseAuth.createUserWithEmailAndPassword(userCredentials.email, userCredentials.password);
+    public async register(userCredentials: IUserCredentials): Promise<boolean> {
+        if (userCredentials?.email && userCredentials?.password === userCredentials?.confirmPassword) {
+            try {
+                let result = await firebaseAuth.createUserWithEmailAndPassword(userCredentials.email, userCredentials.password);
 
-                    if (result?.user?.uid) {
-                        await this.seedDefaultValues(result.user.uid);
-                    }
-                    console.log('auth service register')
-                } catch (error) {
-                    console.log(error);
+                if (result?.user?.uid) {
+                    await this.seedDefaultValues(result.user.uid);
+
+                    return true;
                 }
+            } catch (error) {
+                return false;
             }
         }
+        return false;
     }
 
     public async logout(): Promise<void> {
@@ -52,8 +58,8 @@ export default class AuthService {
         const userSettingsRef = this.getUserSettingsCollectionRef(userId);
 
         const defaultUserSettings: IUserSettings = {
-            language: 'EN'
-        }
+            language: 'EN',
+        };
 
         await userSettingsRef.add(defaultUserSettings);
     }

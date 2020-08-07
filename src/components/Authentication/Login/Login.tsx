@@ -14,6 +14,7 @@ import {
     IonRow,
     IonCol,
     IonIcon,
+    IonToast,
 } from '@ionic/react';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { inject, observer } from 'mobx-react';
@@ -22,6 +23,7 @@ import { logoGoogle as googleIcon, logoFacebook as fbIcon } from 'ionicons/icons
 import { AppRoutes } from '../../AppRoutes';
 
 import '../LoginRegister.css';
+import { GlobalColors } from '../../../models/Constants/GlobalColors';
 
 interface LoginPageProps {
     loggedIn: boolean;
@@ -32,6 +34,7 @@ interface LoginPageState {
     email: string;
     password: string;
     loading: boolean;
+    anyError: boolean;
 }
 
 @inject('userStore')
@@ -41,6 +44,7 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
         email: '',
         password: '',
         loading: false,
+        anyError: false
     };
 
     private setEmail(email: string): void {
@@ -64,11 +68,16 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
     private async handleLogin(): Promise<void> {
         this.setLoading(true);
 
-        let authContext = await this.props.userStore.handleLogin({
+        let authResult = await this.props.userStore.handleLogin({
             email: this.state.email,
             password: this.state.password,
         });
-    }
+
+        if(!authResult) {
+            this.setLoading(false);
+            this.setShowToast(true);
+        }
+     }
 
     private setCorrectStateSaveButton = (): boolean => {
         if (this.state.email === '' || this.state.password === '' || this.state.loading) {
@@ -141,8 +150,22 @@ export default class LoginPage extends React.Component<LoginPageProps, LoginPage
                     <IonButton className="c-create-acc-btn" color="light" fill="clear" size="small" routerLink={AppRoutes.registerRoute}>
                         CREATE AN ACCOUNT
                     </IonButton>
+                    <IonToast
+                        isOpen={this.state.anyError}
+                        onDidDismiss={() => this.setShowToast(false)}
+                        message="Invalid email and/or password"
+                        // message={this.props.localizationStore.vehicleLabels.preferredVehicleUpdateMessage}
+                        duration={10000}
+                        color={GlobalColors.redColor}
+                    />
                 </IonContent>
             </IonPage>
         );
+    }
+
+    private setShowToast(show: boolean): void {
+        this.setState({
+            anyError: show,
+        });
     }
 }
