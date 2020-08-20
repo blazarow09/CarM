@@ -1,0 +1,22 @@
+.c-background-tab {
+    --background: #f0f0f0;
+}
+
+.c-date-info {
+    opacity: 0.6;
+}
+
+.c-date-content {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+.c-button-click-effect:active {
+    color: #817e7e;
+}
+
+.c-space-between {
+    margin-top: 1px;
+}
