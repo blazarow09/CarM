@@ -34,13 +34,14 @@ export default class AppTabs extends React.Component<AppTabsProps> {
             this.props.userStore.setUserContext(this.props.userId);
             console.log('setUserContext');
 
+            await this.props.vehicleStore.getPreferredVehicleId(this.props?.userId);
+            
             await this.props.userStore.getUserSettings();
 
             this.props.localizationStore.populateLabelStore(
                 this.props.userStore?.userSettings?.language ? this.props.userStore?.userSettings?.language : 'EN'
             );
 
-            await this.props.vehicleStore.getPreferredVehicleId(this.props?.userId);
         }
     }
 

@@ -2,14 +2,14 @@
 
 :root {
     --default: #50c8ff;
-    --purple: #6a64ff;
+    --purple: #6f0396;
     --red: #ff4961;
     --orange: #ffd534;
 
     --ion-color-default: #3dc2ff;
-    --ion-color-default-rgb: 61,194,255;
+    --ion-color-default-rgb: 61, 194, 255;
     --ion-color-default-contrast: #ffffff;
-    --ion-color-default-contrast-rgb: 255,255,255;
+    --ion-color-default-contrast-rgb: 255, 255, 255;
     --ion-color-default-shade: #36abe0;
     --ion-color-default-tint: #50c8ff;
 
@@ -27,12 +27,18 @@
     --ion-color-red-shade: #cf3c4f;
     --ion-color-red-tint: #ed576b;
 
-    --ion-color-purple: #5260ff;
+    --ion-color-purple: #6f0396;
+    --ion-color-purple-rgb: 111, 3, 150;
+    --ion-color-purple-contrast: #ffffff;
+    --ion-color-purple-contrast-rgb: 255, 255, 255;
+    --ion-color-purple-shade: #620384;
+    --ion-color-purple-tint: #7d1ca1;
+    /* --ion-color-purple: #5260ff;
     --ion-color-purple-rgb: 82, 96, 255;
     --ion-color-purple-contrast: #ffffff;
     --ion-color-purple-contrast-rgb: 255, 255, 255;
     --ion-color-purple-shade: #4854e0;
-    --ion-color-purple-tint: #6370ff;
+    --ion-color-purple-tint: #6370ff; */
 }
 
 .ion-color-default {
@@ -44,7 +50,6 @@
     --ion-color-tint: var(--ion-color-default-tint) !important;
 }
 
-
 .ion-color-purple {
     --ion-color-base: var(--ion-color-purple) !important;
     --ion-color-base-rgb: var(--ion-color-purple-rgb) !important;
@@ -53,7 +58,6 @@
     --ion-color-shade: var(--ion-color-purple-shade) !important;
     --ion-color-tint: var(--ion-color-purple-tint) !important;
 }
-
 
 .ion-color-red {
     --ion-color-base: var(--ion-color-red) !important;
