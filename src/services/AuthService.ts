@@ -23,7 +23,7 @@ export default class AuthService {
                     return true;
                 }
             } catch (error) {
-                if (error.code == 'auth/invalid-email' || error.code == 'auth/wrong-password') {
+                if (error.code === 'auth/invalid-email' || error.code === 'auth/wrong-password') {
                     return false;
                 }
             }

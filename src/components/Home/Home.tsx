@@ -7,16 +7,9 @@ import {
     IonContent,
     IonItem,
     IonLabel,
-    IonSelect,
-    IonSelectOption,
     IonLoading,
     IonFab,
     IonFabButton,
-    IonCard,
-    IonCardHeader,
-    IonCardSubtitle,
-    IonCardTitle,
-    IonCardContent,
     IonList,
 } from '@ionic/react';
 import { settingsOutline as settingsIcon, exitOutline as exitIcon, add as addIcon } from 'ionicons/icons';
@@ -128,10 +121,15 @@ export default class Home extends React.Component<HomeProps, HomeState> {
                     <IonItem lines="none">
                         <IonIcon className="c-entries-month-icon" icon={calendarIcon} />
 
-                        <IonLabel className="c-entries-month">{dayjs(Date.now()).format(DateFormat.defaultDateFormatFullMonthWithoutYear)}</IonLabel>
+                        <IonLabel className="c-entries-month">
+                            {dayjs(Date.now()).format(DateFormat.defaultDateFormatFullMonthWithoutYear)}
+                        </IonLabel>
                     </IonItem>
                     {this.props.contentStore.historyEntries.map((historyEntry, index) => (
                         <HistoryEntry key={index} historyEntry={historyEntry} />
+                        /* <svg height="50" width="500" style={{ marginLeft: '9%' }}>
+                                <line x1="0" y1="0" x2="0" y2="200" style={{ stroke: '#3dc2ff', strokeWidth: '4' }} />
+                            </svg> */
                     ))}
                 </IonList>
             </>

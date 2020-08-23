@@ -10,7 +10,6 @@ import { DateFormat } from '../../models/Constants/DateFormat';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import { observer, inject } from 'mobx-react';
 import { AppRoutes } from '../AppRoutes';
-import { promises } from 'dns';
 
 interface HistoryEntryProps {
     vehicleStore?: IVehicleStore;

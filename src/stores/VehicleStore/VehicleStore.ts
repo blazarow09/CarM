@@ -89,7 +89,7 @@ export class VehicleStore implements IVehicleStore {
         if (this.preferredVehicleId) {
             let lastOdometer = await this._vehicleService.getLastOdometerForVehicle(this.preferredVehicleId);
 
-            if(lastOdometer) {
+            if (lastOdometer) {
                 this.lastOdometer = lastOdometer;
             }
         }
@@ -207,7 +207,6 @@ export class VehicleStore implements IVehicleStore {
         if (refuel && this.preferredVehicleId) {
             let refuelId = await this._refuelService.saveRefuel(refuel, userId, this.preferredVehicleId);
 
-
             // await this.saveLastOdometerForVehicle(refuel.mileage);
 
             return refuelId;
@@ -226,6 +225,7 @@ export class VehicleStore implements IVehicleStore {
         }
     }
 
+    @action
     public async getSingleRefulebById(refuelId: string): Promise<void> {
         if (refuelId && this.preferredVehicleId) {
             let refuel = await this._refuelService.getSingleRefuel(this.preferredVehicleId, refuelId);
