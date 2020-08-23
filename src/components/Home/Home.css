@@ -7,3 +7,11 @@
     margin-left: 6%;
     font-size: 20px;
 }
+
+.line-horizontal {
+    background-color: #000;
+    width: 2px;
+    height: 2px;
+    display: inline-block;
+    margin: 0px;
+}

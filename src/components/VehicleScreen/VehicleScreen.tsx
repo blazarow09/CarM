@@ -155,8 +155,6 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                                     checked={this.props.vehicleStore?.preferredVehicleId === vehicle?.uid}
                                     onClick={async (event): Promise<void> => {
                                         if (event?.currentTarget?.value !== this.props.vehicleStore?.preferredVehicleId) {
-                                            console.log(event?.currentTarget?.value);
-                                            console.log(this.props.vehicleStore?.preferredVehicleId);
                                             await this.savePreferredVehicle(event?.currentTarget?.value);
                                         }
                                     }}
@@ -236,7 +234,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
     private extraContent = (): JSX.Element => {
         return (
             <IonButtons slot="start">
-                <IonBackButton defaultHref={AppRoutes.homeRoute} text={this.props.localizationStore.generalLabels.backButton} />
+                <IonBackButton defaultHref={AppRoutes.homeRoute} />
             </IonButtons>
         );
     };
