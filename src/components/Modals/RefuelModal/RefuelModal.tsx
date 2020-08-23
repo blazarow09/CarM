@@ -38,6 +38,7 @@ interface RefuelModalProps extends IModalBaseProps {
 interface RefuelModalState extends IModalBaseState {
     uid?: string;
     date?: string;
+    time?: string;
     quantity?: string;
     pricePerLtr?: string;
     totalCost?: string;
@@ -62,6 +63,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
     public state: RefuelModalState = {
         uid: '',
         date: dayjs(Date.now()).toString(),
+        time: dayjs(new Date(Date.now())).format(DateFormat.defaultTimeFormat),
         quantity: '',
         pricePerLtr: '',
         totalCost: '',
@@ -73,7 +75,16 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
         headerToolbarColor: GlobalColors.purpleColor,
     };
 
-    private inputFieldTypes = new Array<string>('date', 'quantity', 'pricePerLtr', 'totalCost', 'fillingStation', 'notes', 'mileage');
+    private inputFieldTypes = new Array<string>(
+        'date',
+        'time',
+        'quantity',
+        'pricePerLtr',
+        'totalCost',
+        'fillingStation',
+        'notes',
+        'mileage'
+    );
 
     protected resetStores(): void {
         this.props.vehicleStore.setVehicleToEdit(null);
@@ -121,27 +132,40 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
         });
     }
 
+    public timeFormat = 'HH:mm';
+
     protected content(): JSX.Element {
         return (
             <IonContent>
                 <IonList className="c-form-fields">
                     <IonRow>
-                        <IonCol size="8">
-                            <IonRow>
-                                <IonCol size="9">
-                                    <IonItem className="c-input-field-purple">
-                                        <IonLabel position="floating">Date</IonLabel>
-                                        <IonDatetime
-                                            color="warning"
-                                            pickerFormat={DateFormat.defaultDateFormat}
-                                            displayFormat={DateFormat.defaultDateFormat}
-                                            onIonChange={(event) => this.handleInput(event)}
-                                            name="date"
-                                            value={dayjs(this.state.date).format(DateFormat.defaultDateFormat)}
-                                        />
-                                    </IonItem>
-                                </IonCol>
-                            </IonRow>
+                        <IonCol size="6">
+                            <IonItem className="c-input-field-purple">
+                                <IonLabel position="floating">Date</IonLabel>
+                                <IonDatetime
+                                    color="warning"
+                                    pickerFormat={DateFormat.defaultDateFormat}
+                                    displayFormat={DateFormat.defaultDateFormat}
+                                    onIonChange={(event) => this.handleInput(event)}
+                                    name="date"
+                                    value={dayjs(this.state.date).format(DateFormat.defaultDateFormat)}
+                                />
+                            </IonItem>
+                        </IonCol>
+                        <IonCol size="6">
+                            <IonItem className="c-input-field-purple">
+                                <IonLabel position="floating">Time</IonLabel>
+                                <IonDatetime
+                                    onTimeUpdate={(event) => this.handleInput(event)}
+                                    color="warning"
+                                    pickerFormat={DateFormat.defaultTimeFormat}
+                                    displayFormat={DateFormat.defaultTimeFormat}
+                                    minuteValues="0,15,30,45"
+                                    // onIonChange={(event) => this.handleInput(event)}
+                                    name="time"
+                                    value={dayjs(this.state.time).format(DateFormat.defaultTimeFormat)}
+                                />
+                            </IonItem>
                         </IonCol>
                     </IonRow>
                     <IonRow>
@@ -152,7 +176,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                                 type="number"
                                 inputName="mileage"
                                 labelPosition="floating"
-                                labelText="Mileage"
+                                labelText="Odometer"
                                 suffix="Km"
                                 borderColor="purple"
                             />
@@ -274,7 +298,6 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                 this.setSaveLoading(false);
                 // log the problem.
             }
-
         } else {
             console.log('Please, form all fields');
         }
