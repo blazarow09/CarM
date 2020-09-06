@@ -1,0 +1,19 @@
+.c-icon-customization {
+    /* font-size: 30px; */
+    position: absolute;
+    bottom: 0px;
+}
+
+.c-icon-customization-with-helper-text {
+    /* font-size: 30px; */
+    position: absolute;
+    bottom: 24px;
+}
+
+.c-field-grid {
+    padding-left: 5% !important;
+}
+
+.MuiFormHelperText-root {
+    text-align: end !important;
+}

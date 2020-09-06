@@ -5,5 +5,7 @@ export interface IRefuelCreateEdit {
     totalCost: number;
     notes: string;
     fillingStation: string;
+    reason: string;
     date: string; // Not sure for the type of this one.
+    time: string; // Not sure for the type of this one.
 }

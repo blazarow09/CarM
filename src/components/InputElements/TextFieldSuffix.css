@@ -1,9 +1,37 @@
-.c-input-suffix {
+/* .c-input-suffix {
     position: absolute;
     right: 0;
     bottom: 6%;
     font-size: 15px;
 }
+
+.c-input-prefix {
+    position: absolute;
+    right: 0;
+    bottom: 15%;
+    left: 0;
+    font-size: 21px;
+}
+
+ion-col.md > .c-input-suffix {
+    position: absolute;
+    right: 0;
+    bottom: 6%;
+    font-size: 15px;
+    left: 0;
+}
+
+ion-col.md > .c-input-prefix {
+    position: absolute;
+    right: 0;
+    bottom: 15%;
+    left: -47%;
+    font-size: 21px;
+}
+
+.c-input-field-row {
+    position: fixed;
+} */
 
 .c-input-column.md > ion-input {
     /* top: 10%; */
