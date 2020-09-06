@@ -1,11 +1,15 @@
 .c-icon-customization {
     /* font-size: 30px; */
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
+}
+
+.c-icon-customization-date-picker {
+    position: absolute;
+    bottom: 10px;
 }
 
 .c-icon-customization-with-helper-text {
-    /* font-size: 30px; */
     position: absolute;
     bottom: 24px;
 }
