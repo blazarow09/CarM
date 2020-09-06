@@ -9,13 +9,9 @@ import ModalBase, { IModalBaseProps, IModalBaseState } from '../ModalBase';
 import { GlobalColors } from '../../../models/Constants/GlobalColors';
 import IHistoryEntry from '../../../models/History/IHistoryEntry';
 import { IContentStore } from '../../../stores/ContentStore/ContentStore';
-import Grid from '@material-ui/core/Grid';
-import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
 import { Moment } from 'moment';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CustomTextField from '../../InputElements/CustomTextField';
-import { DateFormat } from '../../../models/Constants/DateFormat';
 import { IRefuelCreateEdit } from '../../../models/Refuel/IRefuelCreateEdit';
 import CustomTextFieldWithMask from '../../InputElements/CustomTextFieldWithMask';
 // Icons
@@ -24,7 +20,10 @@ import LocalAtmOutlinedIcon from '@material-ui/icons/LocalAtmOutlined';
 import RoomOutlinedIcon from '@material-ui/icons/RoomOutlined';
 import WorkOutlineOutlinedIcon from '@material-ui/icons/WorkOutlineOutlined';
 import NotesOutlinedIcon from '@material-ui/icons/NotesOutlined';
+import DateRangeOutlinedIcon from '@material-ui/icons/DateRangeOutlined';
+
 import './RefuelModal.css';
+import CustomDatePicker from '../../InputElements/CustomDatePicker';
 
 interface RefuelModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
@@ -162,38 +161,17 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
             <IonContent>
                 <ThemeProvider theme={this.muiTheme}>
                     <IonItem lines="none" className="c-input-field-item">
-                        <Grid container justify="space-around" spacing={2}>
-                            <Grid item xs={6}>
-                                <MuiPickersUtilsProvider utils={MomentUtils}>
-                                    <KeyboardDatePicker
-                                        format={DateFormat.defaultDateFormat}
-                                        margin="normal"
-                                        id="date-picker-inline"
-                                        label="Date"
-                                        value={this.state.date}
-                                        onChange={this.handleDate}
-                                        name="date"
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <MuiPickersUtilsProvider utils={MomentUtils}>
-                                    <KeyboardTimePicker
-                                        margin="normal"
-                                        id="time-picker"
-                                        label="Time"
-                                        value={this.state.time}
-                                        onChange={this.handleTime}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change time',
-                                        }}
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </Grid>
-                        </Grid>
+                        <CustomDatePicker
+                            margin="normal"
+                            label="Date"
+                            value={this.state.date}
+                            onChange={this.handleDate}
+                            name="date"
+                            fullWidth={true}
+                            icon={DateRangeOutlinedIcon}
+                            withTimePicker={true}
+                            timePickerProps={{ onChange: this.handleTime, value: this.state.time, label: 'Time' }}
+                        />
                     </IonItem>
                     <IonItem lines="none" className="c-input-field-item">
                         <CustomTextFieldWithMask
@@ -256,9 +234,9 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                             // rows={3}
                         />
                     </IonItem>
-                    {/* <IonItem className="c-note-italic">
+                    <IonItem className="c-note-italic">
                         Note: Entering mileage will update your car's odometer and track it by every entry.
-                    </IonItem> */}
+                    </IonItem>
                 </ThemeProvider>
             </IonContent>
         );
@@ -297,10 +275,10 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
             let refuel: IRefuelCreateEdit = {
                 date: this.state.date,
                 time: this.state.time,
-                mileage: parseInt(this.state.mileage),
-                pricePerLtr: parseFloat(this.state.pricePerLtr),
-                totalCost: parseInt(this.state.totalCost),
-                quantity: parseFloat(this.state.quantity),
+                mileage: this.state.mileage,
+                pricePerLtr: this.state.pricePerLtr,
+                totalCost: this.state.totalCost,
+                quantity: this.state.quantity,
                 fillingStation: this.state.fillingStation,
                 notes: this.state.notes,
                 reason: this.state.reason,

@@ -1,8 +1,8 @@
 export interface IRefuelCreateEdit {
-    quantity: number;
-    pricePerLtr: number;
-    mileage: number;
-    totalCost: number;
+    quantity: string;
+    pricePerLtr: string;
+    mileage: string;
+    totalCost: string;
     notes: string;
     fillingStation: string;
     reason: string;

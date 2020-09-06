@@ -1,7 +1,7 @@
 export default class IHistoryEntry {
-    cost: number;
+    cost: string;
     date: string;
-    mileage: number;
+    mileage: string;
     referenceId: string;
     title: string;
     type: 'refuel' | 'repair';
