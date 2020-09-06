@@ -130,11 +130,11 @@ export default class VehicleService {
                 (car): IVehicleViewModel => ({
                     uid: car.id,
                     type: car.data()?.type,
-                    brand: car.data()?.brand,
+                    manufacturer: car.data()?.manufacturer,
                     model: car.data()?.model,
-                    engine: car.data()?.engine,
-                    variant: car.data()?.variant,
-                    mileage: car.data()?.mileage,
+                    vehicleName: car.data()?.vehicleName,
+                    licensePlate: car.data()?.licensePlate,
+                    year: car.data()?.year,
                     fuel: car.data()?.fuel,
                 })
             );

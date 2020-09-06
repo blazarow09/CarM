@@ -21,8 +21,7 @@ import RoomOutlinedIcon from '@material-ui/icons/RoomOutlined';
 import WorkOutlineOutlinedIcon from '@material-ui/icons/WorkOutlineOutlined';
 import NotesOutlinedIcon from '@material-ui/icons/NotesOutlined';
 import DateRangeOutlinedIcon from '@material-ui/icons/DateRangeOutlined';
-
-import './RefuelModal.css';
+// Icon
 import CustomDatePicker from '../../InputElements/CustomDatePicker';
 
 interface RefuelModalProps extends IModalBaseProps {
@@ -103,7 +102,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
     };
 
     private handleInput = (event: any): void => {
-        let statePropName = event?.target.getAttribute('name');
+        let statePropName = event?.target?.getAttribute('name');
         let statePropValue = event?.target?.value;
 
         if (this.inputFieldTypes.includes(statePropName)) {

@@ -12,3 +12,11 @@
     opacity: 0.6;
     font-style: italic;
 }
+
+.c-input-field-item {
+    margin-bottom: 2%;
+}
+
+.c-vehicle-margin-top {
+    margin-top: 4%;
+}

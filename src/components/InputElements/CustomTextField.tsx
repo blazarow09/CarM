@@ -1,13 +1,16 @@
 import * as React from 'react';
-import { Grid, TextField, InputAdornment, GridSize } from '@material-ui/core';
+import { Grid, TextField, InputAdornment, GridSize, MenuItem, InputBaseComponentProps } from '@material-ui/core';
 import { IonIcon } from '@ionic/react';
 import './CustomTextField.css';
 import TextFieldPropsBase from './TextFieldPropsBase';
 
 interface TextFieldWithIconProps extends TextFieldPropsBase {
-    type?: 'number' | 'text';
+    type?: 'number' | 'text' | 'search';
     trailingFields?: JSX.Element[];
     trailingFieldsCount?: 1 | 2;
+    select?: boolean;
+    selectOptions?: HTMLOptionElement[];
+    InputProps?: InputBaseComponentProps;
     // multiline?: boolean;
     // rows?: number;
 }
@@ -26,7 +29,7 @@ export default class CustomTextField extends React.Component<TextFieldWithIconPr
                 className={`c-text-field`}
                 value={this.props.value && this.props.value}
                 label={this.props.label}
-                fullWidth={this.props.fullWidth && this.props.fullWidth}
+                fullWidth={this.props.fullWidth ? this.props.fullWidth : true}
                 type={this.props.type && this.props.type}
                 InputProps={{
                     endAdornment: this.props.withAdornment && this.props.adornmentPosition === 'end' && (
@@ -37,10 +40,19 @@ export default class CustomTextField extends React.Component<TextFieldWithIconPr
                     ),
                 }}
                 helperText={this.props.helperText && this.props.helperText}
+                select={this.props.select}
                 // multiline={this.props.multiline && this.props.multiline}
                 // rows={this.props.multiline && this.props.rows && this.props.rows}
                 // rowsMax={10}
-            />
+            >
+                {this.props.select &&
+                    this.props.selectOptions &&
+                    this.props.selectOptions?.map((option) => (
+                        <MenuItem key={option?.value} value={option?.value}>
+                            {option?.label}
+                        </MenuItem>
+                    ))}
+            </TextField>
         );
     }
 

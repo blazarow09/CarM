@@ -1,5 +1,5 @@
 export default interface TextFieldPropsBase {
-    onChange: (event: any) => void;
+    onChange?: (event: any) => void;
     label: string;
     value?: string;
     icon?: any;
