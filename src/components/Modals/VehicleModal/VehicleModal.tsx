@@ -1,19 +1,5 @@
 import * as React from 'react';
-import {
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonSelect,
-    IonSelectOption,
-    IonRow,
-    IonCol,
-    IonIcon,
-    IonSpinner,
-} from '@ionic/react';
+import { IonButton, IonButtons, IonContent, IonIcon, IonSpinner, IonItem } from '@ionic/react';
 import { inject, observer } from 'mobx-react';
 import { IUiStore } from '../../../stores/UiStore/UiStore';
 import { closeOutline as closeIcon, checkmarkOutline as saveButton } from 'ionicons/icons';
@@ -22,6 +8,18 @@ import { IUserStore } from '../../../stores/UserStore/UserStore';
 import { IVehicleViewModel } from '../../../models/Vehicle/IVehicleViewModel';
 import ModalBase, { IModalBaseProps, IModalBaseState } from '../ModalBase';
 import { GlobalColors } from '../../../models/Constants/GlobalColors';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import CustomTextField from '../../InputElements/CustomTextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+//Icons
+import DriveEtaOutlinedIcon from '@material-ui/icons/DriveEtaOutlined';
+import BusinessOutlinedIcon from '@material-ui/icons/BusinessOutlined';
+import FormatListBulletedOutlinedIcon from '@material-ui/icons/FormatListBulletedOutlined';
+import LinearScaleOutlinedIcon from '@material-ui/icons/LinearScaleOutlined';
+//Icons
+import { manufacturers } from '../../../resources/Vehicle/Manufacturers';
+import { TextField, Grid, ButtonGroup, Button } from '@material-ui/core';
+import CustomTextFieldWithMask from '../../InputElements/CustomTextFieldWithMask';
 
 interface VehicleModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
@@ -32,15 +30,18 @@ interface VehicleModalProps extends IModalBaseProps {
 interface VehicleModalState extends IModalBaseState {
     uid?: string;
     type?: string;
-    brand?: string;
+    manufacturer?: string;
     model?: string;
-    variant?: string;
-    engine?: string;
-    fuel?: string;
-    mileage?: string;
+    vehicleName?: string;
+    licensePlate?: string;
+    year?: string;
+    fuelTanksCount?: string;
+    tankCapacity?: string;
     saveLoading?: boolean;
     headerToolbarColor?: string;
     headerTitle?: string;
+    oneTankButtonTheme: 'text' | 'contained' | 'outlined';
+    twoTanksButtonTheme: 'text' | 'contained' | 'outlined';
 }
 
 @inject('uiStore')
@@ -55,144 +56,210 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
     public state: VehicleModalState = {
         uid: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.uid : '',
         type: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.type : '',
-        brand: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.brand : '',
         model: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.model : '',
-        variant: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.variant : '',
-        engine: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.engine : '',
-        fuel: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.fuel : '',
-        mileage: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.mileage.toString() : '',
+        licensePlate: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.licensePlate : '',
+        year: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.year : '',
+        vehicleName: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.vehicleName : '',
+        manufacturer: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.manufacturer : '',
+        fuelTanksCount: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.fuelTanksCount : '',
+        tankCapacity: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.tankCapacity : '',
         saveLoading: false,
         headerTitle: this.props.uiStore.modals.createVehicleModalOpen ? 'Add vehicle' : 'Edit vehicle',
         headerToolbarColor: GlobalColors.redColor,
+        oneTankButtonTheme: this.props.vehicleStore.vehicleToEdit?.fuelTanksCount === '1' ? 'contained' : 'outlined',
+        twoTanksButtonTheme: this.props.vehicleStore.vehicleToEdit?.fuelTanksCount === '2' ? 'contained' : 'outlined',
     };
 
-    private inputFieldTypes = new Array<string>('type', 'brand', 'model', 'variant', 'engine', 'fuel', 'mileage');
+    private inputFieldTypes = new Array<string>('type', 'model', 'fuel', 'mileage', 'vehicleName', 'licensePlate', 'year');
 
     protected resetStores(): void {
         this.props.vehicleStore.setVehicleToEdit(null);
     }
 
-    private handleInput(event: any): void {
-        let statePropName = event.target.name;
-        let statePropValue = event.detail.value;
+    private handleInput = (event: any): void => {
+        let statePropName = event?.target?.getAttribute('name');
+        let statePropValue = event?.target?.value;
 
         if (this.inputFieldTypes.includes(statePropName)) {
             this.setState({ [statePropName]: statePropValue });
         }
-    }
+    };
+
+    private handleVehicleTypeChange = (event: any): void => {
+        this.setState({
+            type: event?.target.value,
+        });
+    };
+
+    private muiTheme = createMuiTheme({
+        palette: {
+            primary: {
+                main: GlobalColors.redColorRGB,
+                light: GlobalColors.redColorRGB,
+                dark: GlobalColors.redColorRGB,
+            },
+        },
+    });
+
+    private vehicleTypes = [
+        {
+            value: 'Car',
+            label: 'Car',
+        },
+        {
+            value: 'Motorcycle',
+            label: 'Motorcycle',
+        },
+        {
+            value: 'Bus',
+            label: 'Bus',
+        },
+    ];
+
+    private onManufacturerChange = (_event: any, newValue: string): void => {
+        this.setState({
+            manufacturer: newValue,
+        });
+    };
 
     protected content(): JSX.Element {
         return (
-            <>
-                <IonContent>
-                    <IonList className="c-form-fields">
-                        <IonRow>
-                            <IonCol>
-                                <IonItem className="c-item-input-vehicle">
-                                    <IonLabel position="floating">Type</IonLabel>
-                                    <IonSelect
-                                        color={GlobalColors.redColor}
-                                        interface="popover"
-                                        onIonChange={(event): void => this.handleInput(event)}
-                                        value={this.state.type}
-                                        name="type"
+            <IonContent>
+                <ThemeProvider theme={this.muiTheme}>
+                    <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                        <CustomTextField
+                            label="Vehicle"
+                            name="type"
+                            onChange={this.handleVehicleTypeChange}
+                            value={this.state.type}
+                            icon={DriveEtaOutlinedIcon}
+                            select={true}
+                            selectOptions={this.vehicleTypes as HTMLOptionElement[]}
+                        />
+                    </IonItem>
+                    <IonItem lines="none" className="c-input-field-item">
+                        <Grid container spacing={1}>
+                            <Grid item xs={1}></Grid>
+                            <Grid item xs={11} className="c-field-grid">
+                                <CustomTextField
+                                    label="Vehicle name"
+                                    name="vehicleName"
+                                    onChange={this.handleInput}
+                                    value={this.state.vehicleName}
+                                />
+                            </Grid>
+                        </Grid>
+                    </IonItem>
+                    <IonItem lines="none" className="c-input-field-item">
+                        <Autocomplete
+                            freeSolo
+                            disableClearable
+                            fullWidth={true}
+                            options={manufacturers.map((option) => option.name)}
+                            onChange={this.onManufacturerChange}
+                            value={this.state.manufacturer}
+                            renderInput={(params) => (
+                                <Grid container spacing={1}>
+                                    <Grid item xs={1}>
+                                        <div className="c-icon-customization-select">
+                                            <BusinessOutlinedIcon />
+                                        </div>
+                                    </Grid>
+                                    <Grid item xs={11} className="c-field-grid">
+                                        <TextField
+                                            {...params}
+                                            label="Manufacturer"
+                                            margin="normal"
+                                            name="manufacturer"
+                                            InputProps={{ ...params.InputProps, type: 'search' }}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            )}
+                        />
+                    </IonItem>
+                    <IonItem lines="none" className="c-input-field-item">
+                        <CustomTextField
+                            label="Model"
+                            name="model"
+                            onChange={this.handleInput}
+                            value={this.state.model}
+                            icon={FormatListBulletedOutlinedIcon}
+                        />
+                    </IonItem>
+                    <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                        <Grid container spacing={1}>
+                            <Grid item xs={1}>
+                                {/* <div className="c-icon-customization-select">
+                                            <BusinessOutlinedIcon />
+                                        </div> */}
+                            </Grid>
+                            <Grid item xs={11} className="c-field-grid">
+                                <ButtonGroup fullWidth size="small" color="primary" aria-label="small primary button group">
+                                    <Button
+                                        className="c-one-tank-btn"
+                                        variant={this.state.oneTankButtonTheme}
+                                        aria-valuetext="1"
+                                        onClick={(event: any): void => this.onTankChange(event)}
                                     >
-                                        <IonSelectOption key={1} value="Car">
-                                            Car
-                                        </IonSelectOption>
-                                        <IonSelectOption key={2} value="Motorcycle" disabled>
-                                            Motorcycle
-                                        </IonSelectOption>
-                                        <IonSelectOption key={3} value="Bus" disabled>
-                                            Bus
-                                        </IonSelectOption>
-                                    </IonSelect>
-                                </IonItem>
-                            </IonCol>
-                        </IonRow>
-                        <IonRow>
-                            <IonCol>
-                                <IonItem className="c-item-input-vehicle">
-                                    <IonLabel position="floating">Brand</IonLabel>
-                                    <IonInput
-                                        onIonChange={(event): void => this.handleInput(event)}
-                                        className="c-veh-input"
-                                        value={this.state.brand}
-                                        name="brand"
-                                    />
-                                </IonItem>
-                            </IonCol>
-                            <IonCol>
-                                <IonItem className="c-item-input-vehicle">
-                                    <IonLabel position="floating">Model</IonLabel>
-                                    <IonInput
-                                        onIonChange={(event): void => this.handleInput(event)}
-                                        value={this.state.model}
-                                        name="model"
-                                    />
-                                </IonItem>
-                            </IonCol>
-                        </IonRow>
-                        <IonRow>
-                            <IonCol>
-                                <IonItem className="c-item-input-vehicle">
-                                    <IonLabel position="floating">Variant</IonLabel>
-                                    <IonInput
-                                        onIonChange={(event): void => this.handleInput(event)}
-                                        value={this.state.variant}
-                                        name="variant"
-                                    />
-                                </IonItem>
-                            </IonCol>
-                            <IonCol>
-                                <IonItem className="c-item-input-vehicle">
-                                    <IonLabel position="floating">Engine</IonLabel>
-                                    <IonInput
-                                        onIonChange={(event): void => this.handleInput(event)}
-                                        value={this.state.engine}
-                                        name="engine"
-                                    />
-                                </IonItem>
-                            </IonCol>
-                        </IonRow>
-                        <IonRow>
-                            <IonCol>
-                                <IonItem className="c-item-input-vehicle">
-                                    <IonLabel position="floating">Fuel</IonLabel>
-                                    <IonSelect
-                                        interface="popover"
-                                        onIonChange={(event): void => this.handleInput(event)}
-                                        value={this.state.fuel}
-                                        name="fuel"
+                                        One tank
+                                    </Button>
+                                    <Button
+                                        className="c-two-tanks-btn"
+                                        variant={this.state.twoTanksButtonTheme}
+                                        aria-valuetext="2"
+                                        onClick={(event: any): void => this.onTankChange(event)}
                                     >
-                                        <IonSelectOption key={1} value="Diesel">
-                                            Diesel
-                                        </IonSelectOption>
-                                        <IonSelectOption key={2} value="Petrol">
-                                            Petrol
-                                        </IonSelectOption>
-                                        <IonSelectOption key={3} value="Electricity">
-                                            Electricity
-                                        </IonSelectOption>
-                                    </IonSelect>
-                                </IonItem>
-                            </IonCol>
-                            <IonCol>
-                                <IonItem className="c-item-input-vehicle">
-                                    <IonLabel position="floating">Mileage</IonLabel>
-                                    <IonInput
-                                        value={this.state.mileage}
-                                        type="number"
-                                        onIonChange={(event): void => this.handleInput(event)}
-                                        name="mileage"
-                                    />
-                                </IonItem>
-                            </IonCol>
-                        </IonRow>
-                    </IonList>
-                </IonContent>
-            </>
+                                        Two tanks
+                                    </Button>
+                                </ButtonGroup>
+                            </Grid>
+                        </Grid>
+                    </IonItem>
+                    <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                        <CustomTextField
+                            label="License plate"
+                            onChange={this.handleInput}
+                            name="licensePlate"
+                            value={this.state.licensePlate}
+                            icon={LinearScaleOutlinedIcon}
+                            trailingFieldsCount={1}
+                            trailingFields={[
+                                <CustomTextFieldWithMask
+                                    onChange={this.handleInput}
+                                    label="Year"
+                                    allowOnlyNumber={true}
+                                    name="year"
+                                    fullWidth={true}
+                                    value={this.state.year}
+                                    mask="9999"
+                                    maskChar=" "
+                                />,
+                            ]}
+                        />
+                    </IonItem>
+                </ThemeProvider>
+            </IonContent>
         );
+    }
+
+    private onTankChange(event: any, tankCount?: '1' | '2'): void {
+        console.log(event.target.parentElement.ariaValueText);
+        let fuelTanksCount = event?.target?.parentElement?.ariaValueText;
+
+        if (fuelTanksCount === '1') {
+            this.setState({
+                oneTankButtonTheme: 'contained',
+                twoTanksButtonTheme: 'outlined',
+                fuelTanksCount: fuelTanksCount,
+            });
+        } else if (fuelTanksCount === '2') {
+            this.setState({
+                oneTankButtonTheme: 'outlined',
+                twoTanksButtonTheme: 'contained',
+                fuelTanksCount: fuelTanksCount,
+            });
+        }
     }
 
     private setSaveLoading(loading: boolean): void {
@@ -202,25 +269,17 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
     }
 
     private async handleVehicleSave(): Promise<void> {
-        if (
-            this.state.type &&
-            this.state.brand &&
-            this.state.model &&
-            this.state.variant &&
-            this.state.engine &&
-            this.state.fuel &&
-            this.state.mileage
-        ) {
+        if (this.state.type && this.state.manufacturer && this.state.model && this.state.vehicleName && this.state.fuelTanksCount) {
             this.setSaveLoading(true);
 
             const vehicle: IVehicleViewModel = {
                 type: this.state.type,
-                brand: this.state.brand,
+                manufacturer: this.state.manufacturer,
+                vehicleName: this.state.vehicleName,
+                licensePlate: this.state.licensePlate,
+                year: this.state.year,
                 model: this.state.model,
-                variant: this.state.variant,
-                engine: this.state.engine,
-                fuel: this.state.fuel,
-                mileage: parseInt(this.state.mileage),
+                fuelTanksCount: this.state.fuelTanksCount,
             };
 
             // The current authenticated used id.
@@ -242,7 +301,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
             }
 
             // Retrieve last vehicle updates.
-            await this.props.vehicleStore.getAvailableCars(false, userId);
+            await this.props.vehicleStore.getAvailableCars(false);
 
             // If at this moment this is the first entry in the vehicle's collection we should add a preferred vehicle in the user's collection
             // with the currently create car id.

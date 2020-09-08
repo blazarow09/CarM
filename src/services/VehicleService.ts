@@ -119,7 +119,7 @@ export default class VehicleService {
         await vehicleRef.doc(vehicleId).update(vehicleToSave);
     }
 
-    public async getAvailablecars(userId: string): Promise<IVehicleViewModel[]> {
+    public async getAvailablecars(): Promise<IVehicleViewModel[]> {
         const vehiclesRef = this.getVehiclesCollectionRef();
 
         let cars = await vehiclesRef.get();
@@ -130,12 +130,13 @@ export default class VehicleService {
                 (car): IVehicleViewModel => ({
                     uid: car.id,
                     type: car.data()?.type,
-                    brand: car.data()?.brand,
+                    manufacturer: car.data()?.manufacturer,
                     model: car.data()?.model,
-                    engine: car.data()?.engine,
-                    variant: car.data()?.variant,
-                    mileage: car.data()?.mileage,
-                    fuel: car.data()?.fuel,
+                    vehicleName: car.data()?.vehicleName,
+                    licensePlate: car.data()?.licensePlate,
+                    year: car.data()?.year,
+                    fuelTanksCount: car.data()?.fuelTanksCount,
+                    tankCapacity: car.data()?.tankCapacity,
                 })
             );
         }

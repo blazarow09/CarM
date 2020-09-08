@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MainHeader from '../MainHeader/MainHeader';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
-import { IonPage, IonContent, IonButtons, IonBackButton, IonItem, IonLabel, IonIcon, IonRow, IonCol } from '@ionic/react';
+import { IonPage, IonContent, IonButtons, IonBackButton, IonItem, IonLabel, IonIcon, IonRow, IonCol, IonButton } from '@ionic/react';
 import { AppRoutes } from '../AppRoutes';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import { observer, inject } from 'mobx-react';
@@ -12,14 +12,18 @@ import {
     chevronBackOutline as backIcon,
     chevronForwardOutline as nextIcon,
     locationOutline as locationIcon,
+    createOutline as editIcon,
 } from 'ionicons/icons';
 import './ViewRefuel.css';
 import dayjs from 'dayjs';
 import { DateFormat } from '../../models/Constants/DateFormat';
+import { Modals, IUiStore } from '../../stores/UiStore/UiStore';
+import LoadingScreen from '../Spinners/LoadingScreen';
 
 interface ViewRefuelProps {
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
+    uiStore?: IUiStore;
 }
 
 interface ViewRefuelState {
@@ -28,6 +32,7 @@ interface ViewRefuelState {
 
 @inject('vehicleStore')
 @inject('userStore')
+@inject('uiStore')
 @observer
 export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRefuelState> {
     public async componentDidMount(): Promise<void> {
@@ -41,9 +46,11 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
     }
 
     public state: ViewRefuelState = {
-        dataLoading: this.props.vehicleStore?.viewRefuelData ? true : false,
+        // dataLoading: this.props.vehicleStore?.viewRefuelData ? false : true,
+        dataLoading: false,
     };
 
+    // No need for loading indicator for now.
     private setDataLoading(dataLoading: boolean): void {
         this.setState({
             dataLoading: dataLoading,
@@ -51,15 +58,15 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
     }
 
     private renderContent(): JSX.Element {
-       return this.renderRefuelContent();
+        // return this.renderRefuelContent();
 
-        // return this.state.dataLoading ? (
-        //     <LoadingScreen iconColor={GlobalColors.purpleColor} />
-        // ) : this.props.vehicleStore?.viewRefuelData ? (
-        //     this.renderRefuelContent()
-        // ) : (
-        //     <></>
-        // );
+        return this.state.dataLoading ? (
+            <LoadingScreen iconColor={GlobalColors.purpleColor} />
+        ) : this.props.vehicleStore?.viewRefuelData && !this.state.dataLoading ? (
+            this.renderRefuelContent()
+        ) : (
+            <></>
+        );
     }
 
     private renderRefuelContent(): JSX.Element {
@@ -104,7 +111,7 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
                 <div className="c-background-tab c-space-between-top">
                     <IonRow className="c-space-left-right">
                         {/* CR: Add field for this in the create/edit form */}
-                        <p className="c-fuel-type">Diesel</p>
+                        <p className="c-fuel-type">{this.props.vehicleStore.viewRefuelData?.fuel}</p>
                     </IonRow>
                     <IonRow className="c-space-left-right">
                         <IonCol>
@@ -117,6 +124,16 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
                         </IonCol>
                     </IonRow>
                 </div>
+                {this.props.vehicleStore?.viewRefuelData?.reason && (
+                    <div className="c-background-tab c-space-between-top">
+                        <IonRow className="c-space-left-right">
+                            <p className="c-fuel-type">Reason</p>
+                        </IonRow>
+                        <IonRow className="c-space-left-right">
+                            <p className="c-wrap-text">{this.props.vehicleStore.viewRefuelData.reason}</p>
+                        </IonRow>
+                    </div>
+                )}
                 {this.props.vehicleStore?.viewRefuelData?.notes && (
                     <div className="c-background-tab c-space-between-top">
                         <IonRow className="c-space-left-right">
@@ -140,11 +157,26 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
         );
     }
 
+    private openRefuelEditMode(): void {
+        this.props.vehicleStore.setRefuelToEdit();
+
+        this.props.uiStore.setCreateEditRefuelModalOpen('edit', true);
+
+        this.props.uiStore.openModal(Modals.RefuelModal);
+    }
+
     private extraContent = (): JSX.Element => {
         return (
-            <IonButtons slot="start">
-                <IonBackButton defaultHref={AppRoutes.homeRoute} />
-            </IonButtons>
+            <>
+                <IonButtons slot="start">
+                    <IonBackButton defaultHref={AppRoutes.homeRoute} />
+                </IonButtons>
+                <IonButtons slot="end">
+                    <IonButton onClick={(): void => this.openRefuelEditMode()}>
+                        <IonIcon slot="icon-only" icon={editIcon} />
+                    </IonButton>
+                </IonButtons>
+            </>
         );
     };
 }

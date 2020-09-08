@@ -27,27 +27,25 @@ export default class RefuelService {
         return refuelModel;
     }
 
-    public async saveRefuel(refuel: IRefuelCreateEdit, userId: string, vehicleId: string): Promise<string> {
+    public async saveRefuel(refuel: IRefuelCreateEdit, vehicleId: string): Promise<string> {
         const repairsRef = this.getRefuelCollectionRef(vehicleId);
 
-        let repairResult = await repairsRef.add(refuel);
+        let result;
+        if (refuel && vehicleId) {
+            result = await repairsRef.add(refuel);
+        }
 
-        return repairResult?.id;
-
-        // const vehicleRef = this.getVehiclesCollectionRef(userId);
-
-        // let preferredRef = this.getUsersCollectionRef(userId);
-
-        // let preferred = await preferredRef.get();
-
-        // if (preferred?.exists == false) {
-        //     await preferred.ref.set({ preferredVehicleId: vehicleId });
-        // } else {
-        //     await preferred.ref.update({ preferredVehicleId: vehicleId });
-        // }
+        // The id of the refuel entry.
+        return result?.id;
     }
 
-    public async getIRefuelsByVehicleId(vehicleId: string, userId: string): Promise<IRefuelView[]> {
+    public async editRefuel(refuel: IRefuelCreateEdit, vehicleId: string, refuelId: string): Promise<void> {
+        const refuelRef = this.getRefuelCollectionRef(vehicleId);
+
+        if (refuel && refuelId) await refuelRef.doc(refuelId).update(refuel);
+    }
+
+    public async getRefuelsByVehicleId(vehicleId: string): Promise<IRefuelView[]> {
         let refuelsCollection: IRefuelView[];
 
         try {
@@ -56,22 +54,12 @@ export default class RefuelService {
             let refuels = await repairsRef.get();
 
             if (refuels?.docs?.length > 0) {
-                refuelsCollection = refuels.docs.map(
-                    (refuel): IRefuelView => this.mapRefuelViewModel(refuel)
-                );
-                // refuelsCollection = refuels.docs.map(
-                //     (refuel): IRefuelView => ({
-                //         uid: refuel.id,
-                //         quantity: refuel.data()?.quantity,
-                //         pricePerLtr: refuel.data()?.pricePerLtr,
-                //         mileage: refuel.data()?.mileage,
-                //         totalCost: refuel.data()?.totalCost,
-                //         notes: refuel.data()?.notes,
-                //         fillingStation: refuel.data()?.fillingStation,
-                //         date: refuel.data()?.date,
-                //     })
-                // );
+                refuelsCollection = refuels.docs.map((refuel): IRefuelView => this.mapRefuelViewModel(refuel));
             }
+
+            refuelsCollection.sort(function (a, b) {
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+            });
         } catch (error) {
             console.log(error);
         }
@@ -89,6 +77,9 @@ export default class RefuelService {
             notes: refuel.data()?.notes,
             fillingStation: refuel.data()?.fillingStation,
             date: refuel.data()?.date,
+            reason: refuel.data()?.reason,
+            time: refuel.data()?.time,
+            fuel: refuel.data()?.fuel,
         };
     }
 }

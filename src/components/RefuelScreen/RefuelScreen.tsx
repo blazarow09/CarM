@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { IonPage, IonContent, IonFab, IonFabButton, IonIcon, IonButtons, IonBackButton } from '@ionic/react';
+import { IonPage, IonContent, IonFab, IonFabButton, IonIcon, IonButtons, IonBackButton, IonButton } from '@ionic/react';
 import MainHeader from '../MainHeader/MainHeader';
 import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 import { Modals, IUiStore } from '../../stores/UiStore/UiStore';
 import { AppRoutes } from '../AppRoutes';
-import { addOutline as addIcon } from 'ionicons/icons';
+import { addOutline as addIcon, createOutline as editIcon } from 'ionicons/icons';
 import { observer, inject } from 'mobx-react';
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
@@ -33,7 +33,6 @@ export default class RefuelScreen extends React.Component<RefuelScreenProps, Ref
 
         await this.props.vehicleStore.getRefuelsByVehicleId(
             false,
-            this.props.userStore.userContext.userId,
             this.props.vehicleStore.preferredVehicleId
         );
 
@@ -41,13 +40,13 @@ export default class RefuelScreen extends React.Component<RefuelScreenProps, Ref
     }
 
     public state: RefuelScreenState = {
-        dataLoading: false
-    }
+        dataLoading: false,
+    };
 
     public componentWillUnmount(): void {
         this.props.userStore.setHideTabsMenu(false);
 
-        this.props.vehicleStore.getRefuelsByVehicleId(true, '', '');
+        this.props.vehicleStore.getRefuelsByVehicleId(true, '');
     }
 
     private setDataLoading(dataLoading: boolean): void {
@@ -69,11 +68,11 @@ export default class RefuelScreen extends React.Component<RefuelScreenProps, Ref
     private renderRefuelContent(): JSX.Element {
         return (
             <>
-            {this.props.vehicleStore?.refuelsByVehicleId?.map((refuel, index) => (
-                <RefuelEntry key={index} refuelEntry={refuel} />
-            ))}
+                {this.props.vehicleStore?.refuelsByVehicleId?.map((refuel, index) => (
+                    <RefuelEntry key={index} refuelEntry={refuel} />
+                ))}
             </>
-        )
+        );
     }
 
     public render() {

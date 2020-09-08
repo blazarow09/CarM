@@ -1,0 +1,28 @@
+.c-icon-customization {
+    /* font-size: 30px; */
+    position: absolute;
+    bottom: 0;
+}
+
+.c-icon-customization-date-picker {
+    position: absolute;
+    bottom: 10px;
+}
+
+.c-icon-customization-select {
+    position: absolute;
+    bottom: 10px;
+}
+
+.c-icon-customization-with-helper-text {
+    position: absolute;
+    bottom: 24px;
+}
+
+.c-field-grid {
+    padding-left: 5% !important;
+}
+
+.MuiFormHelperText-root {
+    text-align: end !important;
+}

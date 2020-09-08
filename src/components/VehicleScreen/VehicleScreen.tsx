@@ -36,12 +36,14 @@ import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
 import { ILocalizationStore } from '../../stores/LocalizationStore/LocalizationStore';
 import LoadingScreen from '../Spinners/LoadingScreen';
+import { IContentStore } from '../../stores/ContentStore/ContentStore';
 
 interface VehicleScreenProps {
     userStore?: IUserStore;
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     localizationStore?: ILocalizationStore;
+    contentStore?: IContentStore;
 }
 
 interface VehicleScreenState {
@@ -55,6 +57,7 @@ interface VehicleScreenState {
 @inject('uiStore')
 @inject('vehicleStore')
 @inject('localizationStore')
+@inject('contentStore')
 @observer
 export default class VehicleScreen extends React.Component<VehicleScreenProps> {
     public async componentDidMount(): Promise<void> {
@@ -62,7 +65,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
         this.setDataLoading(true);
 
-        await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
+        await this.props.vehicleStore.getAvailableCars(false);
 
         // Stop loading indicator.
         this.setDataLoading(false);
@@ -99,7 +102,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
         await this.removeVehicle();
 
-        await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
+        await this.props.vehicleStore.getAvailableCars(false);
     }
 
     private openEditVehicleView(vehicle: IVehicleViewModel): void {
@@ -115,6 +118,8 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
         if (vehicleId) {
             await this.props.vehicleStore.savePreferredVehicleId(vehicleId, this.props.userStore?.userContext?.userId);
 
+            await this.props.contentStore.getHistoryEntries(vehicleId);
+            
             this.setShowToast(true);
         }
     }
@@ -145,7 +150,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
                         <div className="c-vehicle-select">
                             <IonItem>
                                 <IonLabel className="c-car-name-label" color="light">
-                                    {`${vehicle.brand} ${vehicle.model}`}
+                                    {`${vehicle.vehicleName}`}
                                 </IonLabel>
                                 <IonCheckbox
                                     slot="start"

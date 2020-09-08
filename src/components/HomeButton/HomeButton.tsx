@@ -3,16 +3,11 @@ import { IonFab, IonFabButton, IonIcon, IonFabList } from '@ionic/react';
 import { observer, inject } from 'mobx-react';
 import { IUiStore } from '../../stores/UiStore/UiStore';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
-import {
-    arrowUpCircleOutline as arrowUpButton,
-    carSportOutline as vehicleIcon,
-    build as repairIcon,
-} from 'ionicons/icons';
+import { arrowUpCircleOutline as arrowUpButton, carSportOutline as vehicleIcon, build as repairIcon } from 'ionicons/icons';
 import { AppRoutes } from '../AppRoutes';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
 import refuelIcon from '../../img/icons/refuel-w.svg';
 import { IUserStore } from '../../stores/UserStore/UserStore';
-
 
 interface HomeButtonProps {
     uiStore?: IUiStore;
@@ -28,7 +23,12 @@ interface HomeButtonProps {
 export default class HomeButton extends React.Component<HomeButtonProps> {
     public render() {
         return (
-            <IonFab vertical="bottom" horizontal="center" className={`c-home-button ${this.props.userStore.hideTabsMenu && 'c-tabs-not-visible'}`} hidden={this.props.hiddenAppTabs}>
+            <IonFab
+                vertical="bottom"
+                horizontal="center"
+                className={`c-home-button ${this.props.userStore.hideTabsMenu && 'c-tabs-not-visible'}`}
+                hidden={this.props.hiddenAppTabs}
+            >
                 {/* Home Button */}
                 <IonFabButton color={GlobalColors.defaultColor}>
                     <IonIcon icon={arrowUpButton} />
@@ -63,6 +63,7 @@ export default class HomeButton extends React.Component<HomeButtonProps> {
                         color={GlobalColors.purpleColor}
                         routerLink={AppRoutes.refuelScreenRoute}
                         disabled={this.props.vehicleStore.preferredVehicleId === '' ? true : false}
+                        onClick={() => this.props.uiStore.setCreateEditRefuelModalOpen('create', true)}
                     >
                         <IonIcon icon={refuelIcon} />
                     </IonFabButton>

@@ -1,3 +1,7 @@
 .c-tabs-not-visible {
     display: none;
 }
+
+ion-picker {
+    touch-action: none;
+}
