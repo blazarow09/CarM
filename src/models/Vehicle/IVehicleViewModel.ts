@@ -6,5 +6,6 @@ export interface IVehicleViewModel {
     vehicleName?: string;
     licensePlate?: string;
     year?: string;
-    fuel?: string;
+    fuelTanksCount?: string;
+    tankCapacity?: string;
 }

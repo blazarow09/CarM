@@ -5,5 +5,7 @@ export interface IVehicleCreateEdit {
     variant: string;
     engine: string;
     fuel: string;
-    mileage: number;
+    mileage: string;
+    fuelTanksCount?: string;
+    tankCapacity?: string;
 }

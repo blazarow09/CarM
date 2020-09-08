@@ -65,7 +65,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
         this.setDataLoading(true);
 
-        await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
+        await this.props.vehicleStore.getAvailableCars(false);
 
         // Stop loading indicator.
         this.setDataLoading(false);
@@ -102,7 +102,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
         await this.removeVehicle();
 
-        await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
+        await this.props.vehicleStore.getAvailableCars(false);
     }
 
     private openEditVehicleView(vehicle: IVehicleViewModel): void {
