@@ -55,7 +55,7 @@ export default class Home extends React.Component<HomeProps, HomeState> {
     };
 
     public async componentDidMount(): Promise<void> {
-        await this.props.vehicleStore.getAvailableCars(false, this.props.userStore.userContext.userId);
+        await this.props.vehicleStore.getAvailableCars(false);
         await this.props.contentStore.getHistoryEntries(this.props.vehicleStore?.preferredVehicleId);
 
         // Stop loading indicator.
@@ -100,7 +100,9 @@ export default class Home extends React.Component<HomeProps, HomeState> {
             <>
                 <IonItem>
                     <IonLabel>
-                        {preferredVehicle?.brand} {preferredVehicle?.model}
+                        {preferredVehicle?.vehicleName
+                            ? preferredVehicle.vehicleName
+                            : preferredVehicle?.manufacturer + ' ' + preferredVehicle?.model}
                     </IonLabel>
                     <IonButton expand="block" color="primary" fill="outline" routerLink={AppRoutes.vehicleScreenRoute}>
                         Change
