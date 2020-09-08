@@ -1,4 +1,5 @@
 export default class IHistoryEntry {
+    uid?: string;
     cost: string;
     date: string;
     mileage: string;
