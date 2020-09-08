@@ -7,6 +7,7 @@ export interface IRefuelView {
     notes: string;
     reason: string;
     fillingStation: string;
+    fuel: string;
     date: string; // Not sure for the type of this one.
     time: string; // Not sure for the type of this one.
 }

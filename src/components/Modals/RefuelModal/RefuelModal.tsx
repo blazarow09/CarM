@@ -14,6 +14,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CustomTextField from '../../InputElements/CustomTextField';
 import { IRefuelCreateEdit } from '../../../models/Refuel/IRefuelCreateEdit';
 import CustomTextFieldWithMask from '../../InputElements/CustomTextFieldWithMask';
+import CustomDatePicker from '../../InputElements/CustomDatePicker';
 // Icons
 import MoneyOutlinedIcon from '@material-ui/icons/MoneyOutlined';
 import LocalAtmOutlinedIcon from '@material-ui/icons/LocalAtmOutlined';
@@ -21,8 +22,8 @@ import RoomOutlinedIcon from '@material-ui/icons/RoomOutlined';
 import WorkOutlineOutlinedIcon from '@material-ui/icons/WorkOutlineOutlined';
 import NotesOutlinedIcon from '@material-ui/icons/NotesOutlined';
 import DateRangeOutlinedIcon from '@material-ui/icons/DateRangeOutlined';
-// Icon
-import CustomDatePicker from '../../InputElements/CustomDatePicker';
+import LocalGasStationOutlinedIcon from '@material-ui/icons/LocalGasStationOutlined';
+// Icons
 
 interface RefuelModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
@@ -42,6 +43,7 @@ interface RefuelModalState extends IModalBaseState {
     notes?: string;
     mileage?: string;
     reason?: string;
+    fuel?: string;
     saveLoading?: boolean;
     headertoolbarColor?: string;
     headerTitle?: string;
@@ -68,6 +70,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
         notes: this.props.vehicleStore.refuelToEdit?.notes ? this.props.vehicleStore.refuelToEdit?.notes : '',
         mileage: this.props.vehicleStore.refuelToEdit?.mileage ? this.props.vehicleStore.refuelToEdit?.mileage : '',
         reason: this.props.vehicleStore.refuelToEdit?.reason ? this.props.vehicleStore.refuelToEdit?.reason : '',
+        fuel: this.props.vehicleStore.refuelToEdit?.fuel ? this.props.vehicleStore.refuelToEdit?.fuel : '',
         saveLoading: false,
         headerTitle: this.props.uiStore.modals.editRefuelModalOpen ? 'Edit refuel' : 'Add refuel',
         headerToolbarColor: GlobalColors.purpleColor,
@@ -113,6 +116,16 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                             value={this.state.mileage}
                             mask="99999999"
                             maskChar=" "
+                        />
+                    </IonItem>
+                    <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                        <CustomTextField
+                            label="Fuel"
+                            onChange={this.handleFuelTypeChange}
+                            value={this.state.fuel}
+                            icon={LocalGasStationOutlinedIcon}
+                            select={true}
+                            selectOptions={this.fuelTypes as HTMLOptionElement[]}
                         />
                     </IonItem>
                     <IonItem lines="none" className="c-input-field-item">
@@ -184,6 +197,29 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
         );
     };
 
+    private fuelTypes = [
+        {
+            value: 'CNG',
+            label: 'CNG',
+        },
+        {
+            value: 'Diesel',
+            label: 'Diesel',
+        },
+        {
+            value: 'Gasoline',
+            label: 'Gasoline',
+        },
+        {
+            value: 'LPG',
+            label: 'LPG',
+        },
+        {
+            value: 'Electric',
+            label: 'Electric',
+        },
+    ];
+
     private inputFieldTypes = new Array<string>(
         'date',
         'time',
@@ -215,6 +251,12 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
     private handleTime = (time: Moment): void => {
         this.setState({
             time: time.toISOString(),
+        });
+    };
+
+    private handleFuelTypeChange = (event: any): void => {
+        this.setState({
+            fuel: event?.target.value,
         });
     };
 
@@ -287,6 +329,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
             this.state.date &&
             this.state.date &&
             this.state.mileage &&
+            this.state.fuel &&
             this.state.quantity &&
             this.state.pricePerLtr &&
             this.state.totalCost
@@ -296,27 +339,29 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
             let refuel: IRefuelCreateEdit = {
                 date: this.state.date,
                 time: this.state.time,
-                mileage: this.state.mileage,
+                mileage: this.state.mileage.trimEnd(),
                 pricePerLtr: this.state.pricePerLtr,
                 totalCost: this.state.totalCost,
                 quantity: this.state.quantity,
                 fillingStation: this.state.fillingStation,
                 notes: this.state.notes,
                 reason: this.state.reason,
+                fuel: this.state.fuel,
             };
 
             //Create =>
             // 1. Save refuel;
             // 2. Create history model;
             // 3. Save history model;
-            // 4. Get the new refuels ??;
+            // 4. Get the new refuels;
 
             //Edit =>
             // 1. Save edited refuel;
             // 2. Get the history entry from the observable;
             // 3. Else get the history entry from the firebase;
             // 4. Save edited history entry;
-            // 5. Refresh the refuels ??;
+            // 5. Refresh the refuels;
+            // 6. Set the edited refuel in the refuel details screen.
 
             let refuelId: string;
             if (this.props.uiStore.modals.createRefuelModalOpen) {
@@ -344,13 +389,35 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
 
                     historyEntry = this.createHistoryEntryModel(refuel, refuelId, historyEntryId);
                 } else {
-                    // CR: Request the history entry from the firebase.
+                    // If the history entry doesn't exist in the entries observable(it is not loaded at the home screen),
+                    // request to get it from the firebase.
+                    let retrievedHistoryEntry = await this.props.contentStore.getHistoryEntryByReferenceId(
+                        this.props.vehicleStore?.preferredVehicleId,
+                        refuelId
+                    );
+
+                    if (retrievedHistoryEntry?.uid)
+                        historyEntry = this.createHistoryEntryModel(refuel, refuelId, retrievedHistoryEntry.uid);
                 }
 
                 // Save edited history entry by refuel.
-                await this.props.contentStore.editHistoryEntry(this.props.vehicleStore.preferredVehicleId, historyEntry);
+                historyEntry && (await this.props.contentStore.editHistoryEntry(this.props.vehicleStore.preferredVehicleId, historyEntry));
+
+                if (refuelId) {
+                    // Refresh refuels in order to show latest changes.
+                    await this.props.vehicleStore.getRefuelsByVehicleId(false, this.props.vehicleStore.preferredVehicleId);
+
+                    // Find the edited refuel and set it in the refuel view observable.
+                    let editedRefuel = this.props.vehicleStore.refuelsByVehicleId?.find((x): boolean => x?.uid === refuelId);
+                    editedRefuel && this.props.vehicleStore.setViewRefuel(editedRefuel);
+
+                    this.hideModal();
+                } else {
+                    this.setSaveLoading(false);
+                }
             }
         } else {
+            // CR: Add form validation.
             console.log('Please, form all fields');
         }
     }

@@ -37,18 +37,6 @@ export default class RefuelService {
 
         // The id of the refuel entry.
         return result?.id;
-
-        // const vehicleRef = this.getVehiclesCollectionRef(userId);
-
-        // let preferredRef = this.getUsersCollectionRef(userId);
-
-        // let preferred = await preferredRef.get();
-
-        // if (preferred?.exists == false) {
-        //     await preferred.ref.set({ preferredVehicleId: vehicleId });
-        // } else {
-        //     await preferred.ref.update({ preferredVehicleId: vehicleId });
-        // }
     }
 
     public async editRefuel(refuel: IRefuelCreateEdit, vehicleId: string, refuelId: string): Promise<void> {
@@ -91,6 +79,7 @@ export default class RefuelService {
             date: refuel.data()?.date,
             reason: refuel.data()?.reason,
             time: refuel.data()?.time,
+            fuel: refuel.data()?.fuel,
         };
     }
 }

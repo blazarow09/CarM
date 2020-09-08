@@ -111,7 +111,7 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
                 <div className="c-background-tab c-space-between-top">
                     <IonRow className="c-space-left-right">
                         {/* CR: Add field for this in the create/edit form */}
-                        <p className="c-fuel-type">Diesel</p>
+                        <p className="c-fuel-type">{this.props.vehicleStore.viewRefuelData?.fuel}</p>
                     </IonRow>
                     <IonRow className="c-space-left-right">
                         <IonCol>
@@ -124,6 +124,16 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
                         </IonCol>
                     </IonRow>
                 </div>
+                {this.props.vehicleStore?.viewRefuelData?.reason && (
+                    <div className="c-background-tab c-space-between-top">
+                        <IonRow className="c-space-left-right">
+                            <p className="c-fuel-type">Reason</p>
+                        </IonRow>
+                        <IonRow className="c-space-left-right">
+                            <p className="c-wrap-text">{this.props.vehicleStore.viewRefuelData.reason}</p>
+                        </IonRow>
+                    </div>
+                )}
                 {this.props.vehicleStore?.viewRefuelData?.notes && (
                     <div className="c-background-tab c-space-between-top">
                         <IonRow className="c-space-left-right">
