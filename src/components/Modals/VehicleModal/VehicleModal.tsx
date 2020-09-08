@@ -40,8 +40,8 @@ interface VehicleModalState extends IModalBaseState {
     saveLoading?: boolean;
     headerToolbarColor?: string;
     headerTitle?: string;
-    oneTankButtonTheme: 'text' | 'contained' | 'outlined';
-    twoTanksButtonTheme: 'text' | 'contained' | 'outlined';
+    oneTankButtonTheme?: 'text' | 'contained' | 'outlined';
+    twoTanksButtonTheme?: 'text' | 'contained' | 'outlined';
 }
 
 @inject('uiStore')
