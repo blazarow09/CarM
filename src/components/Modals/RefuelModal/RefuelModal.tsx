@@ -38,13 +38,13 @@ interface RefuelModalState extends IModalBaseState {
     quantity?: string;
     pricePerLtr?: string;
     totalCost?: string;
-    mileage?: string;
     fillingStation?: string;
     notes?: string;
+    mileage?: string;
+    reason?: string;
     saveLoading?: boolean;
     headertoolbarColor?: string;
     headerTitle?: string;
-    reason?: string;
 }
 
 @inject('uiStore')
@@ -58,102 +58,28 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
     }
 
     public state: RefuelModalState = {
-        uid: '',
-        date: new Date().toISOString(),
-        time: new Date(Date.now()).toISOString(),
-        quantity: '',
-        pricePerLtr: '',
-        totalCost: '',
-        fillingStation: '',
-        notes: '',
-        mileage: '',
-        reason: '',
+        uid: this.props.vehicleStore.refuelToEdit?.uid ? this.props.vehicleStore.refuelToEdit?.uid : '',
+        date: this.props.vehicleStore.refuelToEdit?.date ? this.props.vehicleStore.refuelToEdit?.date : new Date().toISOString(),
+        time: this.props.vehicleStore.refuelToEdit?.time ? this.props.vehicleStore.refuelToEdit?.time : new Date(Date.now()).toISOString(),
+        quantity: this.props.vehicleStore.refuelToEdit?.quantity ? this.props.vehicleStore.refuelToEdit?.quantity : '',
+        pricePerLtr: this.props.vehicleStore.refuelToEdit?.pricePerLtr ? this.props.vehicleStore.refuelToEdit?.pricePerLtr : '',
+        totalCost: this.props.vehicleStore.refuelToEdit?.totalCost ? this.props.vehicleStore.refuelToEdit?.totalCost : '',
+        fillingStation: this.props.vehicleStore.refuelToEdit?.fillingStation ? this.props.vehicleStore.refuelToEdit?.fillingStation : '',
+        notes: this.props.vehicleStore.refuelToEdit?.notes ? this.props.vehicleStore.refuelToEdit?.notes : '',
+        mileage: this.props.vehicleStore.refuelToEdit?.mileage ? this.props.vehicleStore.refuelToEdit?.mileage : '',
+        reason: this.props.vehicleStore.refuelToEdit?.reason ? this.props.vehicleStore.refuelToEdit?.reason : '',
         saveLoading: false,
-        headerTitle: 'Add refuel',
+        headerTitle: this.props.uiStore.modals.editRefuelModalOpen ? 'Edit refuel' : 'Add refuel',
         headerToolbarColor: GlobalColors.purpleColor,
     };
 
-    private inputFieldTypes = new Array<string>(
-        'date',
-        'time',
-        'quantity',
-        'pricePerLtr',
-        'totalCost',
-        'fillingStation',
-        'notes',
-        'mileage',
-        'reason'
-    );
-
     protected resetStores(): void {
-        this.props.vehicleStore.setVehicleToEdit(null);
-    }
-
-    private handleDate = (date: Moment): void => {
-        this.setState({
-            date: date.toISOString(),
-        });
-    };
-
-    private handleTime = (time: Moment): void => {
-        this.setState({
-            time: time.toISOString(),
-        });
-    };
-
-    private handleInput = (event: any): void => {
-        let statePropName = event?.target?.getAttribute('name');
-        let statePropValue = event?.target?.value;
-
-        if (this.inputFieldTypes.includes(statePropName)) {
-            switch (statePropName) {
-                case 'pricePerLtr':
-                    this.calculateTotalCostByPrice(statePropValue);
-                    break;
-                case 'quantity':
-                    this.calculateTotalCostByQuantity(statePropValue);
-                    break;
-            }
-
-            this.setState({ [statePropName]: statePropValue });
+        // If the edit refuel view was open reset the refuel edit observable and close the dialog.
+        if (this.props.uiStore.modals.editRefuelModalOpen) {
+            this.props.uiStore.setCreateEditRefuelModalOpen('both');
+            this.props.vehicleStore.setRefuelToEdit(true);
         }
-    };
-
-    private calculateTotalCostByQuantity(statePropValue: string): void {
-        let totalCost = 0;
-        if (this.state.pricePerLtr !== '') {
-            totalCost = parseFloat(this.state.pricePerLtr) * parseFloat(statePropValue);
-        }
-
-        this.setState({
-            totalCost: totalCost?.toFixed(2).toString(),
-        });
     }
-
-    private calculateTotalCostByPrice(statePropValue: string): void {
-        let totalCost = 0;
-        if (statePropValue === '0' || statePropValue === '') {
-            totalCost = parseFloat('0.0');
-        } else if (this.state.quantity !== '') {
-            totalCost = parseFloat(this.state.quantity) * parseFloat(statePropValue);
-        }
-
-        this.setState({
-            totalCost: totalCost?.toFixed(2).toString(),
-        });
-    }
-
-    public timeFormat = 'HH:mm';
-
-    private muiTheme = createMuiTheme({
-        palette: {
-            primary: {
-                main: GlobalColors.purpleColorRGB,
-                light: GlobalColors.purpleColorRGB,
-                dark: GlobalColors.purpleColorRGB,
-            },
-        },
-    });
 
     protected content(): JSX.Element {
         return (
@@ -241,6 +167,99 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
         );
     }
 
+    protected extraContent = (): JSX.Element => {
+        return (
+            <>
+                <IonButtons slot="end">
+                    <IonButton onClick={(): void => this.hideModal()}>
+                        <IonIcon slot="icon-only" icon={closeIcon} />
+                    </IonButton>
+                </IonButtons>
+                <IonButtons slot="end">
+                    <IonButton onClick={async (): Promise<void> => await this.handleRefuelSave()}>
+                        {this.state.saveLoading ? <IonSpinner name="crescent" /> : <IonIcon slot="icon-only" icon={saveButton} />}
+                    </IonButton>
+                </IonButtons>
+            </>
+        );
+    };
+
+    private inputFieldTypes = new Array<string>(
+        'date',
+        'time',
+        'quantity',
+        'pricePerLtr',
+        'totalCost',
+        'fillingStation',
+        'notes',
+        'mileage',
+        'reason'
+    );
+
+    private muiTheme = createMuiTheme({
+        palette: {
+            primary: {
+                main: GlobalColors.purpleColorRGB,
+                light: GlobalColors.purpleColorRGB,
+                dark: GlobalColors.purpleColorRGB,
+            },
+        },
+    });
+
+    private handleDate = (date: Moment): void => {
+        this.setState({
+            date: date.toISOString(),
+        });
+    };
+
+    private handleTime = (time: Moment): void => {
+        this.setState({
+            time: time.toISOString(),
+        });
+    };
+
+    private handleInput = (event: any): void => {
+        let statePropName = event?.target?.getAttribute('name');
+        let statePropValue = event?.target?.value;
+
+        if (this.inputFieldTypes.includes(statePropName)) {
+            switch (statePropName) {
+                case 'pricePerLtr':
+                    this.calculateTotalCostByPrice(statePropValue);
+                    break;
+                case 'quantity':
+                    this.calculateTotalCostByQuantity(statePropValue);
+                    break;
+            }
+
+            this.setState({ [statePropName]: statePropValue });
+        }
+    };
+
+    private calculateTotalCostByQuantity(statePropValue: string): void {
+        let totalCost = 0;
+        if (this.state.pricePerLtr !== '') {
+            totalCost = parseFloat(this.state.pricePerLtr) * parseFloat(statePropValue);
+        }
+
+        this.setState({
+            totalCost: totalCost?.toFixed(2).toString(),
+        });
+    }
+
+    private calculateTotalCostByPrice(statePropValue: string): void {
+        let totalCost = 0;
+        if (statePropValue === '0' || statePropValue === '') {
+            totalCost = parseFloat('0.0');
+        } else if (this.state.quantity !== '') {
+            totalCost = parseFloat(this.state.quantity) * parseFloat(statePropValue);
+        }
+
+        this.setState({
+            totalCost: totalCost?.toFixed(2).toString(),
+        });
+    }
+
     private getPriceTrailingFields(): JSX.Element[] {
         return [
             <CustomTextField label="Quantity" name="quantity" onChange={this.handleInput} type="number" value={this.state.quantity} />,
@@ -264,12 +283,15 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
     }
 
     private async handleRefuelSave(): Promise<void> {
-        if (this.state.date && this.state.mileage && this.state.quantity && this.state.pricePerLtr && this.state.totalCost) {
+        if (
+            this.state.date &&
+            this.state.date &&
+            this.state.mileage &&
+            this.state.quantity &&
+            this.state.pricePerLtr &&
+            this.state.totalCost
+        ) {
             this.setSaveLoading(true);
-
-            const vehicleId = this.props.vehicleStore.preferredVehicleId;
-            // The current authenticated used id.
-            const userId = window?.authContext?.userId;
 
             let refuel: IRefuelCreateEdit = {
                 date: this.state.date,
@@ -283,51 +305,72 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                 reason: this.state.reason,
             };
 
-            let refuelId = await this.props.vehicleStore.handleSaveRefuel(refuel, userId);
+            //Create =>
+            // 1. Save refuel;
+            // 2. Create history model;
+            // 3. Save history model;
+            // 4. Get the new refuels ??;
 
-            if (refuelId) {
-                await this.props.vehicleStore.getRefuelsByVehicleId(
-                    false,
-                    this.props.userStore.userContext.userId,
-                    this.props.vehicleStore.preferredVehicleId
-                );
+            //Edit =>
+            // 1. Save edited refuel;
+            // 2. Get the history entry from the observable;
+            // 3. Else get the history entry from the firebase;
+            // 4. Save edited history entry;
+            // 5. Refresh the refuels ??;
 
-                let historyEntry: IHistoryEntry = {
-                    cost: refuel.totalCost,
-                    date: refuel.date,
-                    mileage: refuel.mileage,
-                    referenceId: refuelId,
-                    title: 'Refueling', // CR: think about localization.
-                    type: 'refuel',
-                };
+            let refuelId: string;
+            if (this.props.uiStore.modals.createRefuelModalOpen) {
+                // Save the new refuel.
+                refuelId = await this.props.vehicleStore.handleSaveRefuel(refuel);
 
-                await this.props.contentStore.saveHistoryEntry(vehicleId, historyEntry);
+                // If the refuel is successful create history entry.
+                if (refuelId) {
+                    let historyEntry = this.createHistoryEntryModel(refuel, refuelId);
 
-                // this.setSaveLoading(false);
-                this.hideModal();
-            } else {
-                this.setSaveLoading(false);
-                // log the problem.
+                    // Create history entry.
+                    await this.props.contentStore.saveHistoryEntry(this.props.vehicleStore.preferredVehicleId, historyEntry);
+                }
+            } else if (this.props.uiStore.modals.editRefuelModalOpen) {
+                refuelId = this.state?.uid;
+
+                // Save edited refuel.
+                await this.props.vehicleStore.handleEditRefuel(refuel, refuelId);
+
+                // Try to find the history entry in the entries observable.
+                let historyEntry = this.props.contentStore.historyEntries?.find((x): boolean => x?.referenceId === refuelId);
+                if (historyEntry?.uid) {
+                    // If found get the id and create new history model by the edited refuel.
+                    let historyEntryId = historyEntry.uid;
+
+                    historyEntry = this.createHistoryEntryModel(refuel, refuelId, historyEntryId);
+                } else {
+                    // CR: Request the history entry from the firebase.
+                }
+
+                // Save edited history entry by refuel.
+                await this.props.contentStore.editHistoryEntry(this.props.vehicleStore.preferredVehicleId, historyEntry);
             }
         } else {
             console.log('Please, form all fields');
         }
     }
 
-    protected extraContent = (): JSX.Element => {
-        return (
-            <>
-                <IonButtons slot="end">
-                    <IonButton onClick={(): void => this.hideModal()}>
-                        <IonIcon slot="icon-only" icon={closeIcon} />
-                    </IonButton>
-                </IonButtons>
-                <IonButtons slot="end">
-                    <IonButton onClick={async (): Promise<void> => await this.handleRefuelSave()}>
-                        {this.state.saveLoading ? <IonSpinner name="crescent" /> : <IonIcon slot="icon-only" icon={saveButton} />}
-                    </IonButton>
-                </IonButtons>
-            </>
-        );
-    };
+    private createHistoryEntryModel(refuel: IRefuelCreateEdit, refuelId: string, historyEntryId?: string): IHistoryEntry {
+        let historyEntry: IHistoryEntry;
+
+        historyEntry = {
+            cost: refuel.totalCost,
+            date: refuel.date,
+            mileage: refuel.mileage,
+            referenceId: refuelId,
+            title: 'Refueling', // CR: think about localization.
+            type: 'refuel',
+        };
+
+        if (historyEntryId) {
+            historyEntry.uid = historyEntryId;
+        }
+
+        return historyEntry;
+    }
 }

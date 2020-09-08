@@ -8,6 +8,8 @@ export interface IModals {
 
     // Repair
     repairModalOpen: boolean;
+    createRefuelModalOpen: boolean;
+    editRefuelModalOpen: boolean;
 
     // Refuel
     refuelModalOpen: boolean;
@@ -25,6 +27,8 @@ export interface IUiStore {
     closeAllModals(): void;
     setCreateEditVehicleModalOpen(createOrEdit: 'create' | 'edit', status: boolean): void;
 
+    setCreateEditRefuelModalOpen(createOrEdit: 'create' | 'edit' | 'both', status?: boolean): void;
+
     // Observables
     modals: IModals;
 
@@ -33,11 +37,16 @@ export interface IUiStore {
 
 export class UiStore implements IUiStore {
     @observable public modals: IModals = {
-        vehicleModalOpen: false,
+        // Repair
         repairModalOpen: false,
+        // Vehicle
+        vehicleModalOpen: false,
         editVehicleModalOpen: false,
         createVehicleModalOpen: false,
+        // Refuel
         refuelModalOpen: false,
+        createRefuelModalOpen: false,
+        editRefuelModalOpen: false,
     };
 
     @action.bound
@@ -54,7 +63,6 @@ export class UiStore implements IUiStore {
             case Modals.RefuelModal:
                 this.modals.refuelModalOpen = true;
                 break;
-
             default:
                 break;
         }
@@ -75,6 +83,20 @@ export class UiStore implements IUiStore {
         } else if (createOrEdit === 'edit') {
             this.modals.editVehicleModalOpen = status;
             this.modals.createVehicleModalOpen = !status;
+        }
+    }
+
+    @action
+    public setCreateEditRefuelModalOpen(createOrEdit: 'create' | 'edit' | 'both', status?: boolean): void {
+        if (createOrEdit === 'create') {
+            this.modals.createRefuelModalOpen = status;
+            this.modals.editRefuelModalOpen = !status;
+        } else if (createOrEdit === 'edit') {
+            this.modals.editRefuelModalOpen = status;
+            this.modals.createRefuelModalOpen = !status;
+        } else if (createOrEdit === 'both') {
+            this.modals.editRefuelModalOpen = false;
+            this.modals.createRefuelModalOpen = false;
         }
     }
 }

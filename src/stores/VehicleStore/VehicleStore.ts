@@ -24,19 +24,22 @@ export interface IVehicleStore {
     getPreferredVehicleId(userId: string): Promise<void>;
     savePreferredVehicleId(vehicleId: string, userId: string): Promise<void>;
 
-    getAvailableCars(reset: boolean, userId?: string): Promise<boolean>;
+    getAvailableCars(reset: boolean): Promise<boolean>;
 
     // Repair
     handleSaveRepair(repair: IRepair, userId: string): Promise<string>;
     getRepairsByVehicleId(reset: boolean, vehicleId: string, userId: string): Promise<void>;
 
     //Refuel
-    handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<string>;
-    getRefuelsByVehicleId(reset: boolean, userId: string, vehicleId: string): Promise<void>;
+    handleSaveRefuel(refuel: IRefuelCreateEdit): Promise<string>;
+    getRefuelsByVehicleId(reset: boolean, vehicleId: string): Promise<void>;
     getSingleRefulebById(refuelId: string): Promise<void>;
 
     setViewRefuel(refuel: IRefuelView): void;
     viewRefuelData: IRefuelView;
+    setRefuelToEdit(reset?: boolean): void;
+    handleEditRefuel(refuel: IRefuelCreateEdit, refuelId: string): Promise<void>;
+    refuelToEdit: IRefuelCreateEdit;
 
     // Observables
     availableCars: IObservableArray<IVehicleViewModel>;
@@ -71,6 +74,7 @@ export class VehicleStore implements IVehicleStore {
     @observable public refuelsByVehicleId: IObservableArray<IRefuelView> = observable([]);
     @observable public viewRefuelData: IRefuelView = null;
     @observable public lastOdometer: string = '';
+    @observable public refuelToEdit: IRefuelCreateEdit = null;
 
     //#endregion
 
@@ -151,13 +155,13 @@ export class VehicleStore implements IVehicleStore {
     }
 
     @action
-    public async getAvailableCars(reset: boolean, userId: string): Promise<boolean> {
+    public async getAvailableCars(reset: boolean): Promise<boolean> {
         if (reset) {
             this.availableCars.clear();
             return true;
         } else {
             try {
-                let cars = await this._vehicleService.getAvailablecars(userId);
+                let cars = await this._vehicleService.getAvailablecars();
 
                 this.availableCars.replace(cars);
             } catch (error) {
@@ -203,9 +207,9 @@ export class VehicleStore implements IVehicleStore {
     //#endregion
 
     //#region Refuel Operations
-    public async handleSaveRefuel(refuel: IRefuelCreateEdit, userId: string): Promise<string> {
+    public async handleSaveRefuel(refuel: IRefuelCreateEdit): Promise<string> {
         if (refuel && this.preferredVehicleId) {
-            let refuelId = await this._refuelService.saveRefuel(refuel, userId, this.preferredVehicleId);
+            let refuelId = await this._refuelService.saveRefuel(refuel, this.preferredVehicleId);
 
             // await this.saveLastOdometerForVehicle(refuel.mileage);
 
@@ -213,12 +217,22 @@ export class VehicleStore implements IVehicleStore {
         }
     }
 
-    public async getRefuelsByVehicleId(reset: boolean, userId: string, vehicleId: string): Promise<void> {
+    public async handleEditRefuel(refuel: IRefuelCreateEdit, refuelId: string): Promise<void> {
+        if (refuel && this.preferredVehicleId) {
+            await this._refuelService.editRefuel(refuel, this.preferredVehicleId, refuelId);
+
+            // await this.saveLastOdometerForVehicle(refuel.mileage);
+
+            // return refuelId;
+        }
+    }
+
+    public async getRefuelsByVehicleId(reset: boolean, vehicleId: string): Promise<void> {
         if (reset) {
             this.refuelsByVehicleId.clear();
         } else {
-            if (userId && vehicleId) {
-                let refuels = await this._refuelService.getIRefuelsByVehicleId(vehicleId, userId);
+            if (vehicleId) {
+                let refuels = await this._refuelService.getRefuelsByVehicleId(vehicleId);
 
                 this.refuelsByVehicleId.replace(refuels);
             }
@@ -232,6 +246,13 @@ export class VehicleStore implements IVehicleStore {
 
             this.setViewRefuel(refuel);
         }
+    }
+
+    @action
+    public setRefuelToEdit(reset?: boolean): void {
+        if (reset) {
+            this.refuelToEdit = null;
+        } else if (this.viewRefuelData) this.refuelToEdit = this.viewRefuelData;
     }
 
     @action

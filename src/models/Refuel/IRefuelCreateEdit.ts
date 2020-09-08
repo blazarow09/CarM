@@ -1,4 +1,5 @@
 export interface IRefuelCreateEdit {
+    uid?: string;
     quantity: string;
     pricePerLtr: string;
     mileage: string;
