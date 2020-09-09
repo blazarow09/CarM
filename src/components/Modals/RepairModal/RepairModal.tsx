@@ -295,7 +295,7 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
 
             let repairId = await this.props.vehicleStore.handleSaveRepair(repair, userId);
 
-            await this.props.vehicleStore.getRepairsByVehicleId(false, vehicleId, userId);
+            await this.props.vehicleStore.getRepairsByVehicleId(false, vehicleId);
 
             if (repairId) {
                 let historyEntry: IHistoryEntry = {

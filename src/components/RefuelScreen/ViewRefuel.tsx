@@ -46,7 +46,6 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
     }
 
     public state: ViewRefuelState = {
-        // dataLoading: this.props.vehicleStore?.viewRefuelData ? false : true,
         dataLoading: false,
     };
 
@@ -58,8 +57,6 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
     }
 
     private renderContent(): JSX.Element {
-        // return this.renderRefuelContent();
-
         return this.state.dataLoading ? (
             <LoadingScreen iconColor={GlobalColors.purpleColor} />
         ) : this.props.vehicleStore?.viewRefuelData && !this.state.dataLoading ? (
@@ -110,7 +107,6 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
                 </div>
                 <div className="c-background-tab c-space-between-top">
                     <IonRow className="c-space-left-right">
-                        {/* CR: Add field for this in the create/edit form */}
                         <p className="c-fuel-type">{this.props.vehicleStore.viewRefuelData?.fuel}</p>
                     </IonRow>
                     <IonRow className="c-space-left-right">
