@@ -1,20 +1,23 @@
 export class AppRoutes {
+    static prefixMyRoute = '/my';
+    static homeRoute = AppRoutes.prefixMyRoute + '/home';
+
+    // Auth
     static loginRoute = '/login';
     static registerRoute = '/register';
 
-    static prefixMyRoute = '/my';
+    // Vehicle
+    static vehicleScreenRoute = AppRoutes.prefixMyRoute + '/vehicle';
 
-    static homeRoute = AppRoutes.prefixMyRoute + '/home'
+    // Refuel
+    static refuelScreenRoute = AppRoutes.prefixMyRoute + '/refuels';
+    static viewRefuelScreenRoute = AppRoutes.prefixMyRoute + '/refuel/details';
 
-    static vehicleScreenRoute = AppRoutes.prefixMyRoute + '/vehicle'
+    // Repair
+    static repairScreenRoute = AppRoutes.prefixMyRoute + '/repairs';
+    static viewRepairScreenRoute = AppRoutes.prefixMyRoute + '/repair/details';
 
-    static repairScreenRoute = AppRoutes.prefixMyRoute + '/repairs'
-
-    static refuelScreenRoute = AppRoutes.prefixMyRoute + '/refuels'
-    
-    static viewRefuelScreenRoute = AppRoutes.prefixMyRoute + '/refuel/details'
-
-    static moreOptionsRoute = AppRoutes.prefixMyRoute + '/more-options'
-    
-    static settingsRoute = AppRoutes.prefixMyRoute + '/settings'
+    // Others
+    static moreOptionsRoute = AppRoutes.prefixMyRoute + '/more-options';
+    static settingsRoute = AppRoutes.prefixMyRoute + '/settings';
 }

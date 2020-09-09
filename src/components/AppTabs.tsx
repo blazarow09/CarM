@@ -15,6 +15,7 @@ import MoreOptionsScreen from './MoreOptionsScreen/MoreOptionsScreen';
 import { ILocalizationStore } from '../stores/LocalizationStore/LocalizationStore';
 import ViewRefuel from './RefuelScreen/ViewRefuel';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
+import ViewRepair from './RepairScreen/ViewRepair';
 
 interface AppTabsProps {
     userId: string;
@@ -63,6 +64,9 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                         </Route>
                         <Route exact path={AppRoutes.repairScreenRoute}>
                             <RepairScreen />
+                        </Route>
+                        <Route exact path={AppRoutes.viewRepairScreenRoute}>
+                            <ViewRepair />
                         </Route>
                         <Route exact path={AppRoutes.refuelScreenRoute}>
                             <RefuelScreen />
