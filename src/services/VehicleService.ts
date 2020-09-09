@@ -20,42 +20,6 @@ export default class VehicleService {
         return firestore.collection('users').doc(window?.authContext?.userId);
     }
 
-    //#region Repair Operations
-    public async saveRepair(repair: IRepair, userId: string, vehicleId: string): Promise<string> {
-        const repairsRef = this.getRepairsCollectionRef(vehicleId);
-
-        let repairResult = await repairsRef.add(repair);
-
-        return repairResult.id;
-    }
-
-    public async getRepairsByVehicleId(vehicleId: string, userId: string): Promise<IRepair[]> {
-        const repairsRef = this.getRepairsCollectionRef(vehicleId);
-
-        let repairs = await repairsRef.get();
-
-        let repairsCollection: IRepair[];
-        if (repairs?.docs?.length > 0) {
-            repairsCollection = repairs.docs.map(
-                (repair): IRepair => ({
-                    uid: repair.id,
-                    repair: repair.data()?.repair,
-                    cost: repair.data()?.cost,
-                    mileage: repair.data()?.mileage,
-                    city: repair.data()?.city,
-                    note: repair.data()?.note,
-                    place: repair.data()?.place,
-                    phone: repair.data()?.phone,
-                    date: repair.data()?.date,
-                })
-            );
-        }
-
-        return repairsCollection;
-    }
-    //#endregion
-
-    //#region Vehicle Operations
     public async getLastOdometerForVehicle(vehicleId: string): Promise<string> {
         let singleVehicleRef = this.getVehiclesCollectionRefById(vehicleId);
 
@@ -143,5 +107,4 @@ export default class VehicleService {
 
         return carsCollection;
     }
-    //#endregion
 }

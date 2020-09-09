@@ -63,18 +63,25 @@ export default class HistoryEntry extends React.Component<HistoryEntryProps, His
         switch (this.props.historyEntry.type) {
             case 'refuel':
                 return AppRoutes.viewRefuelScreenRoute;
+            case 'repair':
+                return AppRoutes.viewRepairScreenRoute;
         }
     }
 
     private async getDetailsForEntry(): Promise<void> {
         switch (this.props.historyEntry?.type) {
             case 'refuel':
-                await this.props.vehicleStore.getSingleRefulebById(this.props.historyEntry.referenceId);
+                await this.props.vehicleStore.getSingleRefulebById(this.props.historyEntry?.referenceId);
 
                 this.setState({
                     routerLink: AppRoutes.viewRefuelScreenRoute,
                 });
             case 'repair':
+                await this.props.vehicleStore.getSingleRepairById(this.props.historyEntry?.referenceId);
+
+                this.setState({
+                    routerLink: AppRoutes.viewRepairScreenRoute,
+                });
                 break;
         }
     }
