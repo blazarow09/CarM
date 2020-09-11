@@ -1,0 +1,75 @@
+.c-background-tab {
+    background: #f0f0f0;
+}
+
+.c-item-background-tab {
+    --background: #f0f0f0;
+}
+
+.c-date-info {
+    opacity: 0.6;
+}
+
+.c-date-margin-left {
+    margin-left: 5px;
+}
+
+.c-date-content {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+.c-button-click-effect:active {
+    color: #817e7e;
+}
+
+.c-space-between-top {
+    margin-top: 1px;
+}
+
+.c-detail-title {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.c-detail-info-color {
+    font-size: 27px;
+    color: var(--ion-color-orange);
+}
+
+.c-detail-info {
+    display: inline;
+    position: absolute;
+    margin-top: 5%;
+}
+
+.c-space-left-right {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.c-detail-icon {
+    width: 23px;
+    height: 23px;
+    position: relative;
+    margin-top: 4%;
+}
+
+.c-detail-text {
+    font-size: 15px;
+}
+
+.c-no-margin {
+    margin: 0;
+}
+
+.c-repair-type {
+    color: var(--ion-color-orange);
+    font-weight: 500;
+}
+
+.c-wrap-text {
+    word-break: break-word;
+}

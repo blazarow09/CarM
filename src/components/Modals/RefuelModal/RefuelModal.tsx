@@ -403,18 +403,20 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                 // Save edited history entry by refuel.
                 historyEntry && (await this.props.contentStore.editHistoryEntry(this.props.vehicleStore.preferredVehicleId, historyEntry));
 
-                if (refuelId) {
-                    // Refresh refuels in order to show latest changes.
-                    await this.props.vehicleStore.getRefuelsByVehicleId(false, this.props.vehicleStore.preferredVehicleId);
+               
+            }
 
-                    // Find the edited refuel and set it in the refuel view observable.
-                    let editedRefuel = this.props.vehicleStore.refuelsByVehicleId?.find((x): boolean => x?.uid === refuelId);
-                    editedRefuel && this.props.vehicleStore.setViewRefuel(editedRefuel);
+            if (refuelId) {
+                // Refresh refuels in order to show latest changes.
+                await this.props.vehicleStore.getRefuelsByVehicleId(false, this.props.vehicleStore.preferredVehicleId);
 
-                    this.hideModal();
-                } else {
-                    this.setSaveLoading(false);
-                }
+                // Find the edited refuel and set it in the refuel view observable.
+                let editedRefuel = this.props.vehicleStore.refuelsByVehicleId?.find((x): boolean => x?.uid === refuelId);
+                editedRefuel && this.props.vehicleStore.setViewRefuel(editedRefuel);
+
+                this.hideModal();
+            } else {
+                this.setSaveLoading(false);
             }
         } else {
             // CR: Add form validation.

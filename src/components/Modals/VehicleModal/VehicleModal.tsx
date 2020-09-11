@@ -40,8 +40,8 @@ interface VehicleModalState extends IModalBaseState {
     saveLoading?: boolean;
     headerToolbarColor?: string;
     headerTitle?: string;
-    oneTankButtonTheme: 'text' | 'contained' | 'outlined';
-    twoTanksButtonTheme: 'text' | 'contained' | 'outlined';
+    oneTankButtonTheme?: 'text' | 'contained' | 'outlined';
+    twoTanksButtonTheme?: 'text' | 'contained' | 'outlined';
 }
 
 @inject('uiStore')
@@ -189,11 +189,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                     </IonItem>
                     <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
                         <Grid container spacing={1}>
-                            <Grid item xs={1}>
-                                {/* <div className="c-icon-customization-select">
-                                            <BusinessOutlinedIcon />
-                                        </div> */}
-                            </Grid>
+                            <Grid item xs={1}></Grid>
                             <Grid item xs={11} className="c-field-grid">
                                 <ButtonGroup fullWidth size="small" color="primary" aria-label="small primary button group">
                                     <Button

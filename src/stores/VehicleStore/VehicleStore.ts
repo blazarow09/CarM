@@ -5,6 +5,7 @@ import { IRepair } from '../../models/Repair/IRepair';
 import { IRefuelCreateEdit } from '../../models/Refuel/IRefuelCreateEdit';
 import RefuelService from '../../services/RefuelService';
 import { IRefuelView } from '../../models/Refuel/IRefuelView';
+import RepairService from '../../services/RepairService';
 
 export interface IVehicleStore {
     // Methods
@@ -28,7 +29,10 @@ export interface IVehicleStore {
 
     // Repair
     handleSaveRepair(repair: IRepair, userId: string): Promise<string>;
-    getRepairsByVehicleId(reset: boolean, vehicleId: string, userId: string): Promise<void>;
+    getRepairsByVehicleId(reset: boolean, vehicleId: string): Promise<void>;
+    getSingleRepairById(repairId: string): Promise<void>;
+    setViewRepair(repair: IRepair): void;
+    viewRepairData: IRepair;
 
     //Refuel
     handleSaveRefuel(refuel: IRefuelCreateEdit): Promise<string>;
@@ -59,6 +63,7 @@ export class VehicleStore implements IVehicleStore {
     //#region Services
     private _vehicleService: VehicleService;
     private _refuelService: RefuelService;
+    private _repairService: RepairService;
 
     //#endregion
 
@@ -73,14 +78,16 @@ export class VehicleStore implements IVehicleStore {
 
     @observable public refuelsByVehicleId: IObservableArray<IRefuelView> = observable([]);
     @observable public viewRefuelData: IRefuelView = null;
+    @observable public viewRepairData: IRepair = null;
     @observable public lastOdometer: string = '';
     @observable public refuelToEdit: IRefuelCreateEdit = null;
 
     //#endregion
 
-    public constructor(vehicleService: VehicleService, refuelService: RefuelService) {
+    public constructor(vehicleService: VehicleService, refuelService: RefuelService, repairService: RepairService) {
         this._vehicleService = vehicleService;
         this._refuelService = refuelService;
+        this._repairService = repairService;
     }
 
     public setUserId(userId: string): void {
@@ -182,7 +189,7 @@ export class VehicleStore implements IVehicleStore {
     //#region Repair Operations
     public async handleSaveRepair(repair: IRepair, userId: string): Promise<string> {
         if (repair && this.preferredVehicleId) {
-            let repairId = await this._vehicleService.saveRepair(repair, userId, this.preferredVehicleId);
+            let repairId = await this._repairService.saveRepair(repair, this.preferredVehicleId);
 
             // await this.saveLastOdometerForVehicle(repair.mileage);
 
@@ -191,18 +198,32 @@ export class VehicleStore implements IVehicleStore {
     }
 
     @action
-    public async getRepairsByVehicleId(reset: boolean, vehicleId: string, userId: string): Promise<void> {
+    public async getRepairsByVehicleId(reset: boolean, vehicleId: string): Promise<void> {
         if (reset) {
             this.repairsByVehicleId.clear();
         } else {
             let repairs: IRepair[];
 
-            if (vehicleId && userId) {
-                repairs = await this._vehicleService.getRepairsByVehicleId(vehicleId, userId);
+            if (vehicleId) {
+                repairs = await this._repairService.getRepairsByVehicleId(vehicleId);
             }
 
             this.repairsByVehicleId.replace(repairs);
         }
+    }
+
+    @action
+    public async getSingleRepairById(repairId: string): Promise<void> {
+        if (repairId && this.preferredVehicleId) {
+            let repair = await this._repairService.getSingleRepair(this.preferredVehicleId, repairId);
+
+            this.setViewRepair(repair);
+        }
+    }
+
+    @action
+    public setViewRepair(repair: IRepair): void {
+        this.viewRepairData = repair;
     }
     //#endregion
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MainHeader from '../MainHeader/MainHeader';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
-import { IonPage, IonContent, IonButtons, IonBackButton, IonItem, IonLabel, IonIcon, IonRow, IonCol, IonButton } from '@ionic/react';
+import { IonPage, IonContent, IonButtons, IonBackButton, IonItem, IonIcon, IonRow, IonCol, IonButton } from '@ionic/react';
 import { AppRoutes } from '../AppRoutes';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import { observer, inject } from 'mobx-react';
@@ -14,19 +14,19 @@ import {
     locationOutline as locationIcon,
     createOutline as editIcon,
 } from 'ionicons/icons';
-import './ViewRefuel.css';
+import './ViewRepair.css';
 import dayjs from 'dayjs';
 import { DateFormat } from '../../models/Constants/DateFormat';
 import { Modals, IUiStore } from '../../stores/UiStore/UiStore';
 import LoadingScreen from '../Spinners/LoadingScreen';
 
-interface ViewRefuelProps {
+interface ViewRepairProps {
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
     uiStore?: IUiStore;
 }
 
-interface ViewRefuelState {
+interface ViewRepairState {
     dataLoading: boolean;
 }
 
@@ -34,7 +34,7 @@ interface ViewRefuelState {
 @inject('userStore')
 @inject('uiStore')
 @observer
-export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRefuelState> {
+export default class ViewRepair extends React.Component<ViewRepairProps, ViewRepairState> {
     public async componentDidMount(): Promise<void> {
         this.props.userStore.setHideTabsMenu(true);
     }
@@ -45,7 +45,7 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
         this.props.vehicleStore.setViewRefuel(null);
     }
 
-    public state: ViewRefuelState = {
+    public state: ViewRepairState = {
         dataLoading: false,
     };
 
@@ -59,7 +59,7 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
     private renderContent(): JSX.Element {
         return this.state.dataLoading ? (
             <LoadingScreen iconColor={GlobalColors.purpleColor} />
-        ) : this.props.vehicleStore?.viewRefuelData && !this.state.dataLoading ? (
+        ) : this.props.vehicleStore?.viewRepairData && !this.state.dataLoading ? (
             this.renderRefuelContent()
         ) : (
             <></>
@@ -77,7 +77,7 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
                         <IonCol size="10" className="c-date-info">
                             <IonIcon icon={dateIcon} size="small" />
                             <span className="c-date-margin-left">
-                                {dayjs(this.props.vehicleStore.viewRefuelData?.date).format(DateFormat.defaultDateFormat)}
+                                {dayjs(this.props.vehicleStore.viewRepairData?.date).format(DateFormat.defaultDateFormat)}
                             </span>
                         </IonCol>
                         <IonCol size="1" ion-align-items-end className="c-button-click-effect">
@@ -89,54 +89,45 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
                     <IonRow className="c-space-left-right">
                         <IonCol size="12">
                             <p className="c-detail-title">Total cost</p>
-                            <p className="c-detail-info-price c-no-margin">{this.props.vehicleStore.viewRefuelData?.totalCost} BGN</p>
+                            <p className="c-detail-info-color c-no-margin">{this.props.vehicleStore.viewRepairData?.cost} BGN</p>
                         </IonCol>
                     </IonRow>
                     <IonRow className="c-space-left-right">
                         <IonCol size="6">
                             <IonIcon className="c-detail-icon" icon={odometerIcon} />
-                            <div className="c-detail-info">{this.props.vehicleStore.viewRefuelData?.mileage} km</div>
+                            <div className="c-detail-info">{this.props.vehicleStore.viewRepairData?.mileage} km</div>
                         </IonCol>
-                        {this.props.vehicleStore?.viewRefuelData?.fillingStation && (
+                        {this.props.vehicleStore?.viewRepairData?.place && this.props.vehicleStore?.viewRepairData?.city && (
                             <IonCol size="6">
                                 <IonIcon className="c-detail-icon" icon={locationIcon} />
-                                <div className="c-detail-info">{this.props.vehicleStore.viewRefuelData?.fillingStation}</div>
+                                <div className="c-detail-info">{`${this.props.vehicleStore.viewRepairData?.place}, ${this.props.vehicleStore.viewRepairData?.city}`}</div>
                             </IonCol>
                         )}
                     </IonRow>
                 </div>
                 <div className="c-background-tab c-space-between-top">
                     <IonRow className="c-space-left-right">
-                        <p className="c-fuel-type">{this.props.vehicleStore.viewRefuelData?.fuel}</p>
+                        {/* CR: Add field for this in the create/edit form */}
+                        <p className="c-repair-type">{this.props.vehicleStore.viewRepairData?.repair}</p>
                     </IonRow>
                     <IonRow className="c-space-left-right">
                         <IonCol>
-                            <p className="c-detail-title c-no-margin">Price / L</p>
-                            <p className="c-refuel-price-qty c-no-margin">{this.props.vehicleStore.viewRefuelData?.pricePerLtr} BGN</p>
+                            <p className="c-detail-title c-no-margin">Cost</p>
+                            <p className="c-detail-text c-no-margin">{this.props.vehicleStore.viewRepairData?.cost} BGN</p>
                         </IonCol>
                         <IonCol>
-                            <p className="c-detail-title c-no-margin">Quantity</p>
-                            <p className="c-refuel-price-qty c-no-margin">{this.props.vehicleStore.viewRefuelData?.quantity} L</p>
+                            <p className="c-detail-title c-no-margin">Phone</p>
+                            <p className="c-detail-text c-no-margin">{this.props.vehicleStore.viewRepairData?.phone}</p>
                         </IonCol>
                     </IonRow>
                 </div>
-                {this.props.vehicleStore?.viewRefuelData?.reason && (
+                {this.props.vehicleStore?.viewRepairData?.note && (
                     <div className="c-background-tab c-space-between-top">
                         <IonRow className="c-space-left-right">
-                            <p className="c-fuel-type">Reason</p>
+                            <p className="c-repair-type">Notes</p>
                         </IonRow>
                         <IonRow className="c-space-left-right">
-                            <p className="c-wrap-text">{this.props.vehicleStore.viewRefuelData.reason}</p>
-                        </IonRow>
-                    </div>
-                )}
-                {this.props.vehicleStore?.viewRefuelData?.notes && (
-                    <div className="c-background-tab c-space-between-top">
-                        <IonRow className="c-space-left-right">
-                            <p className="c-fuel-type">Notes</p>
-                        </IonRow>
-                        <IonRow className="c-space-left-right">
-                            <p className="c-wrap-text">{this.props.vehicleStore.viewRefuelData.notes}</p>
+                            <p className="c-wrap-text">{this.props.vehicleStore.viewRepairData.note}</p>
                         </IonRow>
                     </div>
                 )}
@@ -147,7 +138,7 @@ export default class ViewRefuel extends React.Component<ViewRefuelProps, ViewRef
     public render() {
         return (
             <IonPage>
-                <MainHeader toolbarColor={GlobalColors.purpleColor} title="Refuel details" extraContent={this.extraContent} />
+                <MainHeader toolbarColor={GlobalColors.orangeColor} title="Repair details" extraContent={this.extraContent} />
                 <IonContent>{this.renderContent()}</IonContent>
             </IonPage>
         );

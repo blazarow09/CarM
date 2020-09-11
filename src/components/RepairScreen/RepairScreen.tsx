@@ -27,15 +27,14 @@ export default class RepairScreen extends React.Component<RepairScreenProps> {
 
         await this.props.vehicleStore.getRepairsByVehicleId(
             false,
-            this.props.vehicleStore.preferredVehicleId,
-            this.props.userStore.userContext?.userId
+            this.props.vehicleStore.preferredVehicleId
         );
     }
 
     public componentWillUnmount(): void {
         this.props.userStore.setHideTabsMenu(false);
 
-        this.props.vehicleStore.getRepairsByVehicleId(true, '', '');
+        this.props.vehicleStore.getRepairsByVehicleId(true, '');
     }
 
     private renderRepairsList(): JSX.Element {
