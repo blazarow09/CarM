@@ -23,6 +23,7 @@ import WorkOutlineOutlinedIcon from '@material-ui/icons/WorkOutlineOutlined';
 import NotesOutlinedIcon from '@material-ui/icons/NotesOutlined';
 import DateRangeOutlinedIcon from '@material-ui/icons/DateRangeOutlined';
 import LocalGasStationOutlinedIcon from '@material-ui/icons/LocalGasStationOutlined';
+import { InputHelper } from '../../../helpers/InputHelper';
 // Icons
 
 interface RefuelModalProps extends IModalBaseProps {
@@ -125,7 +126,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                             value={this.state.fuel}
                             icon={LocalGasStationOutlinedIcon}
                             select={true}
-                            selectOptions={this.fuelTypes as HTMLOptionElement[]}
+                            selectOptions={InputHelper.fuelTypes as HTMLOptionElement[]}
                         />
                     </IonItem>
                     <IonItem lines="none" className="c-input-field-item">
@@ -197,28 +198,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
         );
     };
 
-    private fuelTypes = [
-        {
-            value: 'CNG',
-            label: 'CNG',
-        },
-        {
-            value: 'Diesel',
-            label: 'Diesel',
-        },
-        {
-            value: 'Gasoline',
-            label: 'Gasoline',
-        },
-        {
-            value: 'LPG',
-            label: 'LPG',
-        },
-        {
-            value: 'Electric',
-            label: 'Electric',
-        },
-    ];
+  
 
     private inputFieldTypes = new Array<string>(
         'date',
