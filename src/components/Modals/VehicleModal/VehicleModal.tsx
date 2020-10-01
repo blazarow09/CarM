@@ -15,10 +15,15 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import DriveEtaOutlinedIcon from '@material-ui/icons/DriveEtaOutlined';
 import BusinessOutlinedIcon from '@material-ui/icons/BusinessOutlined';
 import FormatListBulletedOutlinedIcon from '@material-ui/icons/FormatListBulletedOutlined';
+import AddIcon from '@material-ui/icons/Add';
+import LooksOneIcon from '@material-ui/icons/LooksOne';
+import LooksTwoIcon from '@material-ui/icons/LooksTwo';
 import LinearScaleOutlinedIcon from '@material-ui/icons/LinearScaleOutlined';
 //Icons
 import { manufacturers } from '../../../resources/Vehicle/Manufacturers';
-import { TextField, Grid, ButtonGroup, Button } from '@material-ui/core';
+import { TextField, Grid, ButtonGroup, Button, IconButton } from '@material-ui/core';
+import './VehicleModal.css';
+import { InputHelper } from '../../../helpers/InputHelper';
 import CustomTextFieldWithMask from '../../InputElements/CustomTextFieldWithMask';
 
 interface VehicleModalProps extends IModalBaseProps {
@@ -36,12 +41,16 @@ interface VehicleModalState extends IModalBaseState {
     licensePlate?: string;
     year?: string;
     fuelTanksCount?: string;
-    tankCapacity?: string;
+    mainFuelType?: string;
+    mainTankCapacity?: string;
+    secondFuelType?: string;
+    secondTankCapacity?: string;
     saveLoading?: boolean;
     headerToolbarColor?: string;
     headerTitle?: string;
     oneTankButtonTheme?: 'text' | 'contained' | 'outlined';
     twoTanksButtonTheme?: 'text' | 'contained' | 'outlined';
+    moreOptions?: boolean;
 }
 
 @inject('uiStore')
@@ -62,12 +71,16 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
         vehicleName: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.vehicleName : '',
         manufacturer: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.manufacturer : '',
         fuelTanksCount: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.fuelTanksCount : '',
-        tankCapacity: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.tankCapacity : '',
+        mainFuelType: '', // CR: Load for edit
+        mainTankCapacity: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.tankCapacity : '',
+        secondFuelType: '', // CR: Load for edit
+        secondTankCapacity: '', // CR: Load for edit
         saveLoading: false,
         headerTitle: this.props.uiStore.modals.createVehicleModalOpen ? 'Add vehicle' : 'Edit vehicle',
         headerToolbarColor: GlobalColors.redColor,
         oneTankButtonTheme: this.props.vehicleStore.vehicleToEdit?.fuelTanksCount === '1' ? 'contained' : 'outlined',
         twoTanksButtonTheme: this.props.vehicleStore.vehicleToEdit?.fuelTanksCount === '2' ? 'contained' : 'outlined',
+        moreOptions: false, //CR: True if in edit mode there is license plate, year, chasis, vin or notes.
     };
 
     private inputFieldTypes = new Array<string>('type', 'model', 'fuel', 'mileage', 'vehicleName', 'licensePlate', 'year');
@@ -212,32 +225,128 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                             </Grid>
                         </Grid>
                     </IonItem>
-                    <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
-                        <CustomTextField
-                            label="License plate"
-                            onChange={this.handleInput}
-                            name="licensePlate"
-                            value={this.state.licensePlate}
-                            icon={LinearScaleOutlinedIcon}
-                            trailingFieldsCount={1}
-                            trailingFields={[
-                                <CustomTextFieldWithMask
-                                    onChange={this.handleInput}
-                                    label="Year"
-                                    allowOnlyNumber={true}
-                                    name="year"
-                                    fullWidth={true}
-                                    value={this.state.year}
-                                    mask="9999"
-                                    maskChar=" "
-                                />,
-                            ]}
-                        />
-                    </IonItem>
+                    {this.state.fuelTanksCount === '1' && this.renderMainTankField()}
+                    {this.state.fuelTanksCount === '2' && this.renderBothTankFields()}
+                    {!!this.state.moreOptions && this.renderMoreOptions()}
+
+                    {!this.state.moreOptions && (
+                        <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top c-more-options-item">
+                            <Button className="c-more-options-btn" onClick={() => this.setState({ moreOptions: true })}>
+                                <AddIcon />
+                                <span className="c-more-options-text">More options</span>
+                            </Button>
+                        </IonItem>
+                    )}
                 </ThemeProvider>
             </IonContent>
         );
     }
+
+    private renderMoreOptions(): JSX.Element {
+        return (
+            <>
+                <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                    <CustomTextField
+                        label="License plate"
+                        onChange={this.handleInput}
+                        name="licensePlate"
+                        value={this.state.licensePlate}
+                        icon={LinearScaleOutlinedIcon}
+                        trailingFieldsCount={1}
+                        trailingFields={[
+                            <CustomTextFieldWithMask
+                                onChange={this.handleInput}
+                                label="Year"
+                                allowOnlyNumber={true}
+                                name="year"
+                                fullWidth={true}
+                                value={this.state.year}
+                                mask="9999"
+                                maskChar=" "
+                            />,
+                        ]}
+                    />
+                </IonItem>
+            </>
+        );
+    }
+
+    private renderBothTankFields(): JSX.Element {
+        return (
+            <>
+                {this.renderMainTankField()}
+                {this.renderSecondaryTankField()}
+            </>
+        );
+    }
+
+    private renderMainTankField(): JSX.Element {
+        return (
+            <>
+                <p className="c-tank-title">Main Tank</p>
+                <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                    <CustomTextField
+                        label="Fuel type"
+                        name="mainFuelType"
+                        onChange={this.handleMainFuelTypeChange}
+                        value={this.state.mainFuelType}
+                        icon={LooksOneIcon}
+                        select={true}
+                        selectOptions={InputHelper.fuelTypes as HTMLOptionElement[]}
+                        trailingFieldsCount={1}
+                        trailingFields={[
+                            <CustomTextField
+                                label="Tank capacity(L)"
+                                name="secondTankCapacity"
+                                onChange={this.handleInput}
+                                value={this.state.secondTankCapacity}
+                            />,
+                        ]}
+                    />
+                </IonItem>
+            </>
+        );
+    }
+
+    private renderSecondaryTankField(): JSX.Element {
+        return (
+            <>
+                <p className="c-tank-title">Secondary Tank</p>
+                <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                    <CustomTextField
+                        label="Fuel type"
+                        name="secondFuelType"
+                        onChange={this.handleSecondaryFuelTypeChange}
+                        value={this.state.secondFuelType}
+                        icon={LooksTwoIcon}
+                        select={true}
+                        selectOptions={InputHelper.fuelTypes as HTMLOptionElement[]}
+                        trailingFieldsCount={1}
+                        trailingFields={[
+                            <CustomTextField
+                                label="Tank capacity(L)"
+                                name="secondTankCapacity"
+                                onChange={this.handleInput}
+                                value={this.state.secondTankCapacity}
+                            />,
+                        ]}
+                    />
+                </IonItem>
+            </>
+        );
+    }
+
+    private handleMainFuelTypeChange = (event: any): void => {
+        this.setState({
+            mainFuelType: event?.target.value,
+        });
+    };
+
+    private handleSecondaryFuelTypeChange = (event: any): void => {
+        this.setState({
+            secondFuelType: event?.target.value,
+        });
+    };
 
     private onTankChange(event: any, tankCount?: '1' | '2'): void {
         console.log(event.target.parentElement.ariaValueText);
