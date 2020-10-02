@@ -6,12 +6,10 @@ import { closeOutline as closeIcon, checkmarkOutline as saveButton } from 'ionic
 import { IVehicleStore } from '../../../stores/VehicleStore/VehicleStore';
 import { IUserStore } from '../../../stores/UserStore/UserStore';
 import ModalBase from '../ModalBase';
-import { DateFormat } from '../../../models/Constants/DateFormat';
 import { GlobalColors } from '../../../models/Constants/GlobalColors';
 import IHistoryEntry from '../../../models/History/IHistoryEntry';
 import { IContentStore } from '../../../stores/ContentStore/ContentStore';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
 import { Moment } from 'moment';
 // Icons
 import BuildOutlinedIcon from '@material-ui/icons/BuildOutlined';
