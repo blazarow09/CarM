@@ -174,9 +174,9 @@ export default class Home extends React.Component<HomeProps, HomeState> {
     private extraContent = (): JSX.Element => {
         return (
             <IonButtons slot="end">
-                <IonButton>
+                {/* <IonButton>
                     <IonIcon icon={settingsIcon} slot="icon-only" />
-                </IonButton>
+                </IonButton> */}
                 <IonButton onClick={async (): Promise<void> => await this.logout()}>
                     <IonIcon icon={exitIcon} slot="icon-only" />
                 </IonButton>

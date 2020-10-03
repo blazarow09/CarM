@@ -159,7 +159,7 @@ export default class ViewRepair extends React.Component<ViewRepairProps, ViewRep
                     <IonBackButton defaultHref={AppRoutes.homeRoute} />
                 </IonButtons>
                 <IonButtons slot="end">
-                    <IonButton onClick={(): void => this.openRefuelEditMode()}>
+                    <IonButton onClick={(): void => this.openRefuelEditMode() } disabled>
                         <IonIcon slot="icon-only" icon={editIcon} />
                     </IonButton>
                 </IonButtons>
