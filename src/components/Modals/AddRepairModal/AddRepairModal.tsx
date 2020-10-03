@@ -25,7 +25,7 @@ import { IRepair } from '../../../models/Repair/IRepair';
 import CustomTextFieldWithMask from '../../InputElements/CustomTextFieldWithMask';
 import CustomDatePicker from '../../InputElements/CustomDatePicker';
 
-interface RepairModalState {
+interface AddRepairModalState {
     date?: string;
     mileage?: string;
     repair?: string;
@@ -39,7 +39,7 @@ interface RepairModalState {
     headerTitle?: string;
 }
 
-interface RepairModalProps {
+interface AddRepairModalProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
@@ -51,12 +51,12 @@ interface RepairModalProps {
 @inject('vehicleStore')
 @inject('contentStore')
 @observer
-export default class RepairModal extends ModalBase<RepairModalProps, RepairModalState> {
+export default class AddRepairModal extends ModalBase<AddRepairModalProps, AddRepairModalState> {
     protected visible(): boolean {
         return this.props.uiStore?.modals?.repairModalOpen;
     }
 
-    public state: RepairModalState = {
+    public state: AddRepairModalState = {
         date: new Date().toISOString(),
         mileage: '',
         repair: '',
@@ -129,7 +129,7 @@ export default class RepairModal extends ModalBase<RepairModalProps, RepairModal
                                 withAdornment={true}
                                 adornmentPosition="end"
                                 adornmentText="km"
-                                helperText="Last odometer: 1000 km"
+                                // helperText="Last odometer: 1000 km"
                                 allowOnlyNumber={true}
                                 name="mileage"
                                 fullWidth={true}

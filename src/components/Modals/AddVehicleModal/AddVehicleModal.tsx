@@ -24,17 +24,17 @@ import ConfirmationNumberIcon from '@material-ui/icons/ConfirmationNumber';
 //Icons
 import { manufacturers } from '../../../resources/Vehicle/Manufacturers';
 import { TextField, Grid, ButtonGroup, Button, IconButton } from '@material-ui/core';
-import './VehicleModal.css';
+import './AddVehicleModal.css';
 import { InputHelper } from '../../../helpers/InputHelper';
 import CustomTextFieldWithMask from '../../InputElements/CustomTextFieldWithMask';
 
-interface VehicleModalProps extends IModalBaseProps {
+interface AddVehicleModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
 }
 
-interface VehicleModalState extends IModalBaseState {
+interface AddVehicleModalState extends IModalBaseState {
     uid?: string;
     type?: string;
     manufacturer?: string;
@@ -62,12 +62,12 @@ interface VehicleModalState extends IModalBaseState {
 @inject('vehicleStore')
 @inject('userStore')
 @observer
-export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleModalState> {
+export default class AddVehicleModal extends ModalBase<AddVehicleModalProps, AddVehicleModalState> {
     protected visible(): boolean {
         return this.props.uiStore?.modals.vehicleModalOpen;
     }
 
-    public state: VehicleModalState = {
+    public state: AddVehicleModalState = {
         uid: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.uid : '',
         type: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.type : '',
         model: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.model : '',

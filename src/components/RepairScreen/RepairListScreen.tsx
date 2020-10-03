@@ -11,7 +11,7 @@ import NoResultsScreen from '../NoResultsScreen/NoResultsScreen';
 import { GlobalColors } from '../../models/Constants/GlobalColors';
 import RepairEntry from '../ServiceEntries/RepairEntry';
 
-interface RepairScreenProps {
+interface RepairListScreenProps {
     uiStore?: IUiStore;
     userStore?: IUserStore;
     vehicleStore?: IVehicleStore;
@@ -21,7 +21,7 @@ interface RepairScreenProps {
 @inject('userStore')
 @inject('vehicleStore')
 @observer
-export default class RepairScreen extends React.Component<RepairScreenProps> {
+export default class RepairListScreen extends React.Component<RepairListScreenProps> {
     public async componentDidMount(): Promise<void> {
         this.props.userStore.setHideTabsMenu(true);
 

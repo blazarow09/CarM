@@ -12,13 +12,13 @@ import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import RefuelEntry from '../ServiceEntries/RefuelEntry';
 import LoadingScreen from '../Spinners/LoadingScreen';
 
-interface RefuelScreenProps {
+interface RefuelListScreenProps {
     uiStore?: IUiStore;
     userStore?: IUserStore;
     vehicleStore?: IVehicleStore;
 }
 
-interface RefuelScreenState {
+interface RefuelListScreenState {
     dataLoading: boolean;
 }
 
@@ -26,7 +26,7 @@ interface RefuelScreenState {
 @inject('userStore')
 @inject('vehicleStore')
 @observer
-export default class RefuelScreen extends React.Component<RefuelScreenProps, RefuelScreenState> {
+export default class RefuelListScreen extends React.Component<RefuelListScreenProps, RefuelListScreenState> {
     public async componentDidMount(): Promise<void> {
         this.setDataLoading(true);
         this.props.userStore.setHideTabsMenu(true);
@@ -39,7 +39,7 @@ export default class RefuelScreen extends React.Component<RefuelScreenProps, Ref
         this.setDataLoading(false);
     }
 
-    public state: RefuelScreenState = {
+    public state: RefuelListScreenState = {
         dataLoading: false,
     };
 
