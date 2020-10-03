@@ -90,7 +90,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
     private async removeVehicle(): Promise<void> {
         if (this.state.vehicleId) {
-            await this.props.vehicleStore.removeVehicle(this.state.vehicleId, this.props.userStore?.userContext?.userId);
+            await this.props.vehicleStore.removeVehicle(this.state.vehicleId);
         }
     }
 
@@ -116,7 +116,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
     private async savePreferredVehicle(vehicleId: string): Promise<void> {
         if (vehicleId) {
-            await this.props.vehicleStore.savePreferredVehicleId(vehicleId, this.props.userStore?.userContext?.userId);
+            await this.props.vehicleStore.savePreferredVehicleId(vehicleId);
 
             await this.props.contentStore.getHistoryEntries(vehicleId);
             

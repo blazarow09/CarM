@@ -24,7 +24,6 @@ import NotesOutlinedIcon from '@material-ui/icons/NotesOutlined';
 import DateRangeOutlinedIcon from '@material-ui/icons/DateRangeOutlined';
 import LocalGasStationOutlinedIcon from '@material-ui/icons/LocalGasStationOutlined';
 import { InputHelper } from '../../../helpers/InputHelper';
-import { helloWorld } from '../../../functions/lib';
 // Icons
 
 interface RefuelModalProps extends IModalBaseProps {
@@ -251,9 +250,9 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                 case 'quantity':
                     this.calculateTotalCostByQuantity(statePropValue);
                     break;
-                default:
-                    this.setState({ [statePropName]: statePropValue });
             }
+
+            this.setState({ [statePropName]: statePropValue });
         }
     };
 

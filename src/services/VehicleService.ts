@@ -1,6 +1,5 @@
-import { firestore } from '../firebase/firebaseConfig.dev';
+import { firestore, functions } from '../firebase/firebaseConfig.dev';
 import { IVehicleViewModel } from '../models/Vehicle/IVehicleViewModel';
-import { IRepair } from '../models/Repair/IRepair';
 import { IVehicleCreateEdit } from '../models/Vehicle/IVehicleCreateEdit';
 
 export default class VehicleService {
@@ -30,7 +29,7 @@ export default class VehicleService {
         return lastOdometer;
     }
 
-    public async saveLastOdometerForVehicle(vehicleId: string, odometer: number): Promise<void> {
+    public async saveLastOdometerForVehicle(vehicleId: string, odometer: string): Promise<void> {
         let preferredRef = this.getVehiclesCollectionRefById(vehicleId);
 
         let lastOdometer = await preferredRef.get();
@@ -38,7 +37,7 @@ export default class VehicleService {
         await lastOdometer.ref.set({ lastOdometer: odometer });
     }
 
-    public async getPreferredVehicle(userId: string): Promise<string> {
+    public async getPreferredVehicle(): Promise<string> {
         let preferredRef = this.getUsersCollectionRef();
 
         let preferredVehicleData = await preferredRef.get();
@@ -48,7 +47,7 @@ export default class VehicleService {
         return preferredVehicleId;
     }
 
-    public async savePreferredVehicle(vehicleId: string, userId: string): Promise<void> {
+    public async savePreferredVehicle(vehicleId: string): Promise<void> {
         let preferredRef = this.getUsersCollectionRef();
 
         let preferred = await preferredRef.get();
@@ -60,7 +59,7 @@ export default class VehicleService {
         }
     }
 
-    public async saveVehicle(vehicle: IVehicleViewModel, userId: string): Promise<void> {
+    public async saveVehicle(vehicle: IVehicleViewModel): Promise<void> {
         const vehiclesRef = this.getVehiclesCollectionRef();
 
         let vehicleToSave = vehicle as IVehicleCreateEdit;
@@ -68,14 +67,22 @@ export default class VehicleService {
         await vehiclesRef.add(vehicleToSave);
     }
 
-    public async removeVehicle(vehicleId: string, userId: string): Promise<void> {
+    public async removeVehicle(vehicleId: string): Promise<void> {
         const vehiclesRef = this.getVehiclesCollectionRef();
+
+        // await this.cleanupAfterVehicleRemove(vehicleId)
 
         // CR: should delete and the references as repairs and so on.
         await vehiclesRef.doc(vehicleId).delete();
     }
 
-    public async editVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void> {
+    private async cleanupAfterVehicleRemove(vehicleId: string): Promise<void> {
+        let cleanupAfterVehicleFunction = functions.httpsCallable('cleanupAfterVehicle');
+        
+        await cleanupAfterVehicleFunction({ userId: window.authContext.userId, vehicleId: vehicleId }).then((result) => console.log(result));
+    }
+
+    public async editVehicle(vehicle: IVehicleViewModel, vehicleId: string): Promise<void> {
         const vehicleRef = this.getVehiclesCollectionRef();
 
         let vehicleToSave = vehicle as IVehicleCreateEdit;
@@ -100,7 +107,13 @@ export default class VehicleService {
                     licensePlate: car.data()?.licensePlate,
                     year: car.data()?.year,
                     fuelTanksCount: car.data()?.fuelTanksCount,
-                    tankCapacity: car.data()?.tankCapacity,
+                    chassisNumber: car.data()?.chassisNumber,
+                    vin: car.data()?.vin,
+                    mainFuelType: car.data()?.mainFuelType,
+                    mainTankCapacity: car.data()?.mainTankCapacity,
+                    secondFuelType: car.data()?.secondFuelType,
+                    secondTankCapacity: car.data()?.secondTankCapacity,
+                    notes: car.data()?.notes,
                 })
             );
         }

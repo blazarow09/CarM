@@ -490,17 +490,14 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
             ...vehicleSecondaryTank,
         };
 
-        // The current authenticated used id.
-        const userId = this.props.userStore.userContext?.userId;
-
         // If the modal is open in edit mode.
         if (this.props.uiStore.modals.editVehicleModalOpen && vehicle) {
             vehicle.uid = this.state.uid;
 
-            await this.props.vehicleStore.handleEditVehicle(vehicle, this.state.uid, userId);
+            await this.props.vehicleStore.handleEditVehicle(vehicle, this.state.uid);
             // If the modal is open in crete mode.
         } else if (this.props.uiStore.modals.createVehicleModalOpen && vehicle) {
-            await this.props.vehicleStore.handleVehicleSave(vehicle, userId);
+            await this.props.vehicleStore.handleVehicleSave(vehicle);
         }
 
         let shouldSetPreferredVehicle = false;
@@ -517,7 +514,7 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
         if (shouldSetPreferredVehicle) {
             let preferredVehicleId = this.props.vehicleStore?.availableCars[0]?.uid;
 
-            await this.props.vehicleStore.savePreferredVehicleId(preferredVehicleId, userId);
+            await this.props.vehicleStore.savePreferredVehicleId(preferredVehicleId);
         }
 
         this.setSaveLoading(false);
