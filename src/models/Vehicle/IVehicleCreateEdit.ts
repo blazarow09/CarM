@@ -13,4 +13,6 @@ export interface IVehicleCreateEdit {
     vin?: string;
     chassisNumber?: string;
     notes?: string;
+    lastOdometer?: string;
+    lastUpdatedOdometer: string;
 }

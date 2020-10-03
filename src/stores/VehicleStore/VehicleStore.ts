@@ -19,7 +19,7 @@ export interface IVehicleStore {
     handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string): Promise<void>;
     removeVehicle(vehicleId: string): Promise<void>;
 
-    saveLastOdometerForVehicle(odometer: string): Promise<void>;
+    saveLastOdometerForVehicle(odometer: string, lastUpdatedOdometer: string): Promise<void>;
     getLastOdometerForVehicle(): Promise<void>;
 
     getPreferredVehicleId(userId: string): Promise<void>;
@@ -107,9 +107,9 @@ export class VehicleStore implements IVehicleStore {
     }
 
     @action
-    public async saveLastOdometerForVehicle(odometer: string): Promise<void> {
+    public async saveLastOdometerForVehicle(odometer: string, lastUpdatedOdometer: string): Promise<void> {
         if (this.preferredVehicleId && odometer) {
-            await this._vehicleService.saveLastOdometerForVehicle(this.preferredVehicleId, odometer);
+            await this._vehicleService.saveLastOdometerForVehicle(this.preferredVehicleId, odometer, lastUpdatedOdometer);
 
             this.lastOdometer = odometer;
         }

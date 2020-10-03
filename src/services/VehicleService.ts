@@ -7,7 +7,7 @@ export default class VehicleService {
         return firestore.collection('users').doc(window?.authContext?.userId).collection('vehicles');
     }
 
-    private getVehiclesCollectionRefById(vehicleId: string) {
+    private getVehicleCollectionRefById(vehicleId: string) {
         return firestore.collection('users').doc(window?.authContext?.userId).collection('vehicles').doc(vehicleId);
     }
 
@@ -15,12 +15,25 @@ export default class VehicleService {
         return firestore.collection('users').doc(window?.authContext?.userId).collection('vehicles').doc(vehicleId).collection('repairs');
     }
 
+    private getRefuelsCollectionRef(vehicleId: string) {
+        return firestore.collection('users').doc(window?.authContext?.userId).collection('vehicles').doc(vehicleId).collection('refuels');
+    }
+
+    private getLogHistoryCollectionRef(vehicleId: string) {
+        return firestore
+            .collection('users')
+            .doc(window?.authContext?.userId)
+            .collection('vehicles')
+            .doc(vehicleId)
+            .collection('logHistory');
+    }
+
     private getUsersCollectionRef() {
         return firestore.collection('users').doc(window?.authContext?.userId);
     }
 
     public async getLastOdometerForVehicle(vehicleId: string): Promise<string> {
-        let singleVehicleRef = this.getVehiclesCollectionRefById(vehicleId);
+        let singleVehicleRef = this.getVehicleCollectionRefById(vehicleId);
 
         let singleVehicleData = await singleVehicleRef.get();
 
@@ -29,12 +42,12 @@ export default class VehicleService {
         return lastOdometer;
     }
 
-    public async saveLastOdometerForVehicle(vehicleId: string, odometer: string): Promise<void> {
-        let preferredRef = this.getVehiclesCollectionRefById(vehicleId);
+    public async saveLastOdometerForVehicle(vehicleId: string, odometer: string, lastUpdatedOdometer: string): Promise<void> {
+        let preferredRef = this.getVehicleCollectionRefById(vehicleId);
 
         let lastOdometer = await preferredRef.get();
 
-        await lastOdometer.ref.set({ lastOdometer: odometer });
+        await lastOdometer.ref.update({ lastOdometer: odometer, lastUpdatedOdometer: lastUpdatedOdometer });
     }
 
     public async getPreferredVehicle(): Promise<string> {
@@ -63,6 +76,9 @@ export default class VehicleService {
         const vehiclesRef = this.getVehiclesCollectionRef();
 
         let vehicleToSave = vehicle as IVehicleCreateEdit;
+        // Initialy set the last odometer to 0.
+        vehicleToSave.lastOdometer = '0';
+        vehicleToSave.lastUpdatedOdometer = '0';
 
         await vehiclesRef.add(vehicleToSave);
     }
@@ -71,15 +87,32 @@ export default class VehicleService {
         const vehiclesRef = this.getVehiclesCollectionRef();
 
         // await this.cleanupAfterVehicleRemove(vehicleId)
+        await this.cleanupBeforeVehicleRemove(vehicleId);
 
-        // CR: should delete and the references as repairs and so on.
         await vehiclesRef.doc(vehicleId).delete();
+    }
+
+    private async cleanupBeforeVehicleRemove(vehicleId: string): Promise<void> {
+        const repairsRef = this.getRepairsCollectionRef(vehicleId);
+        const refuelsRef = this.getRefuelsCollectionRef(vehicleId);
+        const logHistoryRef = this.getLogHistoryCollectionRef(vehicleId);
+
+        let repairs = await repairsRef.get();
+        repairs.forEach(async (doc) => await doc.ref.delete());
+
+        let refuels = await refuelsRef.get();
+        refuels.forEach(async (doc) => await doc.ref.delete());
+
+        let logHistory = await logHistoryRef.get();
+        logHistory.forEach(async (doc) => await doc.ref.delete());
     }
 
     private async cleanupAfterVehicleRemove(vehicleId: string): Promise<void> {
         let cleanupAfterVehicleFunction = functions.httpsCallable('cleanupAfterVehicle');
-        
-        await cleanupAfterVehicleFunction({ userId: window.authContext.userId, vehicleId: vehicleId }).then((result) => console.log(result));
+
+        await cleanupAfterVehicleFunction({ userId: window.authContext.userId, vehicleId: vehicleId }).then((result) =>
+            console.log(result)
+        );
     }
 
     public async editVehicle(vehicle: IVehicleViewModel, vehicleId: string): Promise<void> {
