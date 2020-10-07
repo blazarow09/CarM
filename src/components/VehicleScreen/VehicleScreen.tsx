@@ -27,7 +27,7 @@ import {
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { observer, inject } from 'mobx-react';
 import { IUiStore, Modals } from '../../stores/UiStore/UiStore';
-import defaultCarImg from '../../img/default-car.png';
+import defaultCarImg from '../../img/defaultCarImage.png';
 import './VehicleScreen.css';
 import { IVehicleStore } from '../../stores/VehicleStore/VehicleStore';
 import { AppRoutes } from '../AppRoutes';
@@ -90,7 +90,11 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
     private async removeVehicle(): Promise<void> {
         if (this.state.vehicleId) {
-            await this.props.vehicleStore.removeVehicle(this.state.vehicleId, this.props.userStore?.userContext?.userId);
+            await this.props.vehicleStore.removeVehicle(this.state.vehicleId);
+            
+            await this.props.vehicleStore.getAvailableCars(false);
+
+            await this.props.contentStore.getHistoryEntries(this.state.vehicleId);
         }
     }
 
@@ -99,10 +103,6 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
             vehicleId: vehicleId,
             openAlert: open,
         });
-
-        await this.removeVehicle();
-
-        await this.props.vehicleStore.getAvailableCars(false);
     }
 
     private openEditVehicleView(vehicle: IVehicleViewModel): void {
@@ -116,7 +116,7 @@ export default class VehicleScreen extends React.Component<VehicleScreenProps> {
 
     private async savePreferredVehicle(vehicleId: string): Promise<void> {
         if (vehicleId) {
-            await this.props.vehicleStore.savePreferredVehicleId(vehicleId, this.props.userStore?.userContext?.userId);
+            await this.props.vehicleStore.savePreferredVehicleId(vehicleId);
 
             await this.props.contentStore.getHistoryEntries(vehicleId);
             

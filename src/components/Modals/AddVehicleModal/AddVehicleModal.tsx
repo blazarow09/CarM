@@ -19,20 +19,22 @@ import AddIcon from '@material-ui/icons/Add';
 import LooksOneIcon from '@material-ui/icons/LooksOne';
 import LooksTwoIcon from '@material-ui/icons/LooksTwo';
 import LinearScaleOutlinedIcon from '@material-ui/icons/LinearScaleOutlined';
+import NotesOutlinedIcon from '@material-ui/icons/NotesOutlined';
+import ConfirmationNumberIcon from '@material-ui/icons/ConfirmationNumber';
 //Icons
 import { manufacturers } from '../../../resources/Vehicle/Manufacturers';
 import { TextField, Grid, ButtonGroup, Button, IconButton } from '@material-ui/core';
-import './VehicleModal.css';
+import './AddVehicleModal.css';
 import { InputHelper } from '../../../helpers/InputHelper';
 import CustomTextFieldWithMask from '../../InputElements/CustomTextFieldWithMask';
 
-interface VehicleModalProps extends IModalBaseProps {
+interface AddVehicleModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
 }
 
-interface VehicleModalState extends IModalBaseState {
+interface AddVehicleModalState extends IModalBaseState {
     uid?: string;
     type?: string;
     manufacturer?: string;
@@ -47,6 +49,9 @@ interface VehicleModalState extends IModalBaseState {
     secondTankCapacity?: string;
     saveLoading?: boolean;
     headerToolbarColor?: string;
+    chassisNumber?: string;
+    vin?: string;
+    notes?: string;
     headerTitle?: string;
     oneTankButtonTheme?: 'text' | 'contained' | 'outlined';
     twoTanksButtonTheme?: 'text' | 'contained' | 'outlined';
@@ -57,12 +62,12 @@ interface VehicleModalState extends IModalBaseState {
 @inject('vehicleStore')
 @inject('userStore')
 @observer
-export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleModalState> {
+export default class AddVehicleModal extends ModalBase<AddVehicleModalProps, AddVehicleModalState> {
     protected visible(): boolean {
         return this.props.uiStore?.modals.vehicleModalOpen;
     }
 
-    public state: VehicleModalState = {
+    public state: AddVehicleModalState = {
         uid: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.uid : '',
         type: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.type : '',
         model: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.model : '',
@@ -71,10 +76,13 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
         vehicleName: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.vehicleName : '',
         manufacturer: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.manufacturer : '',
         fuelTanksCount: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.fuelTanksCount : '',
-        mainFuelType: '', // CR: Load for edit
-        mainTankCapacity: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.tankCapacity : '',
-        secondFuelType: '', // CR: Load for edit
-        secondTankCapacity: '', // CR: Load for edit
+        mainFuelType: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.mainFuelType : '',
+        mainTankCapacity: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.mainTankCapacity : '',
+        secondFuelType: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.secondFuelType : '',
+        secondTankCapacity: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.secondTankCapacity : '',
+        vin: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.vin : '',
+        chassisNumber: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.chassisNumber : '',
+        notes: this.props.vehicleStore?.vehicleToEdit ? this.props.vehicleStore.vehicleToEdit?.notes : '',
         saveLoading: false,
         headerTitle: this.props.uiStore.modals.createVehicleModalOpen ? 'Add vehicle' : 'Edit vehicle',
         headerToolbarColor: GlobalColors.redColor,
@@ -83,7 +91,29 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
         moreOptions: false, //CR: True if in edit mode there is license plate, year, chasis, vin or notes.
     };
 
-    private inputFieldTypes = new Array<string>('type', 'model', 'fuel', 'mileage', 'vehicleName', 'licensePlate', 'year');
+    public componentDidMount(): void {
+        if (this.props.uiStore.modals.editVehicleModalOpen) {
+            let vehicleToEdit = this.props.vehicleStore.vehicleToEdit;
+
+            if (vehicleToEdit.notes || vehicleToEdit.chassisNumber || vehicleToEdit.vin || vehicleToEdit.licensePlate || vehicleToEdit.year)
+                this.setState({ moreOptions: true });
+        }
+    }
+
+    private inputFieldTypes = new Array<string>(
+        'type',
+        'model',
+        'fuel',
+        'mileage',
+        'vehicleName',
+        'licensePlate',
+        'year',
+        'mainTankCapacity',
+        'secondTankCapacity',
+        'vin',
+        'chassisNumber',
+        'notes'
+    );
 
     protected resetStores(): void {
         this.props.vehicleStore.setVehicleToEdit(null);
@@ -91,9 +121,11 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
 
     private handleInput = (event: any): void => {
         let statePropName = event?.target?.getAttribute('name');
-        let statePropValue = event?.target?.value;
+        let statePropValue = event?.target?.value as string;
 
         if (this.inputFieldTypes.includes(statePropName)) {
+            statePropValue.trim();
+
             this.setState({ [statePropName]: statePropValue });
         }
     };
@@ -267,6 +299,38 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                         ]}
                     />
                 </IonItem>
+                <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                    <CustomTextField
+                        label="Chassis number"
+                        onChange={this.handleInput}
+                        name="chassisNumber"
+                        value={this.state.chassisNumber}
+                        icon={ConfirmationNumberIcon}
+                        fullWidth={true}
+                    />
+                </IonItem>
+                <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                    <CustomTextField
+                        label="Identification (VIN)"
+                        onChange={this.handleInput}
+                        name="vin"
+                        value={this.state.vin}
+                        icon={ConfirmationNumberIcon}
+                        fullWidth={true}
+                    />
+                </IonItem>
+                <IonItem lines="none" className="c-input-field-item c-vehicle-margin-top">
+                    <CustomTextField
+                        label="Notes"
+                        name="notes"
+                        onChange={this.handleInput}
+                        value={this.state.notes}
+                        icon={NotesOutlinedIcon}
+                        fullWidth={true}
+                        // multiline={true}
+                        // rows={3}
+                    />
+                </IonItem>
             </>
         );
     }
@@ -295,11 +359,16 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                         selectOptions={InputHelper.fuelTypes as HTMLOptionElement[]}
                         trailingFieldsCount={1}
                         trailingFields={[
-                            <CustomTextField
-                                label="Tank capacity(L)"
-                                name="secondTankCapacity"
+                            <CustomTextFieldWithMask
                                 onChange={this.handleInput}
-                                value={this.state.secondTankCapacity}
+                                label="Tank capacity"
+                                withAdornment={true}
+                                adornmentPosition="end"
+                                adornmentText="L"
+                                name="mainTankCapacity"
+                                value={this.state.mainTankCapacity}
+                                mask="99999999"
+                                maskChar=""
                             />,
                         ]}
                     />
@@ -323,11 +392,16 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
                         selectOptions={InputHelper.fuelTypes as HTMLOptionElement[]}
                         trailingFieldsCount={1}
                         trailingFields={[
-                            <CustomTextField
-                                label="Tank capacity(L)"
-                                name="secondTankCapacity"
+                            <CustomTextFieldWithMask
                                 onChange={this.handleInput}
+                                label="Tank capacity"
+                                withAdornment={true}
+                                adornmentPosition="end"
+                                adornmentText="L"
+                                name="secondTankCapacity"
                                 value={this.state.secondTankCapacity}
+                                mask="99999999"
+                                maskChar=""
                             />,
                         ]}
                     />
@@ -374,55 +448,78 @@ export default class VehicleModal extends ModalBase<VehicleModalProps, VehicleMo
     }
 
     private async handleVehicleSave(): Promise<void> {
-        if (this.state.type && this.state.manufacturer && this.state.model && this.state.vehicleName && this.state.fuelTanksCount) {
-            this.setSaveLoading(true);
-
-            const vehicle: IVehicleViewModel = {
-                type: this.state.type,
-                manufacturer: this.state.manufacturer,
-                vehicleName: this.state.vehicleName,
-                licensePlate: this.state.licensePlate,
-                year: this.state.year,
-                model: this.state.model,
-                fuelTanksCount: this.state.fuelTanksCount,
-            };
-
-            // The current authenticated used id.
-            const userId = this.props.userStore.userContext?.userId;
-
-            // If the modal is open in edit mode.
-            if (this.props.uiStore.modals.editVehicleModalOpen && vehicle) {
-                vehicle.uid = this.state.uid;
-
-                await this.props.vehicleStore.handleEditVehicle(vehicle, this.state.uid, userId);
-                // If the modal is open in crete mode.
-            } else if (this.props.uiStore.modals.createVehicleModalOpen && vehicle) {
-                await this.props.vehicleStore.handleVehicleSave(vehicle, userId);
-            }
-
-            let shouldSetPreferredVehicle = false;
-            if (!this.props.vehicleStore.isAvailableCars) {
-                shouldSetPreferredVehicle = true;
-            }
-
-            // Retrieve last vehicle updates.
-            await this.props.vehicleStore.getAvailableCars(false);
-
-            // If at this moment this is the first entry in the vehicle's collection we should add a preferred vehicle in the user's collection
-            // with the currently create car id.
-            // Otherwise keep the preferred vehicle as to the users' choice.
-            if (shouldSetPreferredVehicle) {
-                let preferredVehicleId = this.props.vehicleStore?.availableCars[0]?.uid;
-
-                await this.props.vehicleStore.savePreferredVehicleId(preferredVehicleId, userId);
-            }
-
-            this.setSaveLoading(false);
-
-            this.hideModal();
-        } else {
+        if (
+            !this.state.type ||
+            !this.state.manufacturer ||
+            !this.state.model ||
+            !this.state.vehicleName ||
+            !this.state.fuelTanksCount ||
+            (this.state.fuelTanksCount === '1' && (!this.state.mainTankCapacity || !this.state.mainFuelType)) ||
+            (this.state.fuelTanksCount === '2' &&
+                (!this.state.mainTankCapacity || !this.state.secondTankCapacity || !this.state.mainFuelType || !this.state.secondFuelType))
+        ) {
             console.log('Please, form all fields');
+            // CR: Error handle the input
+            return;
         }
+
+        this.setSaveLoading(true);
+
+        let vehicleMainTank: IVehicleViewModel = { mainFuelType: '', mainTankCapacity: '' };
+        let vehicleSecondaryTank: IVehicleViewModel = { secondFuelType: '', secondTankCapacity: '' };
+        if (this.state.fuelTanksCount === '1') {
+            vehicleMainTank.mainFuelType = this.state.mainFuelType;
+            vehicleMainTank.mainTankCapacity = this.state.mainTankCapacity;
+        } else if (this.state.fuelTanksCount === '2') {
+            vehicleSecondaryTank.secondFuelType = this.state.secondFuelType;
+            vehicleSecondaryTank.secondTankCapacity = this.state.secondTankCapacity;
+        }
+
+        let vehicle: IVehicleViewModel = {
+            type: this.state.type,
+            manufacturer: this.state.manufacturer,
+            vehicleName: this.state.vehicleName,
+            licensePlate: this.state.licensePlate,
+            year: this.state.year,
+            model: this.state.model,
+            fuelTanksCount: this.state.fuelTanksCount,
+            chassisNumber: this.state.chassisNumber,
+            vin: this.state.vin,
+            notes: this.state.notes,
+            ...vehicleMainTank,
+            ...vehicleSecondaryTank,
+        };
+
+        // If the modal is open in edit mode.
+        if (this.props.uiStore.modals.editVehicleModalOpen && vehicle) {
+            vehicle.uid = this.state.uid;
+
+            await this.props.vehicleStore.handleEditVehicle(vehicle, this.state.uid);
+            // If the modal is open in crete mode.
+        } else if (this.props.uiStore.modals.createVehicleModalOpen && vehicle) {
+            await this.props.vehicleStore.handleVehicleSave(vehicle);
+        }
+
+        let shouldSetPreferredVehicle = false;
+        if (!this.props.vehicleStore.isAvailableCars) {
+            shouldSetPreferredVehicle = true;
+        }
+
+        // Retrieve last vehicle updates.
+        await this.props.vehicleStore.getAvailableCars(false);
+
+        // If at this moment this is the first entry in the vehicle's collection we should add a preferred vehicle in the user's collection
+        // with the currently create car id.
+        // Otherwise keep the preferred vehicle as to the users' choice.
+        if (shouldSetPreferredVehicle) {
+            let preferredVehicleId = this.props.vehicleStore?.availableCars[0]?.uid;
+
+            await this.props.vehicleStore.savePreferredVehicleId(preferredVehicleId);
+        }
+
+        this.setSaveLoading(false);
+
+        this.hideModal();
     }
 
     protected extraContent = (): JSX.Element => {

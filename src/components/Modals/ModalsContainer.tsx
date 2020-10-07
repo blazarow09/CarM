@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { IUiStore } from '../../stores/UiStore/UiStore';
 import { inject, observer } from 'mobx-react';
-import RepairModal from './RepairModal/RepairModal';
-import RefuelModal from './RefuelModal/RefuelModal';
-import VehicleModal from './VehicleModal/VehicleModal';
+import RepairModal from './AddRepairModal/AddRepairModal';
+import RefuelModal from './AddRefuelModal/AddRefuelModal';
+import VehicleModal from './AddVehicleModal/AddVehicleModal';
 
 interface ModalsContainerProps {
     uiStore?: IUiStore;

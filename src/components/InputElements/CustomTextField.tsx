@@ -43,7 +43,7 @@ export default class CustomTextField extends React.Component<TextFieldWithIconPr
                 select={this.props.select}
                 // multiline={this.props.multiline && this.props.multiline}
                 // rows={this.props.multiline && this.props.rows && this.props.rows}
-                // rowsMax={10}
+                // rowsMax={this.props.multiline && 10}
             >
                 {this.props.select &&
                     this.props.selectOptions &&

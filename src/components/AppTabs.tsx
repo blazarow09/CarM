@@ -8,9 +8,9 @@ import { AppRoutes } from './AppRoutes';
 import { homeOutline as homeIcon, menuOutline as menuIcon } from 'ionicons/icons';
 import HomeButton from './HomeButton/HomeButton';
 import { IVehicleStore } from '../stores/VehicleStore/VehicleStore';
-import VehicleScreen from './VehicleScreen/VehicleScreen';
-import RepairScreen from './RepairScreen/RepairScreen';
-import RefuelScreen from './RefuelScreen/RefuelScreen';
+import VehicleListScreen from './VehicleScreen/VehicleScreen';
+import RepairListScreen from './RepairScreen/RepairListScreen';
+import RefuelListScreen from './RefuelScreen/RefuelListScreen';
 import MoreOptionsScreen from './MoreOptionsScreen/MoreOptionsScreen';
 import { ILocalizationStore } from '../stores/LocalizationStore/LocalizationStore';
 import ViewRefuel from './RefuelScreen/ViewRefuel';
@@ -60,16 +60,16 @@ export default class AppTabs extends React.Component<AppTabsProps> {
                             <Home />
                         </Route>
                         <Route exact path={AppRoutes.vehicleScreenRoute}>
-                            <VehicleScreen />
+                            <VehicleListScreen />
                         </Route>
                         <Route exact path={AppRoutes.repairScreenRoute}>
-                            <RepairScreen />
+                            <RepairListScreen />
                         </Route>
                         <Route exact path={AppRoutes.viewRepairScreenRoute}>
                             <ViewRepair />
                         </Route>
                         <Route exact path={AppRoutes.refuelScreenRoute}>
-                            <RefuelScreen />
+                            <RefuelListScreen />
                         </Route>
                         <Route exact path={AppRoutes.viewRefuelScreenRoute}>
                             <ViewRefuel />

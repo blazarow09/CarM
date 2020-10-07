@@ -57,7 +57,7 @@ export default class RefuelService {
                 refuelsCollection = refuels.docs.map((refuel): IRefuelView => this.mapRefuelViewModel(refuel));
             }
 
-            refuelsCollection.sort(function (a, b) {
+            refuelsCollection?.sort(function (a, b) {
                 return new Date(b.date).getTime() - new Date(a.date).getTime();
             });
         } catch (error) {

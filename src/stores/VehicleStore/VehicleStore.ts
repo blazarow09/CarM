@@ -15,15 +15,15 @@ export interface IVehicleStore {
     setVehicleToEdit(vehicleToEdit: IVehicleViewModel): void;
 
     // Vehicle
-    handleVehicleSave(vehicle: IVehicleViewModel, userId: string): Promise<void>;
-    handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void>;
-    removeVehicle(vehicleId: string, userId: string): Promise<void>;
+    handleVehicleSave(vehicle: IVehicleViewModel): Promise<void>;
+    handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string): Promise<void>;
+    removeVehicle(vehicleId: string): Promise<void>;
 
-    saveLastOdometerForVehicle(odometer: number): Promise<void>;
+    saveLastOdometerForVehicle(odometer: string, lastUpdatedOdometer: string): Promise<void>;
     getLastOdometerForVehicle(): Promise<void>;
 
     getPreferredVehicleId(userId: string): Promise<void>;
-    savePreferredVehicleId(vehicleId: string, userId: string): Promise<void>;
+    savePreferredVehicleId(vehicleId: string): Promise<void>;
 
     getAvailableCars(reset: boolean): Promise<boolean>;
 
@@ -107,45 +107,45 @@ export class VehicleStore implements IVehicleStore {
     }
 
     @action
-    public async saveLastOdometerForVehicle(odometer: number): Promise<void> {
+    public async saveLastOdometerForVehicle(odometer: string, lastUpdatedOdometer: string): Promise<void> {
         if (this.preferredVehicleId && odometer) {
-            await this._vehicleService.saveLastOdometerForVehicle(this.preferredVehicleId, odometer);
+            await this._vehicleService.saveLastOdometerForVehicle(this.preferredVehicleId, odometer, lastUpdatedOdometer);
 
-            this.lastOdometer = this.lastOdometer;
+            this.lastOdometer = odometer;
         }
     }
 
-    public async handleVehicleSave(vehicle: IVehicleViewModel, userId: string): Promise<void> {
+    public async handleVehicleSave(vehicle: IVehicleViewModel): Promise<void> {
         if (vehicle) {
-            await this._vehicleService.saveVehicle(vehicle, userId);
+            await this._vehicleService.saveVehicle(vehicle);
 
             // await this.saveLastOdometerForVehicle(vehicle.mileage);
         }
     }
 
-    public async removeVehicle(vehicleId: string, userId: string): Promise<void> {
-        await this._vehicleService.removeVehicle(vehicleId, userId);
+    public async removeVehicle(vehicleId: string): Promise<void> {
+        await this._vehicleService.removeVehicle(vehicleId);
     }
 
-    public async handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string, userId: string): Promise<void> {
-        if (vehicle && userId) {
-            await this._vehicleService.editVehicle(vehicle, vehicleId, userId);
+    public async handleEditVehicle(vehicle: IVehicleViewModel, vehicleId: string): Promise<void> {
+        if (vehicle) {
+            await this._vehicleService.editVehicle(vehicle, vehicleId);
         }
     }
 
     @action
     public async getPreferredVehicleId(userId: string): Promise<void> {
         if (userId) {
-            let preferredVehicleId = await this._vehicleService.getPreferredVehicle(userId);
+            let preferredVehicleId = await this._vehicleService.getPreferredVehicle();
 
             this.preferredVehicleId = preferredVehicleId;
         }
     }
 
     @action
-    public async savePreferredVehicleId(vehicleId: string, userId: string): Promise<void> {
-        if (userId && vehicleId) {
-            await this._vehicleService.savePreferredVehicle(vehicleId, userId);
+    public async savePreferredVehicleId(vehicleId: string): Promise<void> {
+        if (vehicleId) {
+            await this._vehicleService.savePreferredVehicle(vehicleId);
 
             this.preferredVehicleId = vehicleId;
         }

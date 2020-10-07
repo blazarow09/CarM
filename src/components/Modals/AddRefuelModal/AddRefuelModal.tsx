@@ -26,14 +26,14 @@ import LocalGasStationOutlinedIcon from '@material-ui/icons/LocalGasStationOutli
 import { InputHelper } from '../../../helpers/InputHelper';
 // Icons
 
-interface RefuelModalProps extends IModalBaseProps {
+interface AddRefuelModalProps extends IModalBaseProps {
     uiStore?: IUiStore;
     vehicleStore?: IVehicleStore;
     userStore?: IUserStore;
     contentStore?: IContentStore;
 }
 
-interface RefuelModalState extends IModalBaseState {
+interface AddRefuelModalState extends IModalBaseState {
     uid?: string;
     date?: string;
     time?: string;
@@ -55,12 +55,16 @@ interface RefuelModalState extends IModalBaseState {
 @inject('userStore')
 @inject('contentStore')
 @observer
-export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModalState> {
+export default class AddRefuelModal extends ModalBase<AddRefuelModalProps, AddRefuelModalState> {
     protected visible(): boolean {
         return this.props.uiStore?.modals.refuelModalOpen;
     }
 
-    public state: RefuelModalState = {
+    public async componentDidMount(): Promise<void> {
+        await this.props.vehicleStore.getLastOdometerForVehicle();
+    }
+
+    public state: AddRefuelModalState = {
         uid: this.props.vehicleStore.refuelToEdit?.uid ? this.props.vehicleStore.refuelToEdit?.uid : '',
         date: this.props.vehicleStore.refuelToEdit?.date ? this.props.vehicleStore.refuelToEdit?.date : new Date().toISOString(),
         time: this.props.vehicleStore.refuelToEdit?.time ? this.props.vehicleStore.refuelToEdit?.time : new Date(Date.now()).toISOString(),
@@ -110,7 +114,7 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
                             withAdornment={true}
                             adornmentPosition="end"
                             adornmentText="km"
-                            helperText="Last odometer: 1000 km"
+                            helperText={`Last odometer: ${this.props.vehicleStore.lastOdometer} km`}
                             allowOnlyNumber={true}
                             name="mileage"
                             fullWidth={true}
@@ -197,8 +201,6 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
             </>
         );
     };
-
-  
 
     private inputFieldTypes = new Array<string>(
         'date',
@@ -345,6 +347,11 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
 
             let refuelId: string;
             if (this.props.uiStore.modals.createRefuelModalOpen) {
+                // if(this.props.vehicleStore.lastOdometer >)
+                let lastUpdatedOdometer = new Date(Date.now()).toISOString();
+
+                await this.props.vehicleStore.saveLastOdometerForVehicle(refuel.mileage, lastUpdatedOdometer);
+
                 // Save the new refuel.
                 refuelId = await this.props.vehicleStore.handleSaveRefuel(refuel);
 
@@ -382,8 +389,6 @@ export default class RefuelModal extends ModalBase<RefuelModalProps, RefuelModal
 
                 // Save edited history entry by refuel.
                 historyEntry && (await this.props.contentStore.editHistoryEntry(this.props.vehicleStore.preferredVehicleId, historyEntry));
-
-               
             }
 
             if (refuelId) {
