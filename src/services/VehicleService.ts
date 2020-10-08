@@ -1,4 +1,4 @@
-import { firestore, functions } from '../firebase/firebaseConfig.dev';
+import { firestore } from '../firebase/firebaseConfig.dev';
 import { IVehicleViewModel } from '../models/Vehicle/IVehicleViewModel';
 import { IVehicleCreateEdit } from '../models/Vehicle/IVehicleCreateEdit';
 
@@ -108,11 +108,11 @@ export default class VehicleService {
     }
 
     private async cleanupAfterVehicleRemove(vehicleId: string): Promise<void> {
-        let cleanupAfterVehicleFunction = functions.httpsCallable('cleanupAfterVehicle');
+        // let cleanupAfterVehicleFunction = functions.httpsCallable('cleanupAfterVehicle');
 
-        await cleanupAfterVehicleFunction({ userId: window.authContext.userId, vehicleId: vehicleId }).then((result) =>
-            console.log(result)
-        );
+        // await cleanupAfterVehicleFunction({ userId: window.authContext.userId, vehicleId: vehicleId }).then((result) =>
+        //     console.log(result)
+        // );
     }
 
     public async editVehicle(vehicle: IVehicleViewModel, vehicleId: string): Promise<void> {

@@ -2,6 +2,7 @@ import React from 'react';
 import { IonModal, isPlatform } from '@ionic/react';
 import { IUiStore } from '../../stores/UiStore/UiStore';
 import MainHeader from '../MainHeader/MainHeader';
+import Notification from '../Notifications/Notification';
 import './ModalBase.css';
 
 export interface IModalBaseProps {
@@ -73,6 +74,7 @@ export default class ModalBase<TProps extends IModalBaseProps, TState extends IM
                     toolbarColor={this.state?.headerToolbarColor}
                 />
                 {this.content()}
+                <Notification />
             </IonModal>
         );
     }

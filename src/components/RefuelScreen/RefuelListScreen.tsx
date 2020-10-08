@@ -57,7 +57,7 @@ export default class RefuelListScreen extends React.Component<RefuelListScreenPr
 
     private renderContent(): JSX.Element {
         return this.state.dataLoading ? (
-            <LoadingScreen iconColor={GlobalColors.orangeColor} />
+            <LoadingScreen iconColor={GlobalColors.purpleColor} />
         ) : this.props.vehicleStore?.refuelsByVehicleId?.length > 0 ? (
             this.renderRefuelContent()
         ) : (

@@ -24,6 +24,8 @@ import NotesOutlinedIcon from '@material-ui/icons/NotesOutlined';
 import DateRangeOutlinedIcon from '@material-ui/icons/DateRangeOutlined';
 import LocalGasStationOutlinedIcon from '@material-ui/icons/LocalGasStationOutlined';
 import { InputHelper } from '../../../helpers/InputHelper';
+import dayjs from 'dayjs';
+import { DateFormat } from '../../../models/Constants/DateFormat';
 // Icons
 
 interface AddRefuelModalProps extends IModalBaseProps {
@@ -345,13 +347,30 @@ export default class AddRefuelModal extends ModalBase<AddRefuelModalProps, AddRe
             // 5. Refresh the refuels;
             // 6. Set the edited refuel in the refuel details screen.
 
+            let latestRefuelDate = new Date(this.props.vehicleStore.latestRefuelEntry.date);
+            let latestRefuelOdometer = +this.props.vehicleStore.latestRefuelEntry.mileage;
+            let currentRefuelDate = new Date(refuel.date);
+            let currentRefuelOdometer = +refuel.mileage;
+            let errorMessage = `The odometer and date are conflicting with a previous refueling from ${dayjs(latestRefuelDate).format(
+                DateFormat.defaultDateFormat
+            )} - ${latestRefuelOdometer} km`;
+
+            if (this.props.vehicleStore.refuelsByVehicleId?.length === 1) {
+                // Just do nothing for now.
+            } else if (currentRefuelDate < latestRefuelDate && latestRefuelOdometer < currentRefuelOdometer) {
+                this.props.uiStore.showHideNotification(true, errorMessage, 10000, GlobalColors.redColor);
+
+                this.setSaveLoading(false);
+                return;
+            } else if (currentRefuelDate > latestRefuelDate && latestRefuelOdometer > currentRefuelOdometer) {
+                this.props.uiStore.showHideNotification(true, errorMessage, 10000, GlobalColors.redColor);
+
+                this.setSaveLoading(false);
+                return;
+            }
+
             let refuelId: string;
             if (this.props.uiStore.modals.createRefuelModalOpen) {
-                // if(this.props.vehicleStore.lastOdometer >)
-                let lastUpdatedOdometer = new Date(Date.now()).toISOString();
-
-                await this.props.vehicleStore.saveLastOdometerForVehicle(refuel.mileage, lastUpdatedOdometer);
-
                 // Save the new refuel.
                 refuelId = await this.props.vehicleStore.handleSaveRefuel(refuel);
 
@@ -392,6 +411,9 @@ export default class AddRefuelModal extends ModalBase<AddRefuelModalProps, AddRe
             }
 
             if (refuelId) {
+                let lastUpdatedOdometer = new Date(Date.now()).toISOString();
+                await this.props.vehicleStore.saveLastOdometerForVehicle(refuel.mileage, lastUpdatedOdometer);
+
                 // Refresh refuels in order to show latest changes.
                 await this.props.vehicleStore.getRefuelsByVehicleId(false, this.props.vehicleStore.preferredVehicleId);
 

@@ -1,4 +1,5 @@
 import { observable, action } from 'mobx';
+import { GlobalColors } from '../../models/Constants/GlobalColors';
 
 export interface IModals {
     // Vehicle
@@ -32,6 +33,12 @@ export interface IUiStore {
     // Observables
     modals: IModals;
 
+    // Notification
+    showHideNotification(status: boolean, message?: string, duration?: number, color?: string): void;
+    notificationMessage: string;
+    notificationOpen: boolean;
+    notificationDuration: number;
+    notificationColor: string;
     // Computed
 }
 
@@ -48,6 +55,29 @@ export class UiStore implements IUiStore {
         createRefuelModalOpen: false,
         editRefuelModalOpen: false,
     };
+
+    // Notification
+    @observable public notificationMessage: string = '';
+    @observable public notificationColor: string = GlobalColors.defaultColor;
+    @observable public notificationOpen: boolean = false;
+    @observable public notificationDuration: number = 10000;
+
+    public showHideNotification(status: boolean, message?: string, duration?: number, color?: string): void {
+        if (!status) this.notificationOpen = status;
+
+        if (status) {
+            this.notificationMessage = message;
+
+            if (duration) this.notificationDuration = duration;
+            if (color) this.notificationColor = color;
+
+            this.notificationOpen = status;
+        } else {
+            this.notificationMessage = '';
+            this.notificationDuration = 10000;
+            this.notificationColor = GlobalColors.defaultColor;
+        }
+    }
 
     @action.bound
     public openModal(modal: Modals): void {
