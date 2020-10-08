@@ -12,7 +12,7 @@ import {
     IonFabButton,
     IonList,
 } from '@ionic/react';
-import { settingsOutline as settingsIcon, exitOutline as exitIcon, add as addIcon } from 'ionicons/icons';
+import { exitOutline as exitIcon, add as addIcon } from 'ionicons/icons';
 import { IUserStore } from '../../stores/UserStore/UserStore';
 import { observer, inject } from 'mobx-react';
 import MainHeader from '../MainHeader/MainHeader';
@@ -155,7 +155,7 @@ export default class Home extends React.Component<HomeProps, HomeState> {
     }
 
     private extraContentResultScreen = (): JSX.Element => {
-        // Add default history events such as welcome to carM and one more - Star monitoring your vehicle expenses with Car M
+        // CR: Add default history events such as welcome to carM and one more - Star monitoring your vehicle expenses with Car M
         return (
             <IonFab horizontal="center" className="c-fab">
                 <IonFabButton
