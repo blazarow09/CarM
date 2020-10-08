@@ -40,10 +40,12 @@ export interface IVehicleStore {
     getSingleRefulebById(refuelId: string): Promise<void>;
 
     setViewRefuel(refuel: IRefuelView): void;
-    viewRefuelData: IRefuelView;
     setRefuelToEdit(reset?: boolean): void;
     handleEditRefuel(refuel: IRefuelCreateEdit, refuelId: string): Promise<void>;
+    setLatestRefuelEntry(refuelEntry: IRefuelView): void;
+    viewRefuelData: IRefuelView;
     refuelToEdit: IRefuelCreateEdit;
+    latestRefuelEntry: IRefuelView;
 
     // Observables
     availableCars: IObservableArray<IVehicleViewModel>;
@@ -81,6 +83,7 @@ export class VehicleStore implements IVehicleStore {
     @observable public viewRepairData: IRepair = null;
     @observable public lastOdometer: string = '';
     @observable public refuelToEdit: IRefuelCreateEdit = null;
+    @observable public latestRefuelEntry: IRefuelCreateEdit = null;
 
     //#endregion
 
@@ -118,8 +121,6 @@ export class VehicleStore implements IVehicleStore {
     public async handleVehicleSave(vehicle: IVehicleViewModel): Promise<void> {
         if (vehicle) {
             await this._vehicleService.saveVehicle(vehicle);
-
-            // await this.saveLastOdometerForVehicle(vehicle.mileage);
         }
     }
 
@@ -232,8 +233,6 @@ export class VehicleStore implements IVehicleStore {
         if (refuel && this.preferredVehicleId) {
             let refuelId = await this._refuelService.saveRefuel(refuel, this.preferredVehicleId);
 
-            // await this.saveLastOdometerForVehicle(refuel.mileage);
-
             return refuelId;
         }
     }
@@ -242,12 +241,11 @@ export class VehicleStore implements IVehicleStore {
         if (refuel && this.preferredVehicleId) {
             await this._refuelService.editRefuel(refuel, this.preferredVehicleId, refuelId);
 
-            // await this.saveLastOdometerForVehicle(refuel.mileage);
-
             // return refuelId;
         }
     }
 
+    @action
     public async getRefuelsByVehicleId(reset: boolean, vehicleId: string): Promise<void> {
         if (reset) {
             this.refuelsByVehicleId.clear();
@@ -256,8 +254,15 @@ export class VehicleStore implements IVehicleStore {
                 let refuels = await this._refuelService.getRefuelsByVehicleId(vehicleId);
 
                 this.refuelsByVehicleId.replace(refuels);
+
+                if (refuels.length > 0) this.setLatestRefuelEntry(refuels[0]);
             }
         }
+    }
+
+    @action
+    public setLatestRefuelEntry(refuelEntry: IRefuelView): void {
+        this.latestRefuelEntry = refuelEntry;
     }
 
     @action
